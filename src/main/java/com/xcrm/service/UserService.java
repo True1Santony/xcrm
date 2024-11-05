@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * descomponer para el principio de responsabilidad unica.....
+ * descomponer para el principio de responsabilidad unica....
  */
 @Service
 public class UserService {
