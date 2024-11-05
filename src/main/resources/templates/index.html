@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido a XCRM</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="/JavaScript/cerrar.js" defer></script> <!-- Ruta relativa -->
+</head>
+<body>
+<header>
+    <img th:src="@{/images/logo.png}" alt="Logo XCRM"/>
+    <h1 th:text="${titulo}">Bienvenido a XCRM</h1>
+</header>
+<nav>
+    <ul>
+        <li><a th:href="@{/caracteristicas}">Características</a></li>
+        <li><a th:href="@{/precios}">Precios</a></li>
+        <li><a th:href="@{/contacto}">Contacto</a></li>
+        <li th:if="${loggedIn}">
+            <a th:href="@{/mi-cuenta}">Mi Cuenta</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button class="logout-button" type="submit">Cerrar Sesión</button>
+            </form>
+        </li>
+        <li th:unless="${loggedIn}">
+            <a th:href="@{/login}">Login</a>
+        </li>
+    </ul>
+</nav>
+<main>
+    <section>
+        <h2>Hero Section</h2>
+        <p>Bienvenido a nuestro CRM.</p>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2024 XCRM. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>

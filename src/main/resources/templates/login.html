@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Inicio de Sesión</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="login-container">
+    <h1 th:text="${titulo}">Inicio de Sesión</h1>
+    <form th:action="@{/login}" method="post" class="login-form" >
+        <label>
+            <input type="text" placeholder="Usuario" name="username" required>
+        </label>
+        <label>
+            <input type="password" placeholder="Contraseña" name="password" required>
+        </label>
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+    <p class="register-link">
+        ¿No tienes cuenta? <a th:href="@{/registro}">Regístrate aquí</a>
+    </p>
+    <a th:href="@{/}">Volver a Inicio</a>
+</div>
+</body>
+</html>
+

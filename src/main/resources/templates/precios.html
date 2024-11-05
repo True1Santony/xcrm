@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Precios de XCRM</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1 th:text="${titulo}"></h1>
+<p>Aquí están los precios de XCRM...</p>
+<a th:href="@{/}">Volver a Inicio</a>
+</body>
+</html>
