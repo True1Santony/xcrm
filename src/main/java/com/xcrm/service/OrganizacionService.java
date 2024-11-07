@@ -42,9 +42,9 @@ public class OrganizacionService {
 	        
 	        organizacionRepository.deleteById(id);
 	    }
-	 
-	 public List<Organizacion> buscarPorNombre(String nombre) {
-	        return organizacionRepository.findByNombre(nombre); 
+
+	 public Optional<Organizacion> buscarPorNombre(String nombre) {
+	        return organizacionRepository.findByNombre(nombre);
 	    }
 
 	public Optional<Organizacion> buscarPorEmail(String email) {
@@ -59,6 +59,11 @@ public class OrganizacionService {
 	 * @return
 	 */
 	public Organizacion crearOrganizacion(String nombre, String email, String plan) {
+
+		if(organizacionRepository.findByNombre(nombre).isPresent()){
+			throw new IllegalArgumentException("La organización con este nombre ya existe.");
+		}
+
 		// Crear una nueva instancia de Organizacion
 		Organizacion nuevaOrganizacion = new Organizacion();
 		nuevaOrganizacion.setNombre(nombre);

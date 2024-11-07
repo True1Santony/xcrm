@@ -30,6 +30,11 @@ public class UserService {
 
     @Transactional
     public void crearUsuarioConOrganizacion(String username, String rawPassword, Organizacion organizacion, String role) {
+
+        if (userRepository.findByUsername(username) != null) {
+            throw new IllegalArgumentException("El usuario ya existe");
+        }
+
         // Crear una nueva instancia de User
         User nuevoUsuario = new User();
         nuevoUsuario.setUsername(username); // Establecer el nombre de usuario

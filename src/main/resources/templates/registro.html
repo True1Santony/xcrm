@@ -10,9 +10,13 @@
   <h1 th:text="${titulo}">Registro de Organización</h1>
 
   <!-- Mensaje de error en caso de no coincidir el email o contraseña -->
-  <div th:if="${error}" th:text="${error}" class="error-message" style="color: red;"></div>
+  <div th:if="${errores}" class="error-messages">
+    <ul>
+      <li th:each="error : ${errores}" th:text="${error}" style="color: red;"></li>
+    </ul>
+  </div>
 
-  <form action="#" method="post" class="login-form" th:action="@{/registro}">
+  <form method="post" class="login-form" th:action="@{/registro}">
     <input type="text" placeholder="Nombre" name="nombre" required>
 
     <!-- Email y Confirmación de Email -->

@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 
 @Controller
@@ -100,10 +103,10 @@ public class IndexController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
-        List<Organizacion> organizaciones = organizacionService.buscarPorNombre(username);
+        Optional <Organizacion> organizacionOptional = organizacionService.buscarPorNombre(username);
 
-        if (!organizaciones.isEmpty()) {
-            model.addAttribute("organizacion", organizaciones.get(0)); // Pasamos la organización activa
+        if (organizacionOptional.isPresent()) {
+            model.addAttribute("organizacion", organizacionOptional.get()); // Pasamos la organización activa
         } else {
             System.out.println("la lista de la organizacion esta vacia");
             model.addAttribute("error", "No se encontró la organización.");
@@ -114,6 +117,7 @@ public class IndexController {
 
     @GetMapping("/registro")
     public String muestraRegistro(Model model){
+        model.addAttribute("titulo", "REGISTRO");
         return "registro";
     }
 
@@ -128,31 +132,47 @@ public class IndexController {
                                         @RequestParam String plan,
                                         Model model) {
 
+        model.addAttribute("titulo", "REGISTRO");
+        List<String> errores = new ArrayList<>();
+
         // Verificar si el email ya está registrado
-        /*if (organizacionService.buscarPorEmail(email).isPresent()) {
-            model.addAttribute("error", "El email ya está en uso.");
-            return "registro"; // Regresar al formulario de registro
-        }*/
+        if (organizacionService.buscarPorEmail(email).isPresent()) {
+            errores.add("El email ya está en uso.");
+        }
 
         // Validar que el email y el email de confirmación coincidan
-       /* if (!email.equals(confirmEmail)) {
-            model.addAttribute("error", "Los emails no coinciden.");
-            return "registro";
-        }*/
+       if (!email.equals(confirmEmail)) {
+           errores.add("Los emails no coinciden.");
+        }
 
         // Validar que la contraseña y la confirmación coincidan
-       /* if (!password.equals(confirmPassword)) {
-            model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "registro";
-        }*/
+       if (!password.equals(confirmPassword)) {
+           errores.add("Las contraseñas no coinciden.");
+        }
+        // Validación de la contraseña con expresión regular
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$";
+        if (!Pattern.matches(regex, password)) {
+            errores.add("La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y al menos 6 caracteres.");
+        }
 
-        // guardar una nueva organización
-       Organizacion nuevaOrganizacion = organizacionService.crearOrganizacion(nombre, email, plan);
+       // Si hay errores, devolver al formulario con los errores
+        if (!errores.isEmpty()) {
+            model.addAttribute("errores", errores);
+            return "registro"; // Regresamos al formulario con los mensajes de error
+        }
 
+        try {
+            // Guardar una nueva organización
+            Organizacion nuevaOrganizacion = organizacionService.crearOrganizacion(nombre, email, plan);
 
-        //guardo al usuario administrador
-        userService.crearUsuarioConOrganizacion(nombre, password, nuevaOrganizacion, "ROLE_ADMIN");
+            // Guardar al usuario administrador
+            userService.crearUsuarioConOrganizacion(nombre, password, nuevaOrganizacion, "ROLE_ADMIN");
 
+        } catch (IllegalArgumentException e) {
+            errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo
+            model.addAttribute("errores",errores);
+            return "registro"; // Regresamos al formulario con el mensaje de error
+        }
        // model.addAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "redirect:/login"; // Redirigir al login después de registrarse
     }

@@ -12,7 +12,7 @@ import com.xcrm.model.Organizacion;
 public interface OrganizacionRepository extends JpaRepository<Organizacion, Long> {
 
 	//Genera una query con where nombre = ?, Spring Data JPA lo convierte automaticamente en una consulta
-	List<Organizacion> findByNombre(String nombre);
+	Optional<Organizacion> findByNombre(String nombre);
 
 
     Optional<Organizacion> findByEmail(String email);
