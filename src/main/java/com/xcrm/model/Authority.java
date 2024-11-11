@@ -1,5 +1,6 @@
 package com.xcrm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 public class Authority implements Serializable {
 
     @Id
-    @Column(name = "username", nullable = false)  // Añadir el campo username aquí
+    @Column(name = "username", nullable = false)
     private String username;  // Campo username que corresponde a User
 
     @Id
@@ -19,7 +20,8 @@ public class Authority implements Serializable {
 
     @ManyToOne // Relación ManyToOne con User
     @JoinColumn(name = "username", insertable = false, updatable = false)
-    private User user;  // Aquí va la propiedad 'user'
+    @JsonIgnore // ignora a la hora de serializar, ya se obtienen del lado de organizacion. api
+    private User user;
 
     // Constructor vacío
     public Authority() {

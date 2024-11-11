@@ -1,18 +1,19 @@
 package com.xcrm.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 
 @Entity
 @Table(name="organizaciones")
-public class Organizacion {
+public class Organizacion implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(nullable = false,unique = true, length = 100)
@@ -32,6 +33,7 @@ public class Organizacion {
 	}
 
 	@OneToMany(mappedBy = "organizacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference // Indica el lado principal para evitar anidamiento al serializar.api
 	private Set<User> usuarios = new HashSet<>(); // Una organización puede tener varios usuarios
 
 	public Organizacion(Long id, String nombre, String email, String plan) {

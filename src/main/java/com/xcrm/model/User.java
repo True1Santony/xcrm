@@ -1,5 +1,6 @@
 package com.xcrm.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,7 @@ public class User implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "organizacion_id", nullable = false)
+    @JsonBackReference // Indica el lado inverso.api
     private Organizacion organizacion;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

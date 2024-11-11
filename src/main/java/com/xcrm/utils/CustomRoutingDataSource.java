@@ -51,10 +51,16 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
                 : null;
 
         if (session != null) {
-            return session.getAttribute("TENANT_ID");
+            String tenantId = (String) session.getAttribute("TENANT_ID");
+
+            // Si el tenantId es "mi_app", reemplázalo por "default"
+            if ("mi_app".equals(tenantId)) {
+                return "default";
+            }
+
+            return tenantId;
         } else {
-            // Si no hay sesión, retornar un valor predeterminado, como "default"
-            return "default"; // Cambia esto según tu lógica
+            return "default"; // Usa el DataSource predeterminado si no hay sesión
         }
     }
 

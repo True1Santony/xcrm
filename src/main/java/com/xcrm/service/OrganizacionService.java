@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.xcrm.model.Organizacion;
 import com.xcrm.repository.OrganizacionRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrganizacionService {
@@ -66,6 +67,7 @@ public class OrganizacionService {
 
 		// Crear una nueva instancia de Organizacion
 		Organizacion nuevaOrganizacion = new Organizacion();
+		nuevaOrganizacion.setId(organizacionRepository.count()+30);
 		nuevaOrganizacion.setNombre(nombre);
 		nuevaOrganizacion.setEmail(email);
 		nuevaOrganizacion.setPlan(plan);
@@ -73,6 +75,10 @@ public class OrganizacionService {
 		//Creacion de la base de datos de la organizacion
 
 		databaseRepository.createDatabase(nombre);
+		databaseRepository.createTables(nombre);
+
+		// Insertar la organización en la base de datos de la organización
+		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre,nuevaOrganizacion.getId(),email,plan);
 
 		// Guardar la organización
 		System.out.println("Se va a guardar la organización");
@@ -86,7 +92,7 @@ public class OrganizacionService {
 	public String obtenerDatabaseUrlPorNombre(String nombre) {
 		Optional<Organizacion> organizacion = organizacionRepository.findByNombre(nombre).stream().findFirst();
 		if (organizacion.isPresent()) {
-			return "jdbc:mysql://localhost:3306/" + organizacion.get().getNombre(); // Ajusta esta URL según tu configuración.
+			return "jdbc:mysql://localhost:3306/" + organizacion.get().getNombre();
 		} else {
 			throw new IllegalArgumentException("Organización no encontrada: " + nombre);
 		}

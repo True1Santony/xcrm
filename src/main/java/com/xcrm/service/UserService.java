@@ -4,6 +4,7 @@ import com.xcrm.model.Authority;
 import com.xcrm.model.User;
 import com.xcrm.model.Organizacion;
 import com.xcrm.repository.AuthorityRepository;
+import com.xcrm.repository.DatabaseRepository;
 import com.xcrm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +29,9 @@ public class UserService {
     @Autowired
     private JdbcTemplate jdbcTemplate; // Inyectar JdbcTemplate
 
+    @Autowired
+    private DatabaseRepository databaseRepository;
+
     @Transactional
     public void crearUsuarioConOrganizacion(String username, String rawPassword, Organizacion organizacion, String role) {
 
@@ -50,6 +54,12 @@ public class UserService {
         authority.setAuthority(role);
 
         authorityRepository.save(authority);
+
+        // Insertar el usuario en la base de datos de la organización
+        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombre(),organizacion.getId(),username, nuevoUsuario.getPassword());
+
+        // Insertar el rol de administrador para el usuario
+        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombre(), username, role);
     }
 
     @Transactional
@@ -81,11 +91,11 @@ public class UserService {
         nuevoUsuario.getAuthorities().add(authority);
         userRepository.save(nuevoUsuario); // Actualizar el usuario con la autoridad
 
-        // Ahora guardar el usuario en la base de datos central
+        // Guardo al usuario en la base de datos central
         String insertUserQuery = "INSERT INTO mi_app.users (username, password, enabled, organizacion_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(insertUserQuery, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organizacion.getId());
 
-        // Si necesitas también agregar la autoridad en la base de datos central, hazlo aquí
+        //Los roles del User en la base de datos central
         String insertAuthorityQuery = "INSERT INTO mi_app.authorities (username, authority) VALUES (?, ?)";
         jdbcTemplate.update(insertAuthorityQuery, userName, "ROLE_USER");
 
