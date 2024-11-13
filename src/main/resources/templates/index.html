@@ -7,25 +7,30 @@
 </head>
 <body>
 <header>
-    <img th:src="@{/images/logo.png}" alt="Logo XCRM"/>
-    <h1 th:text="${titulo}">Bienvenido a XCRM</h1>
-</header>
-<nav>
-    <ul>
+    <div class="logo">
+        <img th:src="@{/images/logo3.png}" alt="Logo XCRM"/>
+    </div>
+    <ul class="nav-menu">
+        <li><a th:href="@{/}">Inicio</a></li>
         <li><a th:href="@{/caracteristicas}">Características</a></li>
         <li><a th:href="@{/precios}">Precios</a></li>
         <li><a th:href="@{/contacto}">Contacto</a></li>
+
+        <!-- Mostrar 'Mi Cuenta' y logout si el usuario está autenticado -->
         <li th:if="${loggedIn}">
             <a th:href="@{/mi-cuenta}">Mi Cuenta</a>
             <form th:action="@{/logout}" method="post" style="display:inline;">
                 <button class="logout-button" type="submit">Cerrar Sesión</button>
             </form>
         </li>
+
+        <!-- Mostrar 'Login' si el usuario no está autenticado -->
         <li th:unless="${loggedIn}">
             <a th:href="@{/login}">Login</a>
         </li>
     </ul>
-</nav>
+</header>
+
 <main>
     <section>
         <h2>Hero Section</h2>

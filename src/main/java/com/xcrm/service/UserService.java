@@ -101,6 +101,10 @@ public class UserService {
 
     }
 
+    public User obtenerUsuarioPorNombre(String nombre) {
+        return userRepository.findByUsername(nombre);
+    }
+
 
 }
 

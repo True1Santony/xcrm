@@ -103,7 +103,7 @@ public class IndexController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
-        Optional <Organizacion> organizacionOptional = organizacionService.buscarPorNombre(username);
+        Optional <Organizacion> organizacionOptional = organizacionService.obtenerPorId(userService.obtenerUsuarioPorNombre(username).getOrganizacion().getId());
 
         if (organizacionOptional.isPresent()) {
             model.addAttribute("organizacion", organizacionOptional.get()); // Pasamos la organización activa
@@ -124,7 +124,8 @@ public class IndexController {
 
 
     @PostMapping("/registro")
-    public String registrarOrganizacion(@RequestParam String nombre,
+    public String registrarOrganizacion(@RequestParam String nombreEmpresa,
+                                        @RequestParam String nombreAdmin,
                                         @RequestParam String email,
                                         @RequestParam String confirmEmail,
                                         @RequestParam String password,
@@ -163,10 +164,10 @@ public class IndexController {
 
         try {
             // Guardar una nueva organización
-            Organizacion nuevaOrganizacion = organizacionService.crearOrganizacion(nombre, email, plan);
+            Organizacion nuevaOrganizacion = organizacionService.crearOrganizacion(nombreEmpresa, email, plan);
 
             // Guardar al usuario administrador
-            userService.crearUsuarioConOrganizacion(nombre, password, nuevaOrganizacion, "ROLE_ADMIN");
+            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganizacion, "ROLE_ADMIN");
 
         } catch (IllegalArgumentException e) {
             errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo

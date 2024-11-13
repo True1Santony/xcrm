@@ -76,7 +76,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
        }
 
        // Convertir el tenantId a minúsculas
-       tenantId = tenantId.toLowerCase();
+       tenantId = tenantId.toLowerCase().replaceAll("\\s+", "_");
 
         // Verifica si ya tenemos un DataSource en caché para esta organización
         if (!dataSources.containsKey(tenantId)) {
