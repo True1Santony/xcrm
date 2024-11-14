@@ -81,7 +81,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         // Verifica si ya tenemos un DataSource en caché para esta organización
         if (!dataSources.containsKey(tenantId)) {
             // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
-            String dbUrl = "jdbc:mysql://192.168.1.36:3306/xcrm_" + tenantId;
+            String dbUrl = "jdbc:mysql://192.168.1.36:3306/" + tenantId;
 
             DataSource newDataSource = DataSourceBuilder.create()
                     .url(dbUrl)
@@ -109,11 +109,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
     @Override
     public void afterPropertiesSet() {
         Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put("default", defaultDataSource); // Añade tu DataSource por defecto
-
-        // Aquí podrías añadir lógicas para inicializar otras fuentes de datos
-        // targetDataSources.put("otroTenant", otroDataSource);
-
+        targetDataSources.put("default", defaultDataSource); // Añade DataSource por defecto
         setTargetDataSources(targetDataSources);
         super.afterPropertiesSet();
     }

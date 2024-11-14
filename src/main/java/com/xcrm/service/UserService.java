@@ -56,10 +56,10 @@ public class UserService {
         authorityRepository.save(authority);
 
         // Insertar el usuario en la base de datos de la organización
-        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombre(),organizacion.getId(),username, nuevoUsuario.getPassword());
+        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombreDB(),organizacion.getId(),username, nuevoUsuario.getPassword());
 
         // Insertar el rol de administrador para el usuario
-        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombre(), username, role);
+        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombreDB(), username, role);
     }
 
     @Transactional

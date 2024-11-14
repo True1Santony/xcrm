@@ -15,6 +15,10 @@ public class Organizacion implements Serializable {
 	
 	@Id
 	private Long id;
+
+
+	@Column(name = "nombreDB", nullable = false, length = 50, unique = true)
+	private String nombreDB;
 	
 	@Column(nullable = false,unique = true, length = 100)
 	private String nombre;
@@ -36,12 +40,13 @@ public class Organizacion implements Serializable {
 	@JsonManagedReference // Indica el lado principal para evitar anidamiento al serializar.api
 	private Set<User> usuarios = new HashSet<>(); // Una organización puede tener varios usuarios
 
-	public Organizacion(Long id, String nombre, String email, String plan) {
+	public Organizacion(Long id, String nombre, String email, String plan, String nombreDB) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.email = email;
 		this.plan = plan;
+		this.nombreDB=nombreDB;
 		this.creado = LocalDateTime.now();
 	}
 
@@ -96,5 +101,13 @@ public class Organizacion implements Serializable {
 	public void addUsuario(User usuario) {
 		usuarios.add(usuario);
 		usuario.setOrganizacion(this);
+	}
+
+	public String getNombreDB() {
+		return nombreDB;
+	}
+
+	public void setNombreDB(String nombreDB) {
+		this.nombreDB = nombreDB;
 	}
 }

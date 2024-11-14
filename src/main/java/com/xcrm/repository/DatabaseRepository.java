@@ -23,16 +23,12 @@ public class DatabaseRepository {
 
     public void createDatabase(String dbName){
 
-        String dbNameCreated = "xcrm_"+dbName.toLowerCase().replaceAll("\\s+","_");
-
-        jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS "+ dbNameCreated);
-        System.out.println("Vamos a crear la base de: " +dbName+" Con el nombre de :"+dbNameCreated);
+        jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS "+ dbName);
+        System.out.println("Vamos a crear la base : " +dbName);
 
     }
 
     public void createTables(String dbName){
-
-        dbName="xcrm_"+dbName.toLowerCase().replaceAll("\\s+","_");
 
         jdbcTemplate.execute("USE "+dbName);
 
@@ -40,14 +36,18 @@ public class DatabaseRepository {
         String createTablesScript = loadSqlScript("db/authorities.sql");
 
         jdbcTemplate.execute(createTablesScript);
+        System.out.println("tabla 1 creada");
 
         createTablesScript = loadSqlScript("db/organizaciones.sql");
 
         jdbcTemplate.execute(createTablesScript);
+        System.out.println("tabla 2 creada");
+
 
         createTablesScript = loadSqlScript("db/users.sql");
 
         jdbcTemplate.execute(createTablesScript);
+        System.out.println("tabla 3 creada");
 
     }
 
@@ -66,30 +66,30 @@ public class DatabaseRepository {
     }
 
     @Transactional
-    public void insertarOrganizacionEnBaseDeDatos(String dbName, Long organizacionId, String email, String plan) {
+    public void insertarOrganizacionEnBaseDeDatos(String nombre, Long organizacionId, String email, String plan, String nombreDB) {
 
 
-        String dbNameName = "xcrm_" + dbName.toLowerCase().replaceAll("\\s+", "_");
-        jdbcTemplate.execute("USE " + dbNameName);
+
+        jdbcTemplate.execute("USE " + nombreDB);
 
         // Insertar datos de la organización en la tabla `organizaciones`
-        String sqlInsert = "INSERT INTO organizaciones (id, nombre, email, plan, creado) VALUES (?, ?, ?, ?, NOW())";
-        jdbcTemplate.update(sqlInsert, organizacionId, dbName, email, plan);
+        String sqlInsert = "INSERT INTO organizaciones (id, nombre, email, plan, nombreDB, creado) VALUES (?, ?, ?, ?,?, NOW())";
+        jdbcTemplate.update(sqlInsert, organizacionId, nombre, email, plan, nombreDB);
+        System.out.println("insertando a "+nombre+" en la base de datos central");
     }
 
     @Transactional
     public void insertarUsuarioEnBaseDeDatos(String dbName, Long organizacionId, String username, String password) {
-        dbName = "xcrm_" + dbName.toLowerCase().replaceAll("\\s+", "_");
         jdbcTemplate.execute("USE " + dbName);
 
         // Insertar el usuario administrador en la tabla `users`
         String sqlInsertAdmin = "INSERT INTO users (username, password, enabled, organizacion_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sqlInsertAdmin, username, password, 1, organizacionId);
+        System.out.println("insertando a "+username+" en la base de datos central");
     }
 
     @Transactional
     public void insertarRolDeUsuarioEnBaseDeDatos(String dbName, String username, String role) {
-        dbName = "xcrm_" + dbName.toLowerCase().replaceAll("\\s+", "_");
         jdbcTemplate.execute("USE " + dbName);
 
         // Insertar el rol de administrador para el usuario en la tabla `authorities`

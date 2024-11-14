@@ -71,14 +71,15 @@ public class OrganizacionService {
 		nuevaOrganizacion.setNombre(nombre);
 		nuevaOrganizacion.setEmail(email);
 		nuevaOrganizacion.setPlan(plan);
+		nuevaOrganizacion.setNombreDB(creaNombreBDporNombreEmpresa(nombre));
 
 		//Creacion de la base de datos de la organizacion
 
-		databaseRepository.createDatabase(nombre);
-		databaseRepository.createTables(nombre);
+		databaseRepository.createDatabase(nuevaOrganizacion.getNombreDB());
+		databaseRepository.createTables(nuevaOrganizacion.getNombreDB());
 
 		// Insertar la organización en la base de datos de la organización
-		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre,nuevaOrganizacion.getId(),email,plan);
+		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre,nuevaOrganizacion.getId(),email,plan, nuevaOrganizacion.getNombreDB());
 
 		// Guardar la organización
 		System.out.println("Se va a guardar la organización");
@@ -96,5 +97,12 @@ public class OrganizacionService {
 		} else {
 			throw new IllegalArgumentException("Organización no encontrada: " + nombre);
 		}
+	}
+
+	private String creaNombreBDporNombreEmpresa(String nombreEmpresa){
+
+		String nombreDB = "xcrm_"+nombreEmpresa.toLowerCase().replaceAll("\\s+", "_");
+
+		return nombreDB;
 	}
 }

@@ -53,14 +53,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
         // Establecer el nombre de la organización en el contexto
-        String orgName = user.getOrganizacion().getNombre();
+        String nombreDB = user.getOrganizacion().getNombreDB();
         //UserContextHolder.setCurrentOrgName(orgName);
 
         //cambio de datasource de la organizacion a la que pertenece el user
         //updateDataSource(orgName);
 
 
-        httpSession.setAttribute("TENANT_ID", orgName);
+        httpSession.setAttribute("TENANT_ID", nombreDB);
 
         // Construir el objeto UserDetails a partir del objeto User
         return org.springframework.security.core.userdetails.User
