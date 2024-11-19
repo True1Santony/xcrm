@@ -58,6 +58,28 @@
 
 <div sec:authorize="hasRole('ROLE_ADMIN')">
     <p class="auth-message">This content is only shown to administrators.</p>
+
+    <h1>Usuarios de la Ogganización</h1>
+    <table class="organization-table">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Nombre</td>
+                <td>Roles</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="usuario : ${organizacion.usuarios}">
+                <td th:text="${usuario.username}"></td>
+                <td th:text="${usuario.username}"></td>
+                <td>
+                    <!-- Lista de roles -->
+                    <span th:each="authority : ${usuario.authorities}" th:text="${authority.authority} + ' '"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
 </div>
 
 <div sec:authorize="hasRole('ROLE_USER')">
