@@ -22,33 +22,48 @@ public class DatabaseRepository {
     }
 
     public void createDatabase(String dbName){
-
-        jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS "+ dbName);
-        System.out.println("Vamos a crear la base : " +dbName);
-
+        try {
+            // Intento crear la base de datos
+            jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS " + dbName);
+            System.out.println("Base de datos creada: " + dbName);
+        } catch (Exception e) {
+            System.out.println("Error al crear la base de datos: " + dbName);
+            throw new RuntimeException("No se pudo crear la base de datos", e);
+        }
     }
 
     public void createTables(String dbName){
 
-        jdbcTemplate.execute("USE "+dbName);
+        try {
+            jdbcTemplate.execute("USE " + dbName);
 
-        // Lee el archivo SQL de los recursos
-        String createTablesScript = loadSqlScript("db/authorities.sql");
+            // Lee los scripts SQL de las tablas
+            executeTableScript("db/authorities.sql");
+            executeTableScript("db/organizaciones.sql");
+            executeTableScript("db/users.sql");
+            executeTableScript("db/clientes.sql");
+            executeTableScript("db/campanias.sql");
+            executeTableScript("db/comerciales_campanias.sql");
+            executeTableScript("db/clientes_campanias.sql");
+            executeTableScript("db/comerciales_clientes.sql");
+            executeTableScript("db/interacciones.sql");
+            executeTableScript("db/ventas.sql");
 
-        jdbcTemplate.execute(createTablesScript);
-        System.out.println("tabla 1 creada");
+            System.out.println("Tablas creadas exitosamente.");
 
-        createTablesScript = loadSqlScript("db/organizaciones.sql");
+        } catch (Exception e) {
+            // Si ocurre un error, eliminamos la base de datos
+            jdbcTemplate.execute("DROP DATABASE IF EXISTS " + dbName);
+            System.out.println("Error al crear las tablas. Se ha eliminado la base de datos: " + dbName);
+            throw new RuntimeException("Error al crear las tablas, la base de datos fue eliminada", e);
+        }
 
-        jdbcTemplate.execute(createTablesScript);
-        System.out.println("tabla 2 creada");
+    }
 
-
-        createTablesScript = loadSqlScript("db/users.sql");
-
-        jdbcTemplate.execute(createTablesScript);
-        System.out.println("tabla 3 creada");
-
+    private void executeTableScript(String filename) {
+        String createTableScript = loadSqlScript(filename);
+        jdbcTemplate.execute(createTableScript);
+        System.out.println("Tabla creada desde el script: " + filename);
     }
 
     private String loadSqlScript(String filename) {

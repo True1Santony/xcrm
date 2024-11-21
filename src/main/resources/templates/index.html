@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title>Bienvenido a XCRM</title>
@@ -32,6 +32,28 @@
 </header>
 
 <main>
+    <div sec:authorize="hasRole('ROLE_GOOD')" class="good-section">
+        <h3>Todas las organizaciones</h3>
+
+        <!-- Tabla para mostrar las organizaciones -->
+        <table class="organization-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Base de datos</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="org : ${organizaciones}">
+                <td th:text="${org.id}"></td>
+                <td th:text="${org.nombre}"></td>
+                <td th:text="${org.nombreDB}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <section>
         <h2>Hero Section</h2>
         <p>Bienvenido a nuestro CRM.</p>

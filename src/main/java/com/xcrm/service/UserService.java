@@ -1,16 +1,14 @@
 package com.xcrm.service;
 
-import com.xcrm.model.Authority;
-import com.xcrm.model.User;
-import com.xcrm.model.Organizacion;
-import com.xcrm.repository.AuthorityRepository;
-import com.xcrm.repository.DatabaseRepository;
-import com.xcrm.repository.UserRepository;
+import com.xcrm.model.*;
+import com.xcrm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * descomponer para el principio de responsabilidad unica....
@@ -31,6 +29,12 @@ public class UserService {
 
     @Autowired
     private DatabaseRepository databaseRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private CampaniaRepository campaniaRepository;
 
     @Transactional
     public void crearUsuarioConOrganizacion(String username, String rawPassword, Organizacion organizacion, String role) {
@@ -105,6 +109,34 @@ public class UserService {
         return userRepository.findByUsername(nombre);
     }
 
+    // Asignar un cliente a un comercial
+    @Transactional
+    public void addClienteToComercial(String username, Long clienteId) {
+        Optional<User> userOpt = userRepository.findById(username);
+        Optional<Cliente> clienteOpt = clienteRepository.findById(clienteId);
+
+        if (userOpt.isPresent() && clienteOpt.isPresent()) {
+            User user = userOpt.get();
+            Cliente cliente = clienteOpt.get();
+            user.addCliente(cliente);
+            userRepository.save(user); // Guardamos al comercial con la relación actualizada
+            clienteRepository.save(cliente); // Guardamos el cliente con la relación actualizada
+        }
+    }
+
+    // Asignar una campaña a un comercial
+    @Transactional
+    public void addCampaniaToComercial(String username, Long campaniaId) {
+        Optional<User> userOpt = userRepository.findById(username);
+        Optional<Campania> campaniaOpt = campaniaRepository.findById(campaniaId);
+
+        if (userOpt.isPresent() && campaniaOpt.isPresent()) {
+            User user = userOpt.get();
+            Campania campania = campaniaOpt.get();
+            user.addCampania(campania);
+            userRepository.save(user); // Guardamos al comercial con la relación actualizada
+        }
+    }
 
 }
 

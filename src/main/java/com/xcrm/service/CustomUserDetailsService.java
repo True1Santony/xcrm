@@ -51,15 +51,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toList());
 
-
         // Establecer el nombre de la organización en el contexto
         String nombreDB = user.getOrganizacion().getNombreDB();
-        //UserContextHolder.setCurrentOrgName(orgName);
 
-        //cambio de datasource de la organizacion a la que pertenece el user
-        //updateDataSource(orgName);
-
-
+        //establece el nombre de la DB para cambiar el datasource de la organizacion en curso
         httpSession.setAttribute("TENANT_ID", nombreDB);
 
         // Construir el objeto UserDetails a partir del objeto User
@@ -70,25 +65,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .disabled(!user.isEnabled()) // Controlar si el usuario está habilitado
                 .build();
     }
-
-    /*private void updateDataSource(String orgName) {
-        // Cambia la URL del DataSource para apuntar a la base de datos de la organización
-        DataSource routingDataSource = dataSourceConfig.routingDataSource();
-        DataSource newDataSource = dataSourceConfig.getDataSource(orgName); // Obtener el nuevo DataSource
-
-
-        // Verificar si es una instancia de DriverManagerDataSource para obtener la URL de conexión
-        if (newDataSource instanceof DriverManagerDataSource) {
-            DriverManagerDataSource driverManagerDataSource = (DriverManagerDataSource) newDataSource;
-            System.out.println("Conectando a la base de datos para " + orgName + ": " + driverManagerDataSource.getUrl());
-        }
-
-        // Puedes establecer el nuevo DataSource en el RoutingDataSource
-        // Este método puede variar según tu implementación de RoutingDataSource
-        if (routingDataSource instanceof CustomRoutingDataSource) {
-            ((CustomRoutingDataSource) routingDataSource).setTargetDataSources(Map.of(orgName, newDataSource));
-        }
-    }*/
-
 
 }

@@ -31,6 +31,22 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Authority> authorities = new HashSet<>(); // Relación con Authority
 
+    @ManyToMany
+    @JoinTable(
+            name = "comerciales_campanias",
+            joinColumns = @JoinColumn(name = "comercial_username"),
+            inverseJoinColumns = @JoinColumn(name = "campania_id")
+    )
+    private Set<Campania> campanias = new HashSet<>(); // Relación con las campañas
+
+    @ManyToMany
+    @JoinTable(
+            name = "comerciales_clientes",
+            joinColumns = @JoinColumn(name = "comercial_username"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id")
+    )
+    private Set<Cliente> clientes = new HashSet<>(); // Relación con los clientes
+
     // Constructor, getters y setters
     public User() {}
 
@@ -81,4 +97,28 @@ public class User implements Serializable {
         this.authorities = authorities;
     }
 
+    public Set<Campania> getCampanias() {
+        return campanias;
+    }
+
+    public void setCampanias(Set<Campania> campanias) {
+        this.campanias = campanias;
+    }
+
+    public void addCampania(Campania campania) {
+        campanias.add(campania);
+        campania.getComerciales().add(this); // Agregar el comercial a la campaña
+    }
+
+    public Set<Cliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(Set<Cliente> clientes) {
+        this.clientes = clientes;
+    }
+    public void addCliente(Cliente cliente) {
+        clientes.add(cliente);
+        cliente.getComerciales().add(this); // Agregar el comercial al cliente
+    }
 }

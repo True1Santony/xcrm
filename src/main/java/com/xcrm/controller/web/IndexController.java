@@ -51,15 +51,18 @@ public class IndexController {
             System.out.println("Roles del usuario: " + authentication.getAuthorities());
 
             // Verifica si el usuario tiene el rol ADMIN
-            boolean isAdmin = authentication.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+            boolean isGood = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_GOOD"));
 
-            model.addAttribute("isAdmin", isAdmin);
 
-            if (isAdmin) {
-                System.out.println("El usuario tiene rol ADMIN.");
+
+            if (isGood) {
+                System.out.println("El usuario tiene rol GOOD.");
+
+                model.addAttribute("organizaciones", organizacionService.obtenerTodasLasOrganizaciones());
+
             } else {
-                System.out.println("El usuario no tiene rol ADMIN.");
+                System.out.println("El usuario no tiene rol GOOD.");
             }
         } else {
             System.out.println("Estado de login: No autenticado");
@@ -106,7 +109,7 @@ public class IndexController {
         Optional <Organizacion> organizacionOptional = organizacionService.obtenerPorId(userService.obtenerUsuarioPorNombre(username).getOrganizacion().getId());
 
         if (organizacionOptional.isPresent()) {
-            model.addAttribute("organizacion", organizacionOptional.get()); // Pasamos la organización activa
+            model.addAttribute("organizacion", organizacionOptional.get()); // Paso la organización activa
         } else {
             System.out.println("la lista de la organizacion esta vacia");
             model.addAttribute("error", "No se encontró la organización.");

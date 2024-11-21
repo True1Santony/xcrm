@@ -40,6 +40,10 @@ public class Organizacion implements Serializable {
 	@JsonManagedReference // Indica el lado principal para evitar anidamiento al serializar.api
 	private Set<User> usuarios = new HashSet<>(); // Una organización puede tener varios usuarios
 
+	@OneToMany(mappedBy = "organizacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference // Evitar problemas de serialización
+	private Set<Cliente> clientes = new HashSet<>();
+
 	public Organizacion(Long id, String nombre, String email, String plan, String nombreDB) {
 		super();
 		this.id = id;
@@ -109,5 +113,18 @@ public class Organizacion implements Serializable {
 
 	public void setNombreDB(String nombreDB) {
 		this.nombreDB = nombreDB;
+	}
+
+	public Set<Cliente> getClientes() {
+		return clientes;
+	}
+
+	public void setClientes(Set<Cliente> clientes) {
+		this.clientes = clientes;
+	}
+
+	public void addCliente(Cliente cliente) {
+		clientes.add(cliente);
+		cliente.setOrganizacion(this);
 	}
 }
