@@ -37,6 +37,9 @@ public class DatabaseRepository {
         try {
             jdbcTemplate.execute("USE " + dbName);
 
+            // Deshabilitar las restricciones de claves foráneas
+            jdbcTemplate.execute("SET foreign_key_checks = 0");
+
             // Lee los scripts SQL de las tablas
             executeTableScript("db/authorities.sql");
             executeTableScript("db/organizaciones.sql");
@@ -48,6 +51,9 @@ public class DatabaseRepository {
             executeTableScript("db/comerciales_clientes.sql");
             executeTableScript("db/interacciones.sql");
             executeTableScript("db/ventas.sql");
+
+            // Habilitar las restricciones de claves foráneas nuevamente
+            jdbcTemplate.execute("SET foreign_key_checks = 1");
 
             System.out.println("Tablas creadas exitosamente.");
 

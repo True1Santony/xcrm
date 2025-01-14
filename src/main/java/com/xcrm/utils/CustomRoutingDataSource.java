@@ -85,8 +85,8 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
 
             DataSource newDataSource = DataSourceBuilder.create()
                     .url(dbUrl)
-                    .username(username) // Cambia según tu configuración
-                    .password(password) // Cambia según tu configuración
+                    .username(username)
+                    .password(password)
                     .driverClassName(driverClassName)
                     .build();
             dataSources.put(tenantId, newDataSource);
