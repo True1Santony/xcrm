@@ -17,6 +17,10 @@ import java.util.Map;
 
 @Component
 public class CustomRoutingDataSource extends AbstractRoutingDataSource {
+
+    @Value("${database.url.prefix}")
+    private String dbUrlPrefix;
+
     @Autowired
     private HttpSession httpSession;
 
@@ -81,7 +85,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         // Verifica si ya tenemos un DataSource en caché para esta organización
         if (!dataSources.containsKey(tenantId)) {
             // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
-            String dbUrl = "jdbc:mysql://192.168.1.36:3306/" + tenantId;
+            String dbUrl = dbUrlPrefix + tenantId;
 
             DataSource newDataSource = DataSourceBuilder.create()
                     .url(dbUrl)

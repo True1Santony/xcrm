@@ -93,7 +93,7 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <!-- Sección de registro de usuario solo visible para administradores
+                 Sección de registro de usuario solo visible para administradores
                 <div sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
                     <h3>Registrar Nuevo Usuario por controller</h3>
                     <form th:action="@{/usuarios/registro}" method="post" th:object="${nuevoUsuario}" class="needs-validation" novalidate>
@@ -110,51 +110,11 @@
                         <button type="submit" class="btn btn-primary">Registrar Usuario</button>
                     </form>
                 </div>
-                -->
-
-                <!-- Botón para abrir el modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registroUsuarioModal">
-                    Registrar Nuevo Usuario
-                </button>
-
-                <!-- Modal de registro de usuario -->
-                <div class="modal fade" id="registroUsuarioModal" tabindex="-1" aria-labelledby="registroUsuarioModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="registroUsuarioModalLabel">Registrar Nuevo Usuario</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="registroUsuarioForm">
-                                    <div class="mb-3">
-                                        <label for="username" class="form-label">Nombre de Usuario:</label>
-                                        <input type="text" id="username" name="username" class="form-control" required />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Contraseña:</label>
-                                        <input type="password" id="password" name="password" class="form-control" required />
-                                    </div>
-                                    <input type="hidden" id="organizacionId" value="1" /> <!-- Cambia el valor por el ID de tu organización -->
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="button" class="btn btn-primary" id="btnRegistrarUsuario">Registrar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
 
 
                 <div sec:authorize="isAuthenticated()">
                     <p class="alert alert-info">Este contenido es solo visible para usuarios autenticados.</p>
                 </div>
-
-                <div sec:authorize="hasRole('ROLE_ADMIN')">
-                    <p class="alert alert-info">Este contenido es solo visible para administradores.</p>
-
                     <h3>Usuarios de la Organización</h3>
                     <table class="table table-bordered table-striped">
                         <thead>
@@ -193,8 +153,6 @@
 <!-- Enlazando el archivo JS de Bootstrap local -->
     <script src="/JavaScript/bootstrap.bundle.min.js"></script>
     <script src="/JavaScript/registraUser.js"></script>
-
-
 
 </body>
 </html>

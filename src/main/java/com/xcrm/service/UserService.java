@@ -10,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-/**
- * descomponer para el principio de responsabilidad unica....
- */
 @Service
 public class UserService {
 
@@ -46,7 +43,7 @@ public class UserService {
         // Crear una nueva instancia de User
         User nuevoUsuario = new User();
         nuevoUsuario.setUsername(username); // Establecer el nombre de usuario
-        nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword)); // Encriptar la contraseña
+        nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword));
         nuevoUsuario.setEnabled(true); // Habilitar el usuario
         nuevoUsuario.setOrganizacion(organizacion); // Establecer la relación con la organización
 
@@ -67,7 +64,7 @@ public class UserService {
     }
 
     @Transactional
-    public void crearNuevoUsuario(String userName, String rawPassword, Organizacion organizacion){
+    public void createUserInOrganization(String userName, String rawPassword, Organizacion organizacion){
 
         // Verificar si el usuario ya existe
         if (userRepository.findByUsername(userName) != null) {

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +14,7 @@ public class User implements Serializable {
 
     @Id
     @NotBlank(message = "El nombre de usuario es obligatorio")
-    private String username; // Usamos el campo 'username' como clave primaria
+    private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")

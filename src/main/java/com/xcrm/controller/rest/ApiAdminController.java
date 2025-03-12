@@ -1,17 +1,20 @@
 package com.xcrm.controller.rest;
 
+import com.xcrm.DTO.UserCreateInOrganizationDTO;
 import com.xcrm.model.Organizacion;
-import com.xcrm.model.User;
 import com.xcrm.service.OrganizacionService;
 import com.xcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("api/admin")
 public class ApiAdminController {
 
@@ -33,21 +36,22 @@ public class ApiAdminController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody User nuevoUsuario, @RequestParam Long organizacionId) {
-        Organizacion organizacion = organizacionService.buscarPorId(organizacionId);
-
-        if (organizacion == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La organización no existe.");
-        }
-
+    public String createUser(@ModelAttribute("nuevoUsuario") UserCreateInOrganizationDTO userDTO, Model model) {
         try {
-            userService.crearNuevoUsuario(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organizacion);
-            return ResponseEntity.ok("Usuario creado exitosamente.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            Organizacion organizacion = organizacionService.buscarPorId(userDTO.getOrganizationId());
+            userService.createUserInOrganization(userDTO.getUsername(),userDTO.getPassword(),organizacion);
+            model.addAttribute("success", "Usuario creado exitosamente.");
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al crear el usuario: " + e.getMessage());
         }
+        return "redirect:/mi-cuenta";
     }
 
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error en la deserialización del JSON: " + e.getMessage());
+    }
 
 
 }

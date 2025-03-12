@@ -30,7 +30,7 @@ public class UserController {
 
     @PostMapping("/registro")
     public String registrarUsuario(@Valid
-                                        @ModelAttribute("nuvoUsuario") User nuevoUsuario,
+                                       @ModelAttribute("nuvoUsuario") User nuevoUsuario,
                                    @RequestParam Long organizacionId, BindingResult almacenErrores,
                                    Model model) {
 
@@ -43,13 +43,14 @@ public class UserController {
         }
 
         try {
-            userService.crearNuevoUsuario(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organizacion);
+            userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organizacion);
             model.addAttribute("success", "Usuario registrado exitosamente.");
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         }
+
         model.addAttribute("loggedIn", true);
 
-        return "index"; // Regresar a la vista
+        return "redirect:/mi-cuenta";
     }
 }
