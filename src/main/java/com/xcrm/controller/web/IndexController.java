@@ -4,12 +4,12 @@ import com.xcrm.model.Organizacion;
 import com.xcrm.model.User;
 import com.xcrm.service.OrganizacionService;
 import com.xcrm.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,96 +26,63 @@ import java.util.regex.Pattern;
 @Controller
 public class IndexController {
 
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
     @Autowired
     private OrganizacionService organizacionService;
-
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserService userService;
 
     @GetMapping("/")
     public String mostrarIndex(Model model){
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isLoggedIn = (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken));
         model.addAttribute("loggedIn", isLoggedIn);
-
-        System.out.println("Estado de login: " + (isLoggedIn ? "Autenticado" : "No autenticado"));
-
-        if (isLoggedIn) {
-            // Imprime los roles del usuario
-            System.out.println("Estado de login: Autenticado");
-            System.out.println("Roles del usuario: " + authentication.getAuthorities());
-
-            // Verifica si el usuario tiene el rol ADMIN
-            boolean isGood = authentication.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_GOOD"));
-
-
-
-            if (isGood) {
-                System.out.println("El usuario tiene rol GOOD.");
-
-                model.addAttribute("organizaciones", organizacionService.obtenerTodasLasOrganizaciones());
-
-            } else {
-                System.out.println("El usuario no tiene rol GOOD.");
-            }
-        } else {
-            System.out.println("Estado de login: No autenticado");
-        }
-
-
+        logger.info("Estado de login: " + (isLoggedIn ? "Autenticado" : "No autenticado"));
         return "index";
     }
 
 
     @GetMapping("/caracteristicas")
     public String mostrarCaracteristicas(Model model) {
-       // model.addAttribute("titulo", "Características de XCRM");
-        return "caracteristicas"; // Necesitarás crear un archivo caracteristicas.html en templates
+        model.addAttribute("titulo", "Características de XCRM");
+        return "caracteristicas";
     }
 
     @GetMapping("/precios")
     public String mostrarPrecios(Model model) {
-       // model.addAttribute("titulo", "Precios de XCRM");
-        return "precios"; // Necesitarás crear un archivo precios.html en templates
+        model.addAttribute("titulo", "Precios de XCRM");
+        return "precios";
     }
 
     @GetMapping("/contacto")
     public String mostrarContacto(Model model) {
         model.addAttribute("titulo", "Contacto de XCRM");
-        return "contacto"; // Necesitarás crear un archivo contacto.html en templates
+        return "contacto";
     }
 
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
-        model.addAttribute("titulo", "Inicio de Sesión");
-        return "login"; // Necesitarás crear un archivo login.html en templates
+        return "login";
     }
-
-
 
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
-        //model.addAttribute("titulo", "Mi Cuenta");
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         String username = authentication.getName();
-        Optional <Organizacion> organizacionOptional = organizacionService.obtenerPorId(userService.obtenerUsuarioPorNombre(username).getOrganizacion().getId());
 
-        if (organizacionOptional.isPresent()) {
-            model.addAttribute("organizacion", organizacionOptional.get()); // Paso la organización activa
-        } else {
-            System.out.println("la lista de la organizacion esta vacia");
-            model.addAttribute("error", "No se encontró la organización.");
-        }
+        //obtengo de la Base de datos la Organizacion a partir del username
+        Optional <Organizacion> organizacionOptional = organizacionService
+                .obtenerPorId(userService
+                        .obtenerUsuarioPorNombre(username)
+                        .getOrganizacion()
+                        .getId());
+
+        model.addAttribute("organizacion", organizacionOptional.get()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
-        return "mi-cuenta"; // Necesitarás crear un archivo mi-cuenta.html en templates
+
+        return "mi-cuenta";
     }
 
     @GetMapping("/registro")

@@ -1,13 +1,10 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Cuenta</title>
-    <!-- Enlazando el archivo CSS de Bootstrap local -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-
     <style>
         body {
             background-color: #DCDCDC;
@@ -16,65 +13,52 @@
 </head>
 <body>
 
-    <header class="bg-dark text-light py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="logo">
-                <img src="images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"> <!-- Cambia la ruta de la imagen si es necesario -->
-            </div>
-            <ul class="nav">
-                <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/usuarios}">Usuarios</a></li>
-                <li class="nav-item">
-                    <form th:action="@{/logout}" method="post" class="d-inline">
-                        <button class="btn btn-danger" type="submit">Cerrar Sesión</button>
-                    </form>
-                </li>
-            </ul>
+<header class="bg-dark text-light py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="logo">
+            <img src="images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;">
         </div>
-    </header>
+        <ul class="nav">
+            <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/usuarios}">Usuarios</a></li>
+            <li class="nav-item">
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button class="btn btn-danger" type="submit">Cerrar Sesión</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</header>
 
 <div class="container-fluid">
     <div class="row">
         <!-- Menú Lateral -->
         <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-light">
             <div class="position-sticky">
-                <!-- Logo y Nombre de la Organización -->
                 <div class="d-flex flex-column align-items-center py-4">
                     <h1 class="h5 text-center mb-3" th:text="${organizacion?.nombre}">Nombre de la Organización</h1>
                 </div>
 
-                <!-- Nombre del Usuario Activo -->
                 <div class="text-center mb-4">
                     <p class="mb-0">Usuario Activo:</p>
                     <p class="fw-bold" th:text="${#authentication?.name}">Nombre del Usuario</p>
                 </div>
 
-                <!-- Línea separadora debajo del nombre del usuario -->
                 <div class="border-bottom border-light mb-3"></div>
 
-                <!-- Menú de Navegación -->
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/usuarios}">
-                            <i class="bi bi-people"></i> Usuarios
-                        </a>
+                        <a class="nav-link active" th:href="@{/usuarios}"><i class="bi bi-people"></i> Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/campanas}">
-                            <i class="bi bi-bullhorn"></i> Campañas
-                        </a>
+                        <a class="nav-link" th:href="@{/campanas}"><i class="bi bi-bullhorn"></i> Campañas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/reportes}">
-                            <i class="bi bi-bar-chart"></i> Reportes
-                        </a>
+                        <a class="nav-link" th:href="@{/reportes}"><i class="bi bi-bar-chart"></i> Reportes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/configuracion}">
-                            <i class="bi bi-gear"></i> Configuración
-                        </a>
+                        <a class="nav-link" th:href="@{/configuracion}"><i class="bi bi-gear"></i> Configuración</a>
                     </li>
-
                 </ul>
             </div>
         </nav>
@@ -93,7 +77,7 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                 Sección de registro de usuario solo visible para administradores
+                <!-- Sección de registro de usuario solo visible para administradores -->
                 <div sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
                     <h3>Registrar Nuevo Usuario por controller</h3>
                     <form th:action="@{/usuarios/registro}" method="post" th:object="${nuevoUsuario}" class="needs-validation" novalidate>
@@ -111,34 +95,31 @@
                     </form>
                 </div>
 
-
+                <!-- Sección solo visible para usuarios autenticados -->
                 <div sec:authorize="isAuthenticated()">
                     <p class="alert alert-info">Este contenido es solo visible para usuarios autenticados.</p>
                 </div>
-                    <h3>Usuarios de la Organización</h3>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Roles</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="usuario : ${organizacion.usuarios}">
-                            <td th:text="${usuario.username}"></td>
-                            <td th:text="${usuario.username}"></td>
-                            <td>
-                                <span th:each="authority : ${usuario.authorities}" th:text="${authority.authority} + ' '"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
 
-                <div sec:authorize="hasRole('ROLE_USER')">
-                    <p class="alert alert-info">Este contenido es solo visible para usuarios.</p>
-                </div>
+                <!-- Usuarios de la Organización -->
+                <h3>Usuarios de la Organización</h3>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Roles</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="usuario : ${organizacion.usuarios}">
+                        <td th:text="${usuario.username}"></td>
+                        <td th:text="${usuario.username}"></td>
+                        <td>
+                            <span th:each="authority : ${usuario.authorities}" th:text="${authority.authority} + ' '"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
@@ -150,9 +131,8 @@
     </div>
 </footer>
 
-<!-- Enlazando el archivo JS de Bootstrap local -->
-    <script src="/JavaScript/bootstrap.bundle.min.js"></script>
-    <script src="/JavaScript/registraUser.js"></script>
+<script src="/JavaScript/bootstrap.bundle.min.js"></script>
+<script src="/JavaScript/registraUser.js"></script>
 
 </body>
 </html>
