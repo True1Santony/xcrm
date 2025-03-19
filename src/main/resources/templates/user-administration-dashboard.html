@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+        lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración de Usuarios</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <header class="bg-dark text-light py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo">
+                <img src="/images/user-logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;">
+            </div>
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button class="btn btn-danger" type="submit">Cerrar Sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú Lateral -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-light">
+                <div class="position-sticky">
+                    <div class="d-flex flex-column align-items-center py-4">
+                        <h1 class="h5 text-center mb-3" th:text="${organizacion?.nombre}">Nombre de la Organización</h1>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <p class="mb-0">Usuario Activo:</p>
+                        <p class="fw-bold" th:text="${#authentication?.name}">Nombre del Usuario</p>
+                    </div>
+
+                    <div class="border-bottom border-light mb-3"></div>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/mi-cuenta}"><i class="bi bi-people"></i> Mi cuenta</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/campanas}"><i class="bi bi-bullhorn"></i> Campañas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/reportes}"><i class="bi bi-bar-chart"></i> Reportes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/configuracion}"><i class="bi bi-gear"></i> Configuración</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Contenido Principal -->
+            <main class="col-md-9 col-lg-10">
+                <div class="container mt-4">
+                    <h1 class="text-center">Administración de Usuarios</h1>
+
+                    <div th:if="${error}" class="alert alert-danger">
+                        <p th:text="${error}"></p>
+                    </div>
+
+                    <!-- Sección de registro de usuario solo visible para administradores -->
+                    <div sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
+
+                        <form th:action="@{/usuarios/registro}" method="post" th:object="${nuevoUsuario}" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Nombre de Usuario:</label>
+                                <input type="text" id="username" th:field="*{username}" required class="form-control"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña:</label>
+                                <input type="password" id="password" th:field="*{password}" required class="form-control"/>
+                            </div>
+
+                            <input type="hidden" th:name="organizacionId" th:value="${organizacion.id}" />
+                            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                        </form>
+
+                        <!-- Mensaje de éxito -->
+                        <div th:if="${mensaje}" class="alert alert-success">
+                            <p th:text="${mensaje}"></p>
+                        </div>
+
+                        <!-- Tabla de Usuarios -->
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Roles</th>
+                                <th>Contraseña</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="usuario : ${organizacion.usuarios}">
+                                <form th:action="@{/usuarios/editar}" method="post">
+
+                                    <td th:text="${usuario.id}"></td>
+                                    <!-- Campo oculto para el ID del usuario -->
+                                    <input type="hidden" name="user_id" th:value="${usuario.id}" />
+
+                                    <!-- Username editable -->
+                                    <td>
+                                        <input type="hidden"  th:value="${usuario.username}" />
+                                        <input type="text" name="nuevoUsername" th:value="${usuario.username}" class="form-control" />
+                                    </td>
+
+                                    <!-- Roles editable con checkboxes -->
+                                    <td>
+                                        <!-- Verificar si el usuario tiene el rol ROLE_USER -->
+                                        <input type="checkbox" name="roles" value="ROLE_USER"
+                                               th:each="authority : ${usuario.authorities}"
+                                               th:checked="${authority.getAuthority().equalsIgnoreCase('ROLE_USER')}"/> Usuario
+
+                                        <!-- Verificar si el usuario tiene el rol ROLE_ADMIN -->
+                                        <input type="checkbox" name="roles" value="ROLE_ADMIN"
+                                               th:each="authority : ${usuario.authorities}"
+                                               th:checked="${authority.getAuthority().equalsIgnoreCase('ROLE_ADMIN')}"/> Administrador
+                                    </td>
+
+                                    <!-- Password editable (opcional) -->
+                                    <td>
+                                        <input type="password" name="nuevoPassword" class="form-control" placeholder="Nuevo Password (dejar vacío para no cambiar)" />
+                                    </td>
+
+                                    <!-- Acción: botón de editar -->
+                                    <td>
+                                        <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+
+                                        <!-- Botón de eliminar -->
+                                        <form th:action="@{/usuarios/eliminar}" method="post" class="d-inline">
+                                            <input type="hidden" name="username" th:value="${usuario.username}" />
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </form>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Mi Empresa. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

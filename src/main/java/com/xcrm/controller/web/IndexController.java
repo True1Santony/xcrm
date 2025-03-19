@@ -37,7 +37,11 @@ public class IndexController {
     @GetMapping("/")
     public String mostrarIndex(Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isLoggedIn = (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken));
+        boolean isLoggedIn = (
+                        authentication != null                                        // 1. Verifica si el objeto de autenticación no es nulo
+                        && authentication.isAuthenticated()                           // 2. Verifica si el usuario está autenticado
+                        && !(authentication instanceof AnonymousAuthenticationToken)  // 3. Verifica que no sea un usuario anónimo(por defecto lo es si no se ha logeado)
+        );
         model.addAttribute("loggedIn", isLoggedIn);
         logger.info("Estado de login: " + (isLoggedIn ? "Autenticado" : "No autenticado"));
         return "index";
@@ -144,7 +148,7 @@ public class IndexController {
             model.addAttribute("errores",errores);
             return "registro"; // Regresamos al formulario con el mensaje de error
         }
-       // model.addAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
+        model.addAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "redirect:/login"; // Redirigir al login después de registrarse
     }
 

@@ -8,7 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -42,6 +44,7 @@ public class UserService {
 
         // Crear una nueva instancia de User
         User nuevoUsuario = new User();
+        nuevoUsuario.setId(UUID.randomUUID());
         nuevoUsuario.setUsername(username); // Establecer el nombre de usuario
         nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword));
         nuevoUsuario.setEnabled(true); // Habilitar el usuario
@@ -51,16 +54,18 @@ public class UserService {
         userRepository.save(nuevoUsuario);
 
         Authority authority = new Authority();
-        authority.setUsername(username);
+        authority.setId(UUID.randomUUID());
+        authority.setUser(nuevoUsuario);
         authority.setAuthority(role);
 
         authorityRepository.save(authority);
 
-        // Insertar el usuario en la base de datos de la organización
-        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombreDB(),organizacion.getId(),username, nuevoUsuario.getPassword());
+        // Insertar el usuario en la base de datos de la organización (String dbName, UUID userId, Long organizacionId, String username, String password)
+        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombreDB(),nuevoUsuario.getId(),organizacion.getId(),nuevoUsuario.getUsername(), nuevoUsuario.getPassword());
 
-        // Insertar el rol de administrador para el usuario
-        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombreDB(), username, role);
+        // Insertar el rol de administrador para el usuario (String dbName, UUID idAuthority, UUID userId, String role)
+        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombreDB(), authority.getId(),nuevoUsuario.getId(), role);
+
     }
 
     @Transactional
@@ -73,6 +78,7 @@ public class UserService {
 
         // Crear una nueva instancia de User
         User nuevoUsuario = new User();
+        nuevoUsuario.setId(UUID.randomUUID());
         nuevoUsuario.setUsername(userName);
         nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword));
         nuevoUsuario.setEnabled(true); // Habilitar el usuario
@@ -83,8 +89,9 @@ public class UserService {
 
         // Crear y guardar la autoridad
         Authority authority = new Authority();
-        authority.setUsername(userName);
+        authority.setId(UUID.randomUUID());
         authority.setAuthority("ROLE_USER");
+        authority.setUser(nuevoUsuario);
 
         authorityRepository.save(authority);
 
@@ -92,13 +99,15 @@ public class UserService {
         nuevoUsuario.getAuthorities().add(authority);
         userRepository.save(nuevoUsuario); // Actualizar el usuario con la autoridad
 
+        byte[] uuidUserIdBytes =  uuidToBytes(nuevoUsuario.getId());
         // Guardo al usuario en la base de datos central
-        String insertUserQuery = "INSERT INTO mi_app.users (username, password, enabled, organizacion_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertUserQuery, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organizacion.getId());
+        String insertUserQuery = "INSERT INTO mi_app.users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
+        jdbcTemplate.update(insertUserQuery, uuidUserIdBytes, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organizacion.getId());
 
+        byte[] uuidAuthorityIdBytes = uuidToBytes(authority.getId());
         //Los roles del User en la base de datos central
-        String insertAuthorityQuery = "INSERT INTO mi_app.authorities (username, authority) VALUES (?, ?)";
-        jdbcTemplate.update(insertAuthorityQuery, userName, "ROLE_USER");
+        String insertAuthorityQuery = "INSERT INTO mi_app.authorities (id,authority, user_id) VALUES (?,?,?)";
+        jdbcTemplate.update(insertAuthorityQuery, uuidAuthorityIdBytes, "ROLE_USER", uuidUserIdBytes);
 
     }
 
@@ -106,33 +115,23 @@ public class UserService {
         return userRepository.findByUsername(nombre);
     }
 
-    // Asignar un cliente a un comercial
-    @Transactional
-    public void addClienteToComercial(String username, Long clienteId) {
-        Optional<User> userOpt = userRepository.findById(username);
-        Optional<Cliente> clienteOpt = clienteRepository.findById(clienteId);
 
-        if (userOpt.isPresent() && clienteOpt.isPresent()) {
-            User user = userOpt.get();
-            Cliente cliente = clienteOpt.get();
-            user.addCliente(cliente);
-            userRepository.save(user); // Guardamos al comercial con la relación actualizada
-            clienteRepository.save(cliente); // Guardamos el cliente con la relación actualizada
-        }
+
+    public void save(User user){
+        userRepository.save(user);
     }
 
-    // Asignar una campaña a un comercial
-    @Transactional
-    public void addCampaniaToComercial(String username, Long campaniaId) {
-        Optional<User> userOpt = userRepository.findById(username);
-        Optional<Campania> campaniaOpt = campaniaRepository.findById(campaniaId);
+    public User find(UUID id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        return userOptional.orElse(null); // Devuelve null si no se encuentra el usuario
+    }
 
-        if (userOpt.isPresent() && campaniaOpt.isPresent()) {
-            User user = userOpt.get();
-            Campania campania = campaniaOpt.get();
-            user.addCampania(campania);
-            userRepository.save(user); // Guardamos al comercial con la relación actualizada
-        }
+    // Método para convertir UUID a byte[]
+    private byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
     }
 
 }

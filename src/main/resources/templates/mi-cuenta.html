@@ -20,7 +20,6 @@
         </div>
         <ul class="nav">
             <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/usuarios}">Usuarios</a></li>
             <li class="nav-item">
                 <form th:action="@{/logout}" method="post" class="d-inline">
                     <button class="btn btn-danger" type="submit">Cerrar Sesión</button>
@@ -48,7 +47,7 @@
 
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/usuarios}"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link active" th:href="@{usuarios/administration}"><i class="bi bi-people"></i> Usuarios</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/campanas}"><i class="bi bi-bullhorn"></i> Campañas</a>
@@ -77,48 +76,12 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <!-- Sección de registro de usuario solo visible para administradores -->
+
                 <div sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
-                    <h3>Registrar Nuevo Usuario por controller</h3>
-                    <form th:action="@{/usuarios/registro}" method="post" th:object="${nuevoUsuario}" class="needs-validation" novalidate>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Nombre de Usuario:</label>
-                            <input type="text" id="username" th:field="*{username}" required class="form-control"/>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña:</label>
-                            <input type="password" id="password" th:field="*{password}" required class="form-control"/>
-                        </div>
-
-                        <input type="hidden" th:name="organizacionId" th:value="${organizacion.id}" />
-                        <button type="submit" class="btn btn-primary">Registrar Usuario</button>
-                    </form>
+                    <p>Aqui puede ir informacion para el administrador</p>
+                    <p>Campañas activas, comerciales activos, oportunidades....etc</p>
                 </div>
 
-                <!-- Sección solo visible para usuarios autenticados -->
-                <div sec:authorize="isAuthenticated()">
-                    <p class="alert alert-info">Este contenido es solo visible para usuarios autenticados.</p>
-                </div>
-
-                <!-- Usuarios de la Organización -->
-                <h3>Usuarios de la Organización</h3>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Roles</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="usuario : ${organizacion.usuarios}">
-                        <td th:text="${usuario.username}"></td>
-                        <td th:text="${usuario.username}"></td>
-                        <td>
-                            <span th:each="authority : ${usuario.authorities}" th:text="${authority.authority} + ' '"></span>
-                        </td>
-                    </tr>
-                    </tbody>
                 </table>
             </div>
         </main>

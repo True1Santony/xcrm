@@ -7,13 +7,18 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
 
     @Id
+    @Column(nullable = false, updatable = false)
+    private UUID id;
+
     @NotBlank(message = "El nombre de usuario es obligatorio")
+    @Column
     private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")
@@ -26,13 +31,13 @@ public class User implements Serializable {
     @JsonBackReference // Indica el lado inverso.api
     private Organizacion organizacion;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>(); // Relación con Authority
 
     @ManyToMany
     @JoinTable(
             name = "comerciales_campanias",
-            joinColumns = @JoinColumn(name = "comercial_username"),
+            joinColumns = @JoinColumn(name = "comercial_id"),
             inverseJoinColumns = @JoinColumn(name = "campania_id")
     )
     private Set<Campania> campanias = new HashSet<>(); // Relación con las campañas
@@ -40,19 +45,29 @@ public class User implements Serializable {
     @ManyToMany
     @JoinTable(
             name = "comerciales_clientes",
-            joinColumns = @JoinColumn(name = "comercial_username"),
+            joinColumns = @JoinColumn(name = "comercial_id"),
             inverseJoinColumns = @JoinColumn(name = "cliente_id")
     )
     private Set<Cliente> clientes = new HashSet<>(); // Relación con los clientes
 
     // Constructor, getters y setters
-    public User() {}
+    public User() {
+    }
 
-    public User(String username, String password, boolean enabled, Organizacion organizacion) {
+    public User(UUID id, String username, String password, boolean enabled, Organizacion organizacion) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
         this.organizacion = organizacion;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getUsername() {

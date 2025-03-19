@@ -4,22 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "authorities")
-@IdClass(AuthorityId.class)
 public class Authority implements Serializable {
 
     @Id
-    @Column(name = "username", nullable = false)
-    private String username;  // Campo username que corresponde a User
+    @Column(nullable = false, updatable = false)
+    private UUID id;
 
-    @Id
     @Column(name = "authority", nullable = false)
     private String authority;
 
     @ManyToOne // Relación ManyToOne con User
-    @JoinColumn(name = "username", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore // ignora a la hora de serializar, ya se obtienen del lado de organizacion. api
     private User user;
 
@@ -28,18 +27,18 @@ public class Authority implements Serializable {
     }
 
     // Constructor
-    public Authority(String username, String authority) {
-        this.username = username;
+    public Authority(UUID id, User user, String authority) {
+        this.id = id;
+        this.user = user;
         this.authority = authority;
     }
 
-    // Getters y Setters
-    public String getUsername() {
-        return username;
+    public UUID getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getAuthority() {
@@ -56,5 +55,14 @@ public class Authority implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Authority{" +
+                "id=" + id +
+                ", authority='" + authority + '\'' +
+                ", user=" + user +
+                '}';
     }
 }

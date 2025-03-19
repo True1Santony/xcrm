@@ -14,7 +14,7 @@ public class Interaccion implements Serializable{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comercial_username", nullable = false)
+    @JoinColumn(name = "comercial_id", nullable = false)
     private User comercial; // Relación con el comercial (usuario)
 
     @ManyToOne(fetch = FetchType.LAZY)

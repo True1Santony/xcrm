@@ -62,7 +62,7 @@ public class DataSourceConfig {
 
         // Configuraciones adicionales de JPA/Hibernate
         Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.show_sql", "false"); // Muestra las consultas SQL en la consola
+        jpaProperties.put("hibernate.show_sql", "true"); // Muestra las consultas SQL en la consola
         jpaProperties.put("hibernate.format_sql", "true"); // Formatea las consultas para mejor legibilidad
         jpaProperties.put("hibernate.use_sql_comments", "true"); // Agrega comentarios en las consultas SQL
         jpaProperties.put("hibernate.hbm2ddl.auto", "update"); // Opcional: actualizar el esquema automáticamente

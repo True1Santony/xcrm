@@ -16,7 +16,6 @@ public class Organizacion implements Serializable {
 	@Id
 	private Long id;
 
-
 	@Column(name = "nombreDB", nullable = false, length = 50, unique = true)
 	private String nombreDB;
 	

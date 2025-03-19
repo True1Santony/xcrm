@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Repository
 @Transactional
@@ -89,8 +91,6 @@ public class DatabaseRepository {
     @Transactional
     public void insertarOrganizacionEnBaseDeDatos(String nombre, Long organizacionId, String email, String plan, String nombreDB) {
 
-
-
         jdbcTemplate.execute("USE " + nombreDB);
 
         // Insertar datos de la organización en la tabla `organizaciones`
@@ -100,21 +100,36 @@ public class DatabaseRepository {
     }
 
     @Transactional
-    public void insertarUsuarioEnBaseDeDatos(String dbName, Long organizacionId, String username, String password) {
+    public void insertarUsuarioEnBaseDeDatos(String dbName, UUID userId, Long organizacionId, String username, String password) {
         jdbcTemplate.execute("USE " + dbName);
 
+        // Convertir UUID a byte[] asi lo espera la base de datos
+        byte[] userIdBytes = uuidToBytes(userId);
+
         // Insertar el usuario administrador en la tabla `users`
-        String sqlInsertAdmin = "INSERT INTO users (username, password, enabled, organizacion_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sqlInsertAdmin, username, password, 1, organizacionId);
+        String sqlInsertAdmin = "INSERT INTO users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
+        jdbcTemplate.update(sqlInsertAdmin,userIdBytes, username, password, 1, organizacionId);
         System.out.println("insertando a "+username+" en la base de datos central");
     }
 
     @Transactional
-    public void insertarRolDeUsuarioEnBaseDeDatos(String dbName, String username, String role) {
+    public void insertarRolDeUsuarioEnBaseDeDatos(String dbName, UUID idAuthority, UUID userId, String role) {
         jdbcTemplate.execute("USE " + dbName);
 
+        // Convertir UUID a byte[] asi lo espera la base de datos
+        byte[] idAuthorityBytes = uuidToBytes(idAuthority);
+        byte[] userIdBytes = uuidToBytes(userId);
+
         // Insertar el rol de administrador para el usuario en la tabla `authorities`
-        String sqlInsertAuthority = "INSERT INTO authorities (username, authority) VALUES (?, ?)";
-        jdbcTemplate.update(sqlInsertAuthority, username, role);
+        String sqlInsertAuthority = "INSERT INTO authorities (id, user_id, authority) VALUES (?,?,?)";
+        jdbcTemplate.update(sqlInsertAuthority,idAuthorityBytes , userIdBytes, role);
+    }
+
+    // Método para convertir UUID a byte[]
+    private byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
     }
 }

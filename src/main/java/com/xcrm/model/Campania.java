@@ -38,7 +38,7 @@ public class Campania implements Serializable {
     @JoinTable(
             name = "comercial_campania",
             joinColumns = @JoinColumn(name = "campania_id"),
-            inverseJoinColumns = @JoinColumn(name = "comercial_username")
+            inverseJoinColumns = @JoinColumn(name = "comercial_id")
     )
     private Set<User> comerciales = new HashSet<>();// Relación con los comerciales
 

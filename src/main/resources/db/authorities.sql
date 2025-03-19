@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS `authorities` (
-  `username` varchar(255) NOT NULL,
+  `id` binary(16) NOT NULL, -- UUID almacenado como binario
+  `user_id` binary(16) NOT NULL,
   `authority` varchar(255) NOT NULL,
-  PRIMARY KEY (`username`, `authority`),
-  CONSTRAINT `fk_username` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
