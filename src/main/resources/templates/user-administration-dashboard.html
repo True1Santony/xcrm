@@ -137,13 +137,14 @@
                                     <td>
                                         <button type="submit" class="btn btn-warning btn-sm">Editar</button>
 
+                                </form>
                                         <!-- Botón de eliminar -->
                                         <form th:action="@{/usuarios/eliminar}" method="post" class="d-inline">
-                                            <input type="hidden" name="username" th:value="${usuario.username}" />
+                                            <input type="hidden" name="user_id" th:value="${usuario.id}" />
                                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">Eliminar</button>
                                         </form>
                                     </td>
-                                </form>
+
                             </tr>
                             </tbody>
                         </table>

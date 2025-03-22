@@ -33,14 +33,6 @@ public class UserController {
     @Autowired
     private OrganizacionService organizacionService;
 
-    @Autowired
-    AuthorityRepository authorityRepository;
-
-    @Autowired
-    private AuthorityService authorityService;
-
-    private PasswordEncoder passwordEncoder;
-
     @ModelAttribute("titulo")
     public String title() {
         return "Registro de Usuarios";
@@ -92,82 +84,26 @@ public class UserController {
     }
 
     // Método para editar un usuario
-    @Transactional
     @PostMapping("/editar")
     public String editarUsuario(@RequestParam("user_id") UUID userId,
                                 @RequestParam("nuevoUsername") String nuevoUsername,
                                 @RequestParam(value = "roles", required = false) String[] roles,
                                 @RequestParam(value = "nuevoPassword", required = false) String nuevoPassword,
                                 Model model) {
-        // Obtener el usuario por su nombre de usuario
 
-
-        User usuario = userService.find(userId);
-
-        System.out.println(usuario.getId()+" "+ usuario.getUsername());
-
-        // Si se ha cambiado el nombre de usuario, actualizarlo
-        if (nuevoUsername != null && !nuevoUsername.isEmpty() && !nuevoUsername.equals(usuario.getUsername())) {
-            usuario.setUsername(nuevoUsername);
-        }
-
-        // Si se ha proporcionado una nueva contraseña, actualizarla
-        if (nuevoPassword != null && !nuevoPassword.isEmpty()) {
-            usuario.setPassword(passwordEncoder.encode(nuevoPassword));
-        }
-
-        // Eliminar las autoridades existentes
-        System.out.println("Antes de limpiar  "+usuario.getAuthorities()); // Limpiar las autoridades anteriores
-
-        for (Authority authority : usuario.getAuthorities()) {
-            authorityRepository.delete(authority);
-        }
-        usuario.getAuthorities().clear();
-
-
-
-        userService.save(usuario);
-
-        usuario = userService.find(userId);
-        System.out.println("Despues de limpiar"+usuario.getAuthorities()); // Limpiar las autoridades anteriores
-
-
-        // Actualizar los roles del usuario
-        Set<Authority> authorities = new HashSet<Authority>();
-        for(String rol : roles){
-            Authority authority = new Authority(UUID.randomUUID(),usuario,rol);
-            authorities.add(authority);
-        }
-
-        usuario.setAuthorities(authorities);
-
-        userService.save(usuario);
-
-        System.out.println(usuario.getAuthorities());
+        userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
 
         model.addAttribute("mensaje", "Usuario actualizado correctamente");
 
-        return "redirect:/usuarios/administration"; // Redirige al listado de usuarios o al lugar que desees
+        return "redirect:/usuarios/administration";
     }
 
-    // Método para eliminar un usuario
     @PostMapping("/eliminar")
-    public String eliminarUsuario(@RequestParam("username") String username, Model model) {
-        // Lógica para eliminar el usuario
-        // Obtener el usuario por su nombre de usuario y eliminarlo
-        // Por ejemplo: usuarioRepository.deleteByUsername(username);
-
+    public String eliminarUsuario(@RequestParam("user_id") UUID userId, Model model) {
+        userService.eliminarUsuario(userId);
         model.addAttribute("mensaje", "Usuario eliminado correctamente");
-
-        return "redirect:/usuarios"; // Redirige al listado de usuarios
+        return "redirect:/usuarios/administration";
     }
 
-    // Método para convertir UUID a byte[]
-    private byte[] uuidToBytes(UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return bb.array();
-    }
 
 }

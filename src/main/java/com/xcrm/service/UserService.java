@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -111,6 +114,39 @@ public class UserService {
 
     }
 
+    @Transactional
+    public void actualizarUsuario(UUID userId, String nuevoUsername, String nuevoPassword, String[] roles) {
+        User usuario = find(userId);
+
+        if (nuevoUsername != null && !nuevoUsername.isEmpty() && !nuevoUsername.equals(usuario.getUsername())) {
+            usuario.setUsername(nuevoUsername);
+        }
+
+        if (nuevoPassword != null && !nuevoPassword.isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(nuevoPassword));
+        }
+
+        authorityRepository.deleteAll(usuario.getAuthorities());
+        usuario.getAuthorities().clear();
+
+        Set<Authority> nuevasAuthorities = Arrays.stream(roles)
+                .map(rol -> new Authority(UUID.randomUUID(), usuario, rol))
+                .collect(Collectors.toSet());
+
+        usuario.setAuthorities(nuevasAuthorities);
+
+        save(usuario);//guardo en la base de datos de la organizacion
+
+        //actualizar en la base de datos central(para que se logee correctamente)
+        databaseRepository.actualizarUsuarioYRolesEnDbCentral(
+                usuario.getId(),
+                usuario.getUsername(),
+                nuevoPassword,
+                nuevasAuthorities
+        );
+    }
+
+
     public User obtenerUsuarioPorNombre(String nombre) {
         return userRepository.findByUsername(nombre);
     }
@@ -134,5 +170,16 @@ public class UserService {
         return bb.array();
     }
 
+    @Transactional
+    public void eliminarUsuario(UUID userId) {
+        User usuario = find(userId);
+
+        //1. elimina de la base de datos actual de la organizacion
+        authorityRepository.deleteAll(usuario.getAuthorities());
+        userRepository.delete(usuario);
+
+        //2. elimina de la base de datos central
+        databaseRepository.eliminarUsuarioYRolesDeDbCentral(userId);
+    }
 }
 

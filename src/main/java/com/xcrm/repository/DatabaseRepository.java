@@ -1,5 +1,7 @@
 package com.xcrm.repository;
 
+import com.xcrm.model.Authority;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,7 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -18,9 +21,12 @@ import java.util.UUID;
 public class DatabaseRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final String dbCentral;
 
-    public DatabaseRepository(JdbcTemplate jdbcTemplate){
+    public DatabaseRepository(JdbcTemplate jdbcTemplate,
+                              @Value("${xcrm.central-db-name}") String dbCentral){
         this.jdbcTemplate=jdbcTemplate;
+        this.dbCentral = dbCentral;
     }
 
     public void createDatabase(String dbName){
@@ -125,11 +131,60 @@ public class DatabaseRepository {
         jdbcTemplate.update(sqlInsertAuthority,idAuthorityBytes , userIdBytes, role);
     }
 
+    @Transactional
+    public void actualizarUsuarioYRolesEnDbCentral(UUID userId,
+                                                   String nuevoUsername,
+                                                   String nuevoPassword,
+                                                   Set<Authority> nuevasAuthorities) {
+
+        jdbcTemplate.execute("USE " + dbCentral);
+
+        byte[] userIdBytes = uuidToBytes(userId);
+
+        if (nuevoPassword != null && !nuevoPassword.isEmpty()) {
+            String sqlUpdateUser = "UPDATE users SET username = ?, password = ? WHERE id = ?";
+            jdbcTemplate.update(sqlUpdateUser, nuevoUsername, nuevoPassword, userIdBytes);
+        } else {
+            String sqlUpdateUserOnlyUsername = "UPDATE users SET username = ? WHERE id = ?";
+            jdbcTemplate.update(sqlUpdateUserOnlyUsername, nuevoUsername, userIdBytes);
+        }
+
+        // Eliminar roles anteriores
+        String sqlDeleteRoles = "DELETE FROM authorities WHERE user_id = ?";
+        jdbcTemplate.update(sqlDeleteRoles, userIdBytes);
+
+        // Insertar nuevos roles
+        String sqlInsertAuthority = "INSERT INTO authorities (id, user_id, authority) VALUES (?, ?, ?)";
+        for (Authority auth : nuevasAuthorities) {
+            byte[] idAuthority = uuidToBytes(auth.getId());
+            jdbcTemplate.update(sqlInsertAuthority, idAuthority, userIdBytes, auth.getAuthority());
+        }
+
+        System.out.println("Usuario y roles actualizados en la base central.");
+    }
+
+
     // Método para convertir UUID a byte[]
     private byte[] uuidToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
         return bb.array();
+    }
+
+    public void eliminarUsuarioYRolesDeDbCentral(UUID userId) {
+        jdbcTemplate.execute("USE "+ dbCentral);
+
+        byte[] userIdBytes = uuidToBytes(userId);
+
+        //Elimino roles, por la dependencia de las PK y FK
+        String deleteRoles = "DELETE FROM authorities WHERE user_id = ?";
+        jdbcTemplate.update(deleteRoles, userIdBytes);
+
+        // Luego elimino el usuario
+        String deleteUser = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(deleteUser, userIdBytes);
+
+        System.out.println("Usuario y roles eliminados en la base central.");
     }
 }
