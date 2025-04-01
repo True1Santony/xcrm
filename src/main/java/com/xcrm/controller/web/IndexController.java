@@ -93,7 +93,7 @@ public class IndexController {
         model.addAttribute("titulo", "REGISTRO");
         return "registro";
     }
-    
+
     @PostMapping("/registro")
     public String registrarOrganizacion(@RequestParam String nombreEmpresa,
                                         @RequestParam String nombreAdmin,
