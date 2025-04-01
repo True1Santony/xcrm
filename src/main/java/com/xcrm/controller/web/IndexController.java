@@ -47,7 +47,6 @@ public class IndexController {
         return "index";
     }
 
-
     @GetMapping("/caracteristicas")
     public String mostrarCaracteristicas(Model model) {
         model.addAttribute("titulo", "Características de XCRM");
@@ -94,9 +93,7 @@ public class IndexController {
         model.addAttribute("titulo", "REGISTRO");
         return "registro";
     }
-
-
-
+    
     @PostMapping("/registro")
     public String registrarOrganizacion(@RequestParam String nombreEmpresa,
                                         @RequestParam String nombreAdmin,
