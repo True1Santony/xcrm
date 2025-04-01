@@ -104,6 +104,4 @@ public class UserController {
         model.addAttribute("mensaje", "Usuario eliminado correctamente");
         return "redirect:/usuarios/administration";
     }
-
-
 }
