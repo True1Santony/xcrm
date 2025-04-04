@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.xcrm.model.Organizacion;
 import com.xcrm.repository.OrganizacionRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrganizacionService {
@@ -25,7 +24,7 @@ public class OrganizacionService {
 		return organizacionRepository.findAll();
 	}
 	
-	public Optional<Organizacion> obtenerPorId(Long id){
+	public Optional<Organizacion> findById(Long id){
 		return organizacionRepository.findById(id);
 	}
 	

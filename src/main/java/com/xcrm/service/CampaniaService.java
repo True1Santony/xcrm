@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,5 +38,13 @@ public class CampaniaService {
             cliente.getCampanias().add(campania);
             clienteRepository.save(cliente); // Guardamos al cliente con la relación actualizada
         }
+    }
+
+    public List<Campania> getAll() {
+       return campaniaRepository.findAll();
+    }
+
+    public void save(Campania campania) {
+        campaniaRepository.save(campania);
     }
 }

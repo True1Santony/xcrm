@@ -77,7 +77,7 @@ public class IndexController {
 
         //obtengo de la Base de datos la Organizacion a partir del username
         Optional <Organizacion> organizacionOptional = organizacionService
-                .obtenerPorId(userService
+                .findById(userService
                         .obtenerUsuarioPorNombre(username)
                         .getOrganizacion()
                         .getId());

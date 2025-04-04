@@ -36,7 +36,7 @@ public class Campania implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "comercial_campania",
+            name = "comerciales_campanias",
             joinColumns = @JoinColumn(name = "campania_id"),
             inverseJoinColumns = @JoinColumn(name = "comercial_id")
     )

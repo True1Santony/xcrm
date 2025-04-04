@@ -24,7 +24,7 @@ public class SecurityConfig {
     @Autowired
     private CustomRoutingDataSource customRoutingDataSource; // Cambiar a CustomRoutingDataSource
 
-   /* @Bean
+   /* @Bean seguridad para el caso de usar Api Rest
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
                 .authorizeHttpRequests(auth -> auth
@@ -64,7 +64,7 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/")
                         .permitAll()
                 )
-                .logout(logout -> logout
+                .logout(logout -> logout// intercepta automaticamente @Post /logout y hace lo sigiente
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

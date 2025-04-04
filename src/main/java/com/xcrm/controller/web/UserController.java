@@ -1,27 +1,19 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.model.Authority;
 import com.xcrm.model.Organizacion;
 import com.xcrm.model.User;
-import com.xcrm.repository.AuthorityRepository;
-import com.xcrm.service.AuthorityService;
 import com.xcrm.service.OrganizacionService;
 import com.xcrm.service.UserService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -71,13 +63,13 @@ public class UserController {
         String username = authentication.getName();
 
         //obtengo de la Base de datos la Organizacion a partir del username
-        Optional<Organizacion> organizacionOptional = organizacionService
-                .obtenerPorId(userService
+        Optional<Organizacion> activeOrganization = organizacionService
+                .findById(userService
                         .obtenerUsuarioPorNombre(username)
                         .getOrganizacion()
                         .getId());
 
-        model.addAttribute("organizacion", organizacionOptional.get()); // Paso la organización activa
+        model.addAttribute("organizacion", activeOrganization.get()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
 
         return "user-administration-dashboard";
