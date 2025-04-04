@@ -154,6 +154,7 @@
                     </div>
                 </div>
 
+
                 <!-- Tabla de Usuarios -->
                 <div class="card">
                     <div class="card-header bg-primary text-white">
@@ -180,16 +181,15 @@
                                             <input type="text" name="nuevoUsername" th:value="${usuario.username}" class="form-control form-control-sm">
                                     </td>
                                     <td>
+                                        <!-- Roles con checkboxes -->
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input role-checkbox" type="checkbox" name="roles" value="ROLE_USER"
-                                                   th:each="authority : ${usuario.authorities}"
-                                                   th:checked="${authority.getAuthority().equalsIgnoreCase('ROLE_USER')}">
+                                                   th:checked="${#lists.contains(usuario.authorities.![authority], 'ROLE_USER')}">
                                             <label class="form-check-label">Usuario</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input role-checkbox" type="checkbox" name="roles" value="ROLE_ADMIN"
-                                                   th:each="authority : ${usuario.authorities}"
-                                                   th:checked="${authority.getAuthority().equalsIgnoreCase('ROLE_ADMIN')}">
+                                                   th:checked="${#lists.contains(usuario.authorities.![authority], 'ROLE_ADMIN')}">
                                             <label class="form-check-label">Admin</label>
                                         </div>
                                     </td>
