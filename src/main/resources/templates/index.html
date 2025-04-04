@@ -2,44 +2,159 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bienvenido a XCRM</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .navbar-custom {
+            background-color: #a8e6cf; /* Verde claro */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+        }
+        .feature-card {
+            transition: transform 0.3s;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-custom {
+            background-color: #4facfe;
+            border: none;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #3a8acf;
+        }
+    </style>
 </head>
 <body>
-<header>
-    <div class="logo">
-        <img th:src="@{/images/logo3.png}" alt="Logo XCRM"/>
+<!-- Barra de navegación verde clara -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/caracteristicas}"><i class="bi bi-star"></i> Características</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/precios}"><i class="bi bi-tag"></i> Precios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/contacto}"><i class="bi bi-envelope"></i> Contacto</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <div th:if="${loggedIn}" class="d-flex align-items-center">
+                    <a th:href="@{/mi-cuenta}" class="btn btn-outline-dark me-2"><i class="bi bi-person-circle"></i> Mi Cuenta</a>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                    </form>
+                </div>
+                <div th:unless="${loggedIn}">
+                    <a th:href="@{/login}" class="btn btn-custom"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <ul class="nav-menu">
-        <li><a th:href="@{/}">Inicio</a></li>
-        <li><a th:href="@{/caracteristicas}">Características</a></li>
-        <li><a th:href="@{/precios}">Precios</a></li>
-        <li><a th:href="@{/contacto}">Contacto</a></li>
+</nav>
 
-        <!-- Mostrar 'Mi Cuenta' y logout si el usuario está autenticado -->
-        <li th:if="${loggedIn}">
-            <a th:href="@{/mi-cuenta}">Mi Cuenta</a>
-            <form th:action="@{/logout}" method="post" style="display:inline;">
-                <button class="logout-button" type="submit">Cerrar Sesión</button>
-            </form>
-        </li>
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Potencia tu negocio con XCRM</h1>
+        <p class="lead mb-4">La solución todo en uno para la gestión de tus clientes y campañas de marketing</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a th:href="@{/registro}" class="btn btn-custom btn-lg px-4 gap-3">Regístrate Gratis</a>
+            <a th:href="@{/}" class="btn btn-outline-dark btn-lg px-4">Ver Demo</a>
+        </div>
+    </div>
+</section>
 
-        <!-- Mostrar 'Login' si el usuario no está autenticado -->
-        <li th:unless="${loggedIn}">
-            <a th:href="@{/login}">Login</a>
-        </li>
-    </ul>
-</header>
+<!-- Características principales -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-people-fill text-primary fs-1 mb-3"></i>
+                    <h3>Gestión de Clientes</h3>
+                    <p>Organiza y segmenta tus contactos de manera inteligente.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-megaphone-fill text-success fs-1 mb-3"></i>
+                    <h3>Campañas de Marketing</h3>
+                    <p>Crea y monitorea tus campañas en un solo lugar.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-graph-up-arrow text-warning fs-1 mb-3"></i>
+                    <h3>Reportes Avanzados</h3>
+                    <p>Analiza el rendimiento con dashboards interactivos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<main>
-    <section>
-        <h2>Hero Section</h2>
-        <p>Bienvenido a nuestro CRM.</p>
-    </section>
-</main>
-<footer>
-    <p>&copy; 2024 XCRM. Todos los derechos reservados.</p>
-    <script type="text/javascript" th:src="@{/JavaScript/cerrar.js}" defer></script> <!-- Ruta relativa -->
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>XCRM</h5>
+                <p>La solución de CRM más completa para tu empresa.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Enlaces</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/}" class="text-white">Inicio</a></li>
+                    <li><a th:href="@{/contacto}" class="text-white">Contacto</a></li>
+                    <li><a th:href="@{/privacidad}" class="text-white">Política de Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Contacto</h5>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-envelope"></i> info@xcrm.com</li>
+                    <li><i class="bi bi-telephone"></i> +34 123 456 789</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center">
+            <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
+        </div>
+    </div>
 </footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/JavaScript/cerrar.js}" defer></script>
 </body>
 </html>

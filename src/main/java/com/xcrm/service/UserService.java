@@ -141,7 +141,7 @@ public class UserService {
         databaseRepository.actualizarUsuarioYRolesEnDbCentral(
                 usuario.getId(),
                 usuario.getUsername(),
-                nuevoPassword,
+                usuario.getPassword(),
                 nuevasAuthorities
         );
     }
