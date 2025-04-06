@@ -4,10 +4,7 @@ import com.xcrm.model.Campania;
 import com.xcrm.model.Organizacion;
 import com.xcrm.service.CampaniaService;
 import com.xcrm.service.OrganizacionService;
-import com.xcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,25 +21,11 @@ public class CampaignController {
     CampaniaService campaignService;
 
     @Autowired
-    UserService userService;
-
-    @Autowired
     OrganizacionService organizacionService;
 
     @GetMapping("/administration")
     public String getCampaignsAdministrationDashboard(Model model){
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        //obtengo de la Base de datos la Organizacion a partir del username
-        Optional<Organizacion> activeOrganization = organizacionService
-                .findById(userService
-                        .obtenerUsuarioPorNombre(username)
-                        .getOrganizacion()
-                        .getId());
-
-        model.addAttribute("organizacion", activeOrganization.get());
+        model.addAttribute("organizacion", organizacionService.getOrganizacionActual());
         model.addAttribute("campaigns", campaignService.getAll()); // Paso las campañas existentes.
         model.addAttribute("new_campaign", new Campania());
 

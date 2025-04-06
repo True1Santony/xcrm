@@ -72,19 +72,8 @@ public class IndexController {
 
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        //obtengo de la Base de datos la Organizacion a partir del username
-        Optional <Organizacion> organizacionOptional = organizacionService
-                .findById(userService
-                        .obtenerUsuarioPorNombre(username)
-                        .getOrganizacion()
-                        .getId());
-
-        model.addAttribute("organizacion", organizacionOptional.get()); // Paso la organización activa
+        model.addAttribute("organizacion", organizacionService.getOrganizacionActual()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
-
         return "mi-cuenta";
     }
 

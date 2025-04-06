@@ -36,13 +36,7 @@ public class UserController {
                                    @RequestParam Long organizacionId, BindingResult almacenErrores,
                                    Model model) {
 
-        // Buscar la organización por ID
-        Organizacion organizacion = organizacionService.buscarPorId(organizacionId);
-
-        if (organizacion == null) {
-            model.addAttribute("error", "La organización no existe.");
-            return "mi-cuenta"; // Regresar a la vista
-        }
+        Organizacion organizacion = organizacionService.findById(organizacionId).get();
 
         try {
             userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organizacion);
@@ -52,30 +46,16 @@ public class UserController {
         }
 
         model.addAttribute("loggedIn", true);
-
         return "redirect:/usuarios/administration";
     }
 
     @GetMapping("/administration")
     public String getUserAdministrationDashboard(Model model){
-        //esto se repite en indexController mi-cuenta, encapsular en un metodo de organizacion
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        //obtengo de la Base de datos la Organizacion a partir del username
-        Optional<Organizacion> activeOrganization = organizacionService
-                .findById(userService
-                        .obtenerUsuarioPorNombre(username)
-                        .getOrganizacion()
-                        .getId());
-
-        model.addAttribute("organizacion", activeOrganization.get()); // Paso la organización activa
+        model.addAttribute("organizacion", organizacionService.getOrganizacionActual()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
-
         return "user-administration-dashboard";
     }
 
-    // Método para editar un usuario
     @PostMapping("/editar")
     public String editarUsuario(@RequestParam("user_id") UUID userId,
                                 @RequestParam("nuevoUsername") String nuevoUsername,
@@ -86,7 +66,6 @@ public class UserController {
         userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
 
         model.addAttribute("mensaje", "Usuario actualizado correctamente");
-
         return "redirect:/usuarios/administration";
     }
 
