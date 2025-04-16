@@ -1,13 +1,150 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${titulo}">Contacto de XCRM</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contacto - XCRM</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .navbar-custom {
+            background-color: #a8e6cf;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        .btn-custom {
+            background-color: #4facfe;
+            border: none;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #3a8acf;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #4facfe;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${titulo}"></h1>
-<p>Puedes contactarnos a través de este formulario...</p>
-<a th:href="@{/}">Volver a Inicio</a>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/caracteristicas}"><i class="bi bi-star"></i> Características</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/precios}"><i class="bi bi-tag"></i> Precios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/contacto}"><i class="bi bi-envelope"></i> Contacto</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <div th:if="${loggedIn}" class="d-flex align-items-center">
+                    <a th:href="@{/mi-cuenta}" class="btn btn-outline-dark me-2"><i class="bi bi-person-circle"></i> Mi Cuenta</a>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                    </form>
+                </div>
+                <div th:unless="${loggedIn}">
+                    <a th:href="@{/login}" class="btn btn-custom"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-3">¿Tienes alguna pregunta?</h1>
+        <p class="lead">Nos encantaría saber de ti. Completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</p>
+    </div>
+</section>
+
+<!-- Contact Form -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form th:action="@{/enviar-contacto}" method="post">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="asunto" class="form-label">Asunto</label>
+                            <input type="text" class="form-control" id="asunto" name="asunto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensaje" class="form-label">Mensaje</label>
+                            <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-custom"><i class="bi bi-send-fill"></i> Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>XCRM</h5>
+                <p>La solución de CRM más completa para tu empresa.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Enlaces</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/}" class="text-white">Inicio</a></li>
+                    <li><a th:href="@{/contacto}" class="text-white">Contacto</a></li>
+                    <li><a th:href="@{/privacidad}" class="text-white">Política de Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Contacto</h5>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-envelope"></i> info@xcrm.com</li>
+                    <li><i class="bi bi-telephone"></i> +34 123 456 789</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center">
+            <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/JavaScript/cerrar.js}" defer></script>
 </body>
 </html>
