@@ -3,6 +3,7 @@ package com.xcrm.service;
 import com.xcrm.model.*;
 import com.xcrm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ public class UserService {
 
     @Autowired
     private CampaniaRepository campaniaRepository;
+
+    @Value("${xcrm.central-db-name}")
+    private String databaseCentralName;
 
     @Transactional
     public void crearUsuarioConOrganizacion(String username, String rawPassword, Organizacion organizacion, String role) {
@@ -104,12 +108,12 @@ public class UserService {
 
         byte[] uuidUserIdBytes =  uuidToBytes(nuevoUsuario.getId());
         // Guardo al usuario en la base de datos central
-        String insertUserQuery = "INSERT INTO mi_app.users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
+        String insertUserQuery = "INSERT INTO " + this.databaseCentralName + ".users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
         jdbcTemplate.update(insertUserQuery, uuidUserIdBytes, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organizacion.getId());
 
         byte[] uuidAuthorityIdBytes = uuidToBytes(authority.getId());
         //Los roles del User en la base de datos central
-        String insertAuthorityQuery = "INSERT INTO mi_app.authorities (id,authority, user_id) VALUES (?,?,?)";
+        String insertAuthorityQuery = "INSERT INTO " + this.databaseCentralName + ".authorities (id,authority, user_id) VALUES (?,?,?)";
         jdbcTemplate.update(insertAuthorityQuery, uuidAuthorityIdBytes, "ROLE_USER", uuidUserIdBytes);
 
     }
