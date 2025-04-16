@@ -1,11 +1,9 @@
 package com.xcrm.utils;
 
-import com.xcrm.service.OrganizacionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,20 +16,15 @@ import java.util.Map;
 @Component
 public class CustomRoutingDataSource extends AbstractRoutingDataSource {
 
-    @Value("${database.url.prefix}")
-    private String dbUrlPrefix;
-
-    @Autowired
-    private HttpSession httpSession;
-
-    @Autowired
-    @Lazy
-    private OrganizacionService organizacionService;
-
     private Map<String, DataSource> dataSources = new HashMap<>();
 
     private DataSource defaultDataSource; // Almacena la fuente de datos predeterminada
 
+    @Autowired
+    private HttpSession httpSession;
+
+    @Value("${database.url.prefix}")
+    private String dbUrlPrefix;
 
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
@@ -42,7 +35,8 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
     @Value("${spring.datasource.password}")
     private String password;
 
-
+    @Value("${xcrm.central-db-name}")
+    private String databaseCentralName;
 
     public CustomRoutingDataSource(DataSource defaultDataSource) {
         this.defaultDataSource = defaultDataSource; // Inicializa el DataSource predeterminado
@@ -58,7 +52,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
             String tenantId = (String) session.getAttribute("TENANT_ID");
 
             // Si el tenantId es "mi_app", reemplázalo por "default"
-            if ("mi_app".equals(tenantId)) {
+            if (databaseCentralName.equals(tenantId)) {
                 return "default";
             }
 
@@ -83,28 +77,24 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
        tenantId = tenantId.toLowerCase().replaceAll("\\s+", "_");
 
         // Verifica si ya tenemos un DataSource en caché para esta organización
-        if (!dataSources.containsKey(tenantId)) {
-            // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
-            String dbUrl = dbUrlPrefix + tenantId;
+       synchronized (this) {//condicion de carrera
+           if (!dataSources.containsKey(tenantId)) {
+               // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
+               String dbUrl = dbUrlPrefix + tenantId;
 
-            DataSource newDataSource = DataSourceBuilder.create()
-                    .url(dbUrl)
-                    .username(username)
-                    .password(password)
-                    .driverClassName(driverClassName)
-                    .build();
-            dataSources.put(tenantId, newDataSource);
-        }
+               DataSource newDataSource = DataSourceBuilder.create()
+                       .url(dbUrl)
+                       .username(username)
+                       .password(password)
+                       .driverClassName(driverClassName)
+                       .build();
+               dataSources.put(tenantId, newDataSource);
+           }
+       }
 
         // Retornar el DataSource correspondiente al tenantId
         return dataSources.get(tenantId);
     }
-
-   /* @Override
-    protected DataSource determineTargetDataSource() {
-        String tenantId = (String) determineCurrentLookupKey();
-        return (DataSource) dataSources.getOrDefault(tenantId, defaultDataSource);
-    }*/
 
     public void resetToDefaultDataSource() {
         httpSession.removeAttribute("TENANT_ID"); // Elimina el TENANT_ID para revertir al default

@@ -29,9 +29,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private AuthorityRepository authorityRepository;
 
     @Autowired
-    private DataSourceConfig dataSourceConfig;
-
-    @Autowired
     HttpSession httpSession;
 
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
@@ -43,9 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
         //obtengo las autorizacionces del usuario
-        //List<Authority> authorities = authorityRepository.findByUser_Username(username);
         List<Authority> authorities = authorityRepository.findByUser_Username(username);
-
 
         // Loguear los roles del usuario
         logger.info("Roles para el usuario {}: {}", username, authorities.stream()
