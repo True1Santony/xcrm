@@ -19,11 +19,11 @@ public class Interaccion implements Serializable{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente; // Relación con el cliente
+    private Client client; // Relación con el cliente
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campania_id")
-    private Campania campania; // Relación con la campaña (puede ser NULL)
+    private Campaign campaign; // Relación con la campaña (puede ser NULL)
 
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
@@ -43,10 +43,10 @@ public class Interaccion implements Serializable{
     public Interaccion() {
     }
 
-    public Interaccion(User comercial, Cliente cliente, Campania campania, LocalDateTime fechaHora, String tipo, String estado, String notas) {
+    public Interaccion(User comercial, Client client, Campaign campaign, LocalDateTime fechaHora, String tipo, String estado, String notas) {
         this.comercial = comercial;
-        this.cliente = cliente;
-        this.campania = campania;
+        this.client = client;
+        this.campaign = campaign;
         this.fechaHora = fechaHora;
         this.tipo = tipo;
         this.estado = estado;
@@ -69,20 +69,20 @@ public class Interaccion implements Serializable{
         this.comercial = comercial;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Client getCliente() {
+        return client;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setCliente(Client client) {
+        this.client = client;
     }
 
-    public Campania getCampania() {
-        return campania;
+    public Campaign getCampania() {
+        return campaign;
     }
 
-    public void setCampania(Campania campania) {
-        this.campania = campania;
+    public void setCampania(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     public LocalDateTime getFechaHora() {

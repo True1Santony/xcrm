@@ -1,6 +1,10 @@
 package com.xcrm.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -8,23 +12,27 @@ import java.util.Set;
 
 @Entity
 @Table(name = "clientes")
-public class Cliente implements Serializable {
+public class Client implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
+    @Email(message = "Debe ser un email válido")
     private String email;
 
+    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
     private String telefono;
 
+    @NotBlank(message = "La dirección es obligatoria")
     private String direccion;
 
     @ManyToOne
-    @JoinColumn(name = "organizacion_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_cliente_organizacion"))
-    private Organizacion organizacion;
+    @JoinColumn(name = "organization_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_cliente_organizacion"))
+    private Organization organization;
 
     @ManyToMany
     @JoinTable(
@@ -32,9 +40,9 @@ public class Cliente implements Serializable {
             joinColumns = @JoinColumn(name = "cliente_id"),
             inverseJoinColumns = @JoinColumn(name = "campania_id")
     )
-    private Set<Campania> campanias = new HashSet<>(); // Relación con las campañas
+    private Set<Campaign> campaigns = new HashSet<>(); // Relación con las campañas
 
-    @ManyToMany(mappedBy = "clientes")
+    @ManyToMany(mappedBy = "clients")
     private Set<User> comerciales = new HashSet<>(); // Relación con los comerciales
 
     public Set<User> getComerciales() {
@@ -85,24 +93,24 @@ public class Cliente implements Serializable {
         this.direccion = direccion;
     }
 
-    public Organizacion getOrganizacion() {
-        return organizacion;
+    public Organization getOrganizacion() {
+        return organization;
     }
 
-    public void setOrganizacion(Organizacion organizacion) {
-        this.organizacion = organizacion;
+    public void setOrganizacion(Organization organization) {
+        this.organization = organization;
     }
 
-    public Set<Campania> getCampanias() {
-        return campanias;
+    public Set<Campaign> getCampaigns() {
+        return campaigns;
     }
 
-    public void setCampanias(Set<Campania> campanias) {
-        this.campanias = campanias;
+    public void setCampaigns(Set<Campaign> campaigns) {
+        this.campaigns = campaigns;
     }
 
-    public void addCampania(Campania campania) {
-        campanias.add(campania);
-        campania.getClientes().add(this); // Agregar el cliente a la campaña
+    public void addCampaign(Campaign campaign) {
+        campaigns.add(campaign);
+        campaign.getClientes().add(this); // Agregar el cliente a la campaña
     }
 }

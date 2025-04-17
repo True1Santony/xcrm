@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "campanias")
-public class Campania implements Serializable {
+public class Campaign implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +29,10 @@ public class Campania implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacion_id", nullable = false)
-    private Organizacion organizacion;// Relación con la organización
+    private Organization organization;// Relación con la organización
 
-    @ManyToMany(mappedBy = "campanias")
-    private Set<Cliente> clientes = new HashSet<>(); // Relación con los clientes
+    @ManyToMany(mappedBy = "campaigns")
+    private Set<Client> clients = new HashSet<>(); // Relación con los clientes
 
     @ManyToMany
     @JoinTable(
@@ -42,15 +42,15 @@ public class Campania implements Serializable {
     )
     private Set<User> comerciales = new HashSet<>();// Relación con los comerciales
 
-    public Campania() {
+    public Campaign() {
     }
 
-    public Campania(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Organizacion organizacion) {
+    public Campaign(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Organization organization) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.organizacion = organizacion;
+        this.organization = organization;
     }
 
     public Long getId() {
@@ -93,12 +93,12 @@ public class Campania implements Serializable {
         this.fechaFin = fechaFin;
     }
 
-    public Organizacion getOrganizacion() {
-        return organizacion;
+    public Organization getOrganizacion() {
+        return organization;
     }
 
-    public void setOrganizacion(Organizacion organizacion) {
-        this.organizacion = organizacion;
+    public void setOrganizacion(Organization organization) {
+        this.organization = organization;
     }
 
     public Set<User> getComerciales() {
@@ -114,11 +114,11 @@ public class Campania implements Serializable {
         comercial.getCampanias().add(this); // También agregamos la campaña al comercial
     }
 
-    public Set<Cliente> getClientes() {
-        return clientes;
+    public Set<Client> getClientes() {
+        return clients;
     }
 
-    public void setClientes(Set<Cliente> clientes) {
-        this.clientes = clientes;
+    public void setClientes(Set<Client> clients) {
+        this.clients = clients;
     }
 }

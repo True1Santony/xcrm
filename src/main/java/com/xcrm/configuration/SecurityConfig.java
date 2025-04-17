@@ -22,7 +22,7 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private CustomRoutingDataSource customRoutingDataSource; // Cambiar a CustomRoutingDataSource
+    private CustomRoutingDataSource customRoutingDataSource;
 
    /* @Bean seguridad para el caso de usar Api Rest
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{

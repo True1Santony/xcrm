@@ -1,8 +1,8 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.model.Organizacion;
+import com.xcrm.model.Organization;
 import com.xcrm.model.User;
-import com.xcrm.service.OrganizacionService;
+import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -29,7 +29,7 @@ public class IndexController {
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     @Autowired
-    private OrganizacionService organizacionService;
+    private OrganizationService organizationService;
 
     @Autowired
     private UserService userService;
@@ -72,7 +72,7 @@ public class IndexController {
 
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
-        model.addAttribute("organizacion", organizacionService.getOrganizacionActual()); // Paso la organización activa
+        model.addAttribute("organization", organizationService.getCurrentOrganization()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
         return "mi-cuenta";
     }
@@ -91,13 +91,14 @@ public class IndexController {
                                         @RequestParam String password,
                                         @RequestParam String confirmPassword,
                                         @RequestParam String plan,
-                                        Model model) {
+                                        Model model,
+                                        RedirectAttributes redirectAttributes) {
 
         model.addAttribute("titulo", "REGISTRO");
         List<String> errores = new ArrayList<>();
 
         // Verificar si el email ya está registrado
-        if (organizacionService.buscarPorEmail(email).isPresent()) {
+        if (organizationService.buscarPorEmail(email).isPresent()) {
             errores.add("El email ya está en uso.");
         }
 
@@ -124,17 +125,17 @@ public class IndexController {
 
         try {
             // Guardar una nueva organización
-            Organizacion nuevaOrganizacion = organizacionService.crearOrganizacion(nombreEmpresa, email, plan);
+            Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
 
             // Guardar al usuario administrador
-            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganizacion, "ROLE_ADMIN");
+            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
 
         } catch (IllegalArgumentException e) {
             errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo
             model.addAttribute("errores",errores);
             return "registro"; // Regresamos al formulario con el mensaje de error
         }
-        model.addAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
+        redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "redirect:/login"; // Redirigir al login después de registrarse
     }
 

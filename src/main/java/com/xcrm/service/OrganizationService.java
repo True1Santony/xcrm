@@ -3,6 +3,7 @@ package com.xcrm.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.DatabaseRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,14 +12,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.xcrm.model.Organizacion;
-import com.xcrm.repository.OrganizacionRepository;
+import com.xcrm.repository.OrganizationRepository;
 
 @Service
-public class OrganizacionService {
+public class OrganizationService {
 
 	@Autowired
-	private OrganizacionRepository organizacionRepository;
+	private OrganizationRepository organizationRepository;
 
 	@Autowired
 	private DatabaseRepository databaseRepository;
@@ -26,40 +26,40 @@ public class OrganizacionService {
 	@Autowired
 	UserService userService;
 
-	public List<Organizacion> obtenerTodasLasOrganizaciones(){
-		return organizacionRepository.findAll();
+	public List<Organization> obtenerTodasLasOrganizaciones(){
+		return organizationRepository.findAll();
 	}
 	
-	public Optional<Organizacion> findById(Long id){
-		return organizacionRepository.findById(id);
+	public Optional<Organization> findById(Long id){
+		return organizationRepository.findById(id);
 	}
 
-	public Optional<Organizacion> buscarPorEmail(String email) {
-		return organizacionRepository.findByEmail(email);
+	public Optional<Organization> buscarPorEmail(String email) {
+		return organizationRepository.findByEmail(email);
 	}
 
-	public Organizacion crearOrganizacion(String nombre, String email, String plan) {
-		if(organizacionRepository.findByNombre(nombre).isPresent()){
+	public Organization crearOrganizacion(String nombre, String email, String plan) {
+		if(organizationRepository.findByNombre(nombre).isPresent()){
 			throw new IllegalArgumentException("La organización, con este nombre, ya existe.");
 		}
 		// Crear una nueva instancia de Organizacion
-		Organizacion nuevaOrganizacion = new Organizacion();
-		nuevaOrganizacion.setId(organizacionRepository.count()+30);
-		nuevaOrganizacion.setNombre(nombre);
-		nuevaOrganizacion.setEmail(email);
-		nuevaOrganizacion.setPlan(plan);
-		nuevaOrganizacion.setNombreDB(creaNombreBDporNombreEmpresa(nombre));
+		Organization nuevaOrganization = new Organization();
+		nuevaOrganization.setId(organizationRepository.count()+30);
+		nuevaOrganization.setNombre(nombre);
+		nuevaOrganization.setEmail(email);
+		nuevaOrganization.setPlan(plan);
+		nuevaOrganization.setNombreDB(creaNombreBDporNombreEmpresa(nombre));
 
 		//Creacion de la base de datos de la organizacion
-		databaseRepository.createDatabase(nuevaOrganizacion.getNombreDB());
-		databaseRepository.createTables(nuevaOrganizacion.getNombreDB());
+		databaseRepository.createDatabase(nuevaOrganization.getNombreDB());
+		databaseRepository.createTables(nuevaOrganization.getNombreDB());
 
 		// Insertar la organización en la base de datos de la organización
-		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre,nuevaOrganizacion.getId(),email,plan, nuevaOrganizacion.getNombreDB());
+		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre, nuevaOrganization.getId(),email,plan, nuevaOrganization.getNombreDB());
 
 		// Guardar la organización
 		System.out.println("Se va a guardar la organización");
-		return organizacionRepository.save(nuevaOrganizacion);
+		return organizationRepository.save(nuevaOrganization);
 	}
 
 	private String creaNombreBDporNombreEmpresa(String nombreEmpresa){
@@ -67,7 +67,7 @@ public class OrganizacionService {
 		return nombreDB;
 	}
 
-    public Organizacion getOrganizacionActual() {
+    public Organization getCurrentOrganization() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 

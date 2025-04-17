@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="organizaciones")
-public class Organizacion implements Serializable {
+public class Organization implements Serializable {
 	
 	@Id
 	private Long id;
@@ -31,19 +31,19 @@ public class Organizacion implements Serializable {
 	@Column(name = "creado", nullable = false)
 	private LocalDateTime creado;
 
-	public Organizacion() {
+	public Organization() {
 		this.creado = LocalDateTime.now();
 	}
 
-	@OneToMany(mappedBy = "organizacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference // Indica el lado principal para evitar anidamiento al serializar.api
 	private Set<User> usuarios = new HashSet<>(); // Una organización puede tener varios usuarios
 
-	@OneToMany(mappedBy = "organizacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference // Evitar problemas de serialización
-	private Set<Cliente> clientes = new HashSet<>();
+	private Set<Client> clients = new HashSet<>();
 
-	public Organizacion(Long id, String nombre, String email, String plan, String nombreDB) {
+	public Organization(Long id, String nombre, String email, String plan, String nombreDB) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -114,16 +114,16 @@ public class Organizacion implements Serializable {
 		this.nombreDB = nombreDB;
 	}
 
-	public Set<Cliente> getClientes() {
-		return clientes;
+	public Set<Client> getClientes() {
+		return clients;
 	}
 
-	public void setClientes(Set<Cliente> clientes) {
-		this.clientes = clientes;
+	public void setClientes(Set<Client> clients) {
+		this.clients = clients;
 	}
 
-	public void addCliente(Cliente cliente) {
-		clientes.add(cliente);
-		cliente.setOrganizacion(this);
+	public void addCliente(Client client) {
+		clients.add(client);
+		client.setOrganizacion(this);
 	}
 }

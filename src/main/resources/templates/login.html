@@ -8,6 +8,9 @@
 <body>
 <div class="login-container">
     <h1>Inicio de Sesión</h1>
+    <div th:if="${success}" class="success-message">
+        <p th:text="${success}"></p>
+    </div>
     <form th:action="@{/login}" method="post" class="login-form" >
         <label>
             <input type="text" placeholder="Usuario" name="username" required>

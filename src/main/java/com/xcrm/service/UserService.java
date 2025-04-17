@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,17 +30,11 @@ public class UserService {
     @Autowired
     private DatabaseRepository databaseRepository;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    @Autowired
-    private CampaniaRepository campaniaRepository;
-
     @Value("${xcrm.central-db-name}")
     private String databaseCentralName;
 
     @Transactional
-    public void crearUsuarioConOrganizacion(String username, String rawPassword, Organizacion organizacion, String role) {
+    public void crearUsuarioConOrganizacion(String username, String rawPassword, Organization organization, String role) {
 
         if (userRepository.findByUsername(username) != null) {
             throw new IllegalArgumentException("El usuario ya existe");
@@ -55,7 +46,7 @@ public class UserService {
         nuevoUsuario.setUsername(username); // Establecer el nombre de usuario
         nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword));
         nuevoUsuario.setEnabled(true); // Habilitar el usuario
-        nuevoUsuario.setOrganizacion(organizacion); // Establecer la relación con la organización
+        nuevoUsuario.setOrganizacion(organization); // Establecer la relación con la organización
 
         // Guardar el usuario en la base de datos
         userRepository.save(nuevoUsuario);
@@ -68,15 +59,15 @@ public class UserService {
         authorityRepository.save(authority);
 
         // Insertar el usuario en la base de datos de la organización (String dbName, UUID userId, Long organizacionId, String username, String password)
-        databaseRepository.insertarUsuarioEnBaseDeDatos(organizacion.getNombreDB(),nuevoUsuario.getId(),organizacion.getId(),nuevoUsuario.getUsername(), nuevoUsuario.getPassword());
+        databaseRepository.insertarUsuarioEnBaseDeDatos(organization.getNombreDB(),nuevoUsuario.getId(), organization.getId(),nuevoUsuario.getUsername(), nuevoUsuario.getPassword());
 
         // Insertar el rol de administrador para el usuario (String dbName, UUID idAuthority, UUID userId, String role)
-        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organizacion.getNombreDB(), authority.getId(),nuevoUsuario.getId(), role);
+        databaseRepository.insertarRolDeUsuarioEnBaseDeDatos(organization.getNombreDB(), authority.getId(),nuevoUsuario.getId(), role);
 
     }
 
     @Transactional
-    public void createUserInOrganization(String userName, String rawPassword, Organizacion organizacion){
+    public void createUserInOrganization(String userName, String rawPassword, Organization organization){
 
         // Verificar si el usuario ya existe
         if (userRepository.findByUsername(userName) != null) {
@@ -89,7 +80,7 @@ public class UserService {
         nuevoUsuario.setUsername(userName);
         nuevoUsuario.setPassword(passwordEncoder.encode(rawPassword));
         nuevoUsuario.setEnabled(true); // Habilitar el usuario
-        nuevoUsuario.setOrganizacion(organizacion); // Establecer la relación con la organización
+        nuevoUsuario.setOrganizacion(organization); // Establecer la relación con la organización
 
         // Guardar el usuario en la base de datos
         userRepository.save(nuevoUsuario);
@@ -109,7 +100,7 @@ public class UserService {
         byte[] uuidUserIdBytes =  uuidToBytes(nuevoUsuario.getId());
         // Guardo al usuario en la base de datos central
         String insertUserQuery = "INSERT INTO " + this.databaseCentralName + ".users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
-        jdbcTemplate.update(insertUserQuery, uuidUserIdBytes, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organizacion.getId());
+        jdbcTemplate.update(insertUserQuery, uuidUserIdBytes, userName, nuevoUsuario.getPassword(), nuevoUsuario.isEnabled(), organization.getId());
 
         byte[] uuidAuthorityIdBytes = uuidToBytes(authority.getId());
         //Los roles del User en la base de datos central
@@ -120,7 +111,7 @@ public class UserService {
 
     @Transactional
     public void actualizarUsuario(UUID userId, String nuevoUsername, String nuevoPassword, String[] roles) {
-        User usuario = find(userId);
+        User usuario = findById(userId);
 
         if (nuevoUsername != null && !nuevoUsername.isEmpty() && !nuevoUsername.equals(usuario.getUsername())) {
             usuario.setUsername(nuevoUsername);
@@ -150,18 +141,15 @@ public class UserService {
         );
     }
 
-
     public User obtenerUsuarioPorNombre(String nombre) {
         return userRepository.findByUsername(nombre);
     }
-
-
 
     public void save(User user){
         userRepository.save(user);
     }
 
-    public User find(UUID id) {
+    public User findById(UUID id) {
         Optional<User> userOptional = userRepository.findById(id);
         return userOptional.orElse(null); // Devuelve null si no se encuentra el usuario
     }
@@ -176,7 +164,7 @@ public class UserService {
 
     @Transactional
     public void eliminarUsuario(UUID userId) {
-        User usuario = find(userId);
+        User usuario = findById(userId);
 
         //1. elimina de la base de datos actual de la organizacion
         authorityRepository.deleteAll(usuario.getAuthorities());
@@ -184,6 +172,10 @@ public class UserService {
 
         //2. elimina de la base de datos central
         databaseRepository.eliminarUsuarioYRolesDeDbCentral(userId);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 }
 

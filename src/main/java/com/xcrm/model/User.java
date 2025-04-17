@@ -29,7 +29,7 @@ public class User implements Serializable {
     @ManyToOne
     @JoinColumn(name = "organizacion_id", nullable = false)
     @JsonBackReference // Indica el lado inverso.api
-    private Organizacion organizacion;
+    private Organization organization;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>(); // Relación con Authority
@@ -40,7 +40,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "comercial_id"),
             inverseJoinColumns = @JoinColumn(name = "campania_id")
     )
-    private Set<Campania> campanias = new HashSet<>(); // Relación con las campañas
+    private Set<Campaign> campaigns = new HashSet<>(); // Relación con las campañas
 
     @ManyToMany
     @JoinTable(
@@ -48,18 +48,18 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "comercial_id"),
             inverseJoinColumns = @JoinColumn(name = "cliente_id")
     )
-    private Set<Cliente> clientes = new HashSet<>(); // Relación con los clientes
+    private Set<Client> clients = new HashSet<>(); // Relación con los clientes
 
     // Constructor, getters y setters
     public User() {
     }
 
-    public User(UUID id, String username, String password, boolean enabled, Organizacion organizacion) {
+    public User(UUID id, String username, String password, boolean enabled, Organization organization) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
-        this.organizacion = organizacion;
+        this.organization = organization;
     }
 
     public UUID getId() {
@@ -94,12 +94,12 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
-    public Organizacion getOrganizacion() {
-        return organizacion;
+    public Organization getOrganizacion() {
+        return organization;
     }
 
-    public void setOrganizacion(Organizacion organizacion) {
-        this.organizacion = organizacion;
+    public void setOrganizacion(Organization organization) {
+        this.organization = organization;
     }
 
     public Set<Authority> getAuthorities() {
@@ -110,28 +110,28 @@ public class User implements Serializable {
         this.authorities = authorities;
     }
 
-    public Set<Campania> getCampanias() {
-        return campanias;
+    public Set<Campaign> getCampanias() {
+        return campaigns;
     }
 
-    public void setCampanias(Set<Campania> campanias) {
-        this.campanias = campanias;
+    public void setCampanias(Set<Campaign> campaigns) {
+        this.campaigns = campaigns;
     }
 
-    public void addCampania(Campania campania) {
-        campanias.add(campania);
-        campania.getComerciales().add(this); // Agregar el comercial a la campaña
+    public void addCampania(Campaign campaign) {
+        campaigns.add(campaign);
+        campaign.getComerciales().add(this); // Agregar el comercial a la campaña
     }
 
-    public Set<Cliente> getClientes() {
-        return clientes;
+    public Set<Client> getClientes() {
+        return clients;
     }
 
-    public void setClientes(Set<Cliente> clientes) {
-        this.clientes = clientes;
+    public void setClientes(Set<Client> clients) {
+        this.clients = clients;
     }
-    public void addCliente(Cliente cliente) {
-        clientes.add(cliente);
-        cliente.getComerciales().add(this); // Agregar el comercial al cliente
+    public void addCliente(Client client) {
+        clients.add(client);
+        client.getComerciales().add(this); // Agregar el comercial al cliente
     }
 }

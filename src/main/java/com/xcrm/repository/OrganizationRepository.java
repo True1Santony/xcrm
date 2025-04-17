@@ -1,19 +1,18 @@
 package com.xcrm.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.xcrm.model.Organizacion;
+import com.xcrm.model.Organization;
 
 @Repository
-public interface OrganizacionRepository extends JpaRepository<Organizacion, Long> {
+public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
 	//Genera una query con where nombre = ?, Spring Data JPA lo convierte automaticamente en una consulta
-	Optional<Organizacion> findByNombre(String nombre);
+	Optional<Organization> findByNombre(String nombre);
 
 
-    Optional<Organizacion> findByEmail(String email);
+    Optional<Organization> findByEmail(String email);
 }

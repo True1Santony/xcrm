@@ -1,19 +1,17 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.model.Organizacion;
+import com.xcrm.model.Organization;
 import com.xcrm.model.User;
-import com.xcrm.service.OrganizacionService;
+import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -23,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private OrganizacionService organizacionService;
+    private OrganizationService organizationService;
 
     @ModelAttribute("titulo")
     public String title() {
@@ -36,10 +34,10 @@ public class UserController {
                                    @RequestParam Long organizacionId, BindingResult almacenErrores,
                                    Model model) {
 
-        Organizacion organizacion = organizacionService.findById(organizacionId).get();
+        Organization organization = organizationService.findById(organizacionId).get();
 
         try {
-            userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organizacion);
+            userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organization);
             model.addAttribute("success", "Usuario registrado exitosamente.");
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -51,7 +49,7 @@ public class UserController {
 
     @GetMapping("/administration")
     public String getUserAdministrationDashboard(Model model){
-        model.addAttribute("organizacion", organizacionService.getOrganizacionActual()); // Paso la organización activa
+        model.addAttribute("organization", organizationService.getCurrentOrganization()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
         return "user-administration-dashboard";
     }
@@ -70,9 +68,9 @@ public class UserController {
     }
 
     @PostMapping("/eliminar")
-    public String eliminarUsuario(@RequestParam("user_id") UUID userId, Model model) {
+    public String eliminarUsuario(@RequestParam("user_id") UUID userId, RedirectAttributes redirectAttributes) {
         userService.eliminarUsuario(userId);
-        model.addAttribute("mensaje", "Usuario eliminado correctamente");
+        redirectAttributes.addFlashAttribute("mensaje", "Usuario eliminado correctamente");
         return "redirect:/usuarios/administration";
     }
 }
