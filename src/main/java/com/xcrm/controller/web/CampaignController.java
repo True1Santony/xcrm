@@ -1,7 +1,6 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.model.Campaign;
-import com.xcrm.model.Organization;
 import com.xcrm.service.CampaignService;
 import com.xcrm.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,45 +23,42 @@ public class CampaignController {
     @GetMapping("/administration")
     public String getCampaignsAdministrationDashboard(Model model){
         model.addAttribute("organization", organizationService.getCurrentOrganization());
-        model.addAttribute("campaigns", campaignService.findAll()); // Paso las campañas existentes.
+        model.addAttribute("campaigns", campaignService.findAll());
         model.addAttribute("new_campaign", new Campaign());
 
         return "campaigns-administration-dashboard";
     }
 
-    @PostMapping
+    @PostMapping()
     public String createCampaign(
             @ModelAttribute("new_campaign") Campaign campaign,
-            @RequestParam Long organizacionId, // Recibe el ID de la organización desde el formulario
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Validaciones básicas
+        // Validaciones, si hay errores, carga de nuevo la plantilla
         if (result.hasErrors()) {
+            model.addAttribute("organization", organizationService.getCurrentOrganization());
             model.addAttribute("campaigns", campaignService.findAll());
             return "campaigns-administration-dashboard";
         }
 
         try {
-            // 1. Buscar la organización
-            Organization organization = organizationService.findById(organizacionId)
-                    .orElseThrow(() -> new IllegalArgumentException("Organización no encontrada"));
-
-            // 2. Asignar la organización a la campaña
-            campaign.setOrganizacion(organization);
-
-            // 3. Guardar la campaña
+            campaign.setOrganizacion(organizationService.getCurrentOrganization());
             campaignService.save(campaign);
-
-            // Mensaje de éxito
             redirectAttributes.addFlashAttribute("mensaje", "Campaña creada exitosamente");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear campaña: " + e.getMessage());
             return "redirect:/campaigns/administration";
         }
 
+        return "redirect:/campaigns/administration";
+    }
+
+    @PostMapping("/delete")
+    public String deleteCampaign(@RequestParam Long id, RedirectAttributes redirectAttributes){
+        campaignService.deleteById(id);
+        redirectAttributes.addFlashAttribute("mensaje", "Campaña eliminada exitosamente");
         return "redirect:/campaigns/administration";
     }
 

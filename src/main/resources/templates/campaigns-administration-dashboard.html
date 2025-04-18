@@ -148,7 +148,6 @@
                                     <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}" required>
                                 </div>
                                 <div class="col-12">
-                                    <input type="hidden" th:name="organizacionId" th:value="${organization.id}">
                                     <button type="submit" class="btn btn-custom">
                                         <i class="bi bi-save"></i> Crear Campaña
                                     </button>
@@ -189,11 +188,8 @@
                                                       class="badge bg-secondary me-1"></span>
                                     </td>
                                     <td class="table-actions">
-                                        <a th:href="@{/campaigns/editar/{id}(id=${campaign.id})}"
-                                           class="btn btn-sm btn-edit text-white">
-                                            <i class="bi bi-pencil-square"></i> Editar
-                                        </a>
-                                        <form th:action="@{/campaigns/eliminar/{id}(id=${campaign.id})}" method="post" class="d-inline ms-1">
+                                        <form th:action="@{/campaigns/delete}" method="post" class="d-inline ms-1">
+                                            <input type="hidden" name="id" th:value="${campaign.id}">
                                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar esta campaña?');">
                                                 <i class="bi bi-trash"></i> Eliminar
                                             </button>

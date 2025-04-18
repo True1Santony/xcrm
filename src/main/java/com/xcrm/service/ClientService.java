@@ -6,6 +6,7 @@ import com.xcrm.model.User;
 import com.xcrm.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -62,5 +63,47 @@ public class ClientService {
 
     public void deleteById(Long id) {
         clientRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updateClient(Client client, List<Long> campaignIds, UUID[] salesRepresentativesIds) {
+
+        if (campaignIds != null &&  !campaignIds.isEmpty()) {
+            Set<Campaign> campaigns = new HashSet<>();
+            for (Long id : campaignIds) {
+                campaigns.add(campaignService.findById(id).orElse(null));
+            }
+            client.setCampaigns(campaigns);
+        } else {
+            client.setCampaigns(new HashSet<>());
+        }
+
+        if (salesRepresentativesIds != null && salesRepresentativesIds.length > 0) {
+            // Limpiar relaciones antiguas
+            for (User oldComercial : client.getComerciales()) {
+                oldComercial.getClientes().remove(client);
+            }
+
+            Set<User> salesRepresentatives = new HashSet<>();
+            for (UUID id : salesRepresentativesIds) {
+                User comercial = userService.findById(id);
+                if (comercial != null) {
+                    // Verificar si el cliente ya está asignado a este comercial
+                    if (!comercial.getClientes().contains(client)) {
+                        comercial.getClientes().add(client); // Agregar solo si no existe
+                    }
+                    salesRepresentatives.add(comercial);
+                }
+            }
+            client.setComerciales(salesRepresentatives);
+        } else {
+            // Si no hay comerciales seleccionados, limpiar todas las relaciones
+            for (User oldComercial : client.getComerciales()) {
+                oldComercial.getClientes().remove(client);
+            }
+            client.setComerciales(new HashSet<>());
+        }
+
+        clientRepository.save(client);
     }
 }

@@ -98,8 +98,8 @@ public class ClientController {
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
         // Obtener todas las campañas y comerciales disponibles
-        Set<Campaign> allCampaigns = client.getCampaigns();
-        Set<User> allComerciales = client.getComerciales();
+        List<Campaign> allCampaigns = campaignService.findAll();
+        List<User> allComerciales = userService.findAll();
 
         model.addAttribute("client", client);
         model.addAttribute("allCampaigns", allCampaigns);
@@ -109,13 +109,13 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public String updateClient(@ModelAttribute Client client,
-                               @RequestParam(required = false) List<Long> campaignIds,
-                               @RequestParam(required = false) List<Long> comercialIds,
+    public String updateClient(@ModelAttribute("client") Client client,
+                               @RequestParam(value = "campaignIds", required = false) List<Long> campaignIds,
+                               @RequestParam(value = "comercialIds", required = false) UUID[] salesRepresentativesIds,
                                RedirectAttributes redirectAttributes) {
 
         try {
-            //clientService.updateClient(client, campaignIds, comercialIds);
+            clientService.updateClient(client, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente actualizado correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el cliente: " + e.getMessage());

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -112,5 +113,18 @@ public class Client implements Serializable {
     public void addCampaign(Campaign campaign) {
         campaigns.add(campaign);
         campaign.getClientes().add(this); // Agregar el cliente a la campaña
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(id, client.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

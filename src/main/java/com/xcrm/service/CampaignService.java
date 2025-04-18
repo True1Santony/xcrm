@@ -20,11 +20,6 @@ public class CampaignService {
     @Autowired
     private ClientRepository clientRepository;
 
-    // Obtener una campaña por su id
-    public Optional<Campaign> getCampaniaById(Long id) {
-        return campaignRepository.findById(id);
-    }
-
     // Asignar una campaña a un cliente o comercial (mediante las tablas intermedias)
     @Transactional
     public void addClienteToCampania(Long clienteId, Long campaniaId) {
@@ -50,5 +45,9 @@ public class CampaignService {
 
     public Optional<Campaign> findById(Long id){
         return campaignRepository.findById(id);
+    }
+
+    public void deleteById(Long id) {
+        campaignRepository.deleteById(id);
     }
 }

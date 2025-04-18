@@ -141,27 +141,45 @@
           <!-- Selección de Campañas -->
           <div class="col-md-6">
             <label class="form-label">Campañas</label>
-            <select class="form-select" multiple th:name="campaignIds">
+            <select class="form-select" multiple th:name="campaignIds" size="5">
               <option th:each="campaign : ${allCampaigns}"
                       th:value="${campaign.id}"
                       th:text="${campaign.nombre}"
-                      th:selected="${client.campaigns.contains(campaign)}">
+                      th:selected="${#lists.contains(client.campaigns.![id], campaign.id)}">
               </option>
             </select>
             <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
+            <div class="selected-items-container">
+              <small class="text-muted">Seleccionados:</small>
+              <div>
+                    <span th:each="campaign : ${client.campaigns}"
+                          class="badge badge-campaign">
+                      <span th:text="${campaign.nombre}"></span>
+                    </span>
+              </div>
+            </div>
           </div>
 
           <!-- Selección de Comerciales -->
           <div class="col-md-6">
             <label class="form-label">Comerciales</label>
-            <select class="form-select" multiple th:name="comercialIds">
+            <select class="form-select" multiple th:name="comercialIds" size="5">
               <option th:each="comercial : ${allComerciales}"
                       th:value="${comercial.id}"
                       th:text="${comercial.username}"
-                      th:selected="${client.comerciales.contains(comercial)}">
+                      th:selected="${#lists.contains(client.comerciales.![id], comercial.id)}">
               </option>
             </select>
             <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
+            <div class="selected-items-container">
+              <small class="text-muted">Seleccionados:</small>
+              <div>
+                    <span th:each="comercial : ${client.comerciales}"
+                          class="badge badge-comercial">
+                      <span th:text="${comercial.username}"></span>
+                    </span>
+              </div>
+            </div>
           </div>
 
           <div class="col-12 mt-4">

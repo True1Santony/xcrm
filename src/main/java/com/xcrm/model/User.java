@@ -40,7 +40,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "comercial_id"),
             inverseJoinColumns = @JoinColumn(name = "campania_id")
     )
-    private Set<Campaign> campaigns = new HashSet<>(); // Relación con las campañas
+    private Set<Campaign> campaigns = new HashSet<>(); // Relación con las campañas, es el propietario
 
     @ManyToMany
     @JoinTable(
@@ -134,4 +134,6 @@ public class User implements Serializable {
         clients.add(client);
         client.getComerciales().add(this); // Agregar el comercial al cliente
     }
+
+
 }
