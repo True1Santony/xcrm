@@ -2,6 +2,7 @@ package com.xcrm.controller.web;
 
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
+import com.xcrm.repository.UserRepository;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import org.slf4j.Logger;
@@ -100,6 +101,14 @@ public class IndexController {
         // Verificar si el email ya está registrado
         if (organizationService.buscarPorEmail(email).isPresent()) {
             errores.add("El email ya está en uso.");
+        }
+
+        if (userService.findByUsername(nombreAdmin) != null) {
+            errores.add("El usuario ya existe");
+        }
+
+        if(organizationService.findByNombre(nombreEmpresa).isPresent()){
+            errores.add("La organización, con este nombre, ya existe.");
         }
 
         // Validar que el email y el email de confirmación coincidan

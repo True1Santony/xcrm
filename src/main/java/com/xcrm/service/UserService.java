@@ -141,7 +141,7 @@ public class UserService {
         );
     }
 
-    public User obtenerUsuarioPorNombre(String nombre) {
+    public User findByUsername(String nombre) {
         return userRepository.findByUsername(nombre);
     }
 
@@ -177,5 +177,6 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
 }
 

@@ -32,18 +32,16 @@ public class UserController {
     public String registrarUsuario(@Valid
                                        @ModelAttribute("nuvoUsuario") User nuevoUsuario,
                                    @RequestParam Long organizacionId, BindingResult almacenErrores,
-                                   Model model) {
-
+                                   Model model,
+                                   RedirectAttributes redirectAttributes) {
         Organization organization = organizationService.findById(organizacionId).get();
 
         try {
             userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organization);
-            model.addAttribute("success", "Usuario registrado exitosamente.");
+            redirectAttributes.addFlashAttribute("success", "Usuario registrado exitosamente.");
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
-        model.addAttribute("loggedIn", true);
         return "redirect:/usuarios/administration";
     }
 

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.xcrm.repository.OrganizationRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrganizationService {
@@ -38,6 +39,7 @@ public class OrganizationService {
 		return organizationRepository.findByEmail(email);
 	}
 
+	@Transactional
 	public Organization crearOrganizacion(String nombre, String email, String plan) {
 		if(organizationRepository.findByNombre(nombre).isPresent()){
 			throw new IllegalArgumentException("La organización, con este nombre, ya existe.");
@@ -71,8 +73,12 @@ public class OrganizationService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 
-		User user = userService.obtenerUsuarioPorNombre(username);
+		User user = userService.findByUsername(username);
 		return findById(user.getOrganizacion().getId())
 				.orElseThrow(()-> new EntityNotFoundException("Organización no encontrada"));
     }
+
+	public Optional<Organization> findByNombre(String nombreEmpresa) {
+		return organizationRepository.findByNombre(nombreEmpresa);
+	}
 }

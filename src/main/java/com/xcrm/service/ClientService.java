@@ -66,7 +66,16 @@ public class ClientService {
     }
 
     @Transactional
-    public void updateClient(Client client, List<Long> campaignIds, UUID[] salesRepresentativesIds) {
+    public void updateClient(Client incomingClient, List<Long> campaignIds, UUID[] salesRepresentativesIds) {
+
+        Client client = clientRepository.findById(incomingClient.getId())
+                .orElseThrow(()-> new RuntimeException("Cliente no encontrado"));
+
+        // 2. Actualizar los campos simples (nombre, dirección, etc.)
+        client.setNombre(incomingClient.getNombre());
+        client.setEmail(incomingClient.getEmail());
+        client.setTelefono(incomingClient.getTelefono());
+        client.setDireccion(incomingClient.getDireccion());
 
         if (campaignIds != null &&  !campaignIds.isEmpty()) {
             Set<Campaign> campaigns = new HashSet<>();
@@ -79,25 +88,21 @@ public class ClientService {
         }
 
         if (salesRepresentativesIds != null && salesRepresentativesIds.length > 0) {
-            // Limpiar relaciones antiguas
             for (User oldComercial : client.getComerciales()) {
                 oldComercial.getClientes().remove(client);
             }
 
-            Set<User> salesRepresentatives = new HashSet<>();
+            Set<User> newSalesReps = new HashSet<>();
             for (UUID id : salesRepresentativesIds) {
                 User comercial = userService.findById(id);
                 if (comercial != null) {
-                    // Verificar si el cliente ya está asignado a este comercial
-                    if (!comercial.getClientes().contains(client)) {
-                        comercial.getClientes().add(client); // Agregar solo si no existe
-                    }
-                    salesRepresentatives.add(comercial);
+                    comercial.getClientes().add(client);
+                    newSalesReps.add(comercial);
                 }
             }
-            client.setComerciales(salesRepresentatives);
+
+            client.setComerciales(newSalesReps);
         } else {
-            // Si no hay comerciales seleccionados, limpiar todas las relaciones
             for (User oldComercial : client.getComerciales()) {
                 oldComercial.getClientes().remove(client);
             }

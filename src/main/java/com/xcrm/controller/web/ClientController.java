@@ -96,8 +96,7 @@ public class ClientController {
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         Client client = clientService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
-
-        // Obtener todas las campañas y comerciales disponibles
+        
         List<Campaign> allCampaigns = campaignService.findAll();
         List<User> allComerciales = userService.findAll();
 

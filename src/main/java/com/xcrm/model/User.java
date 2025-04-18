@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class User implements Serializable {
     private UUID id;
 
     @NotBlank(message = "El nombre de usuario es obligatorio")
-    @Column
+    @Column(unique = true, nullable = false)
     private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")
@@ -42,7 +43,7 @@ public class User implements Serializable {
     )
     private Set<Campaign> campaigns = new HashSet<>(); // Relación con las campañas, es el propietario
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "comerciales_clientes",
             joinColumns = @JoinColumn(name = "comercial_id"),
@@ -135,5 +136,16 @@ public class User implements Serializable {
         client.getComerciales().add(this); // Agregar el comercial al cliente
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
