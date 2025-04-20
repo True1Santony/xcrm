@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -23,12 +25,14 @@ public class ContactoController {
             @RequestParam String email,
             @RequestParam String asunto,
             @RequestParam String mensaje,
+            @RequestPart(required = false) MultipartFile archivo, // Recibe el archivo adjunto
             RedirectAttributes redirectAttributes) {
 
         System.out.println("Formulario recibido: nombre=" + nombre + ", email=" + email + ", asunto=" + asunto + ", mensaje=" + mensaje);
 
         try {
-            emailSender.enviarCorreo(nombre, email, asunto, mensaje);
+            // Llamar al servicio de envío de correo, pasando el archivo adjunto
+            emailSender.enviarCorreo(nombre, email, asunto, mensaje, archivo);
             redirectAttributes.addFlashAttribute("success", "¡Mensaje enviado correctamente!");
         } catch (Exception e) {
             e.printStackTrace();
