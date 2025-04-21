@@ -18,13 +18,14 @@
             padding: 4rem 0;
             margin-bottom: 3rem;
         }
+
         .btn-custom {
-            background-color: #4facfe;
+            background-color: #6abf69;
             border: none;
             color: white;
         }
         .btn-custom:hover {
-            background-color: #3a8acf;
+            background-color: #5a9b5a;
         }
         .form-control:focus {
             box-shadow: none;
@@ -87,7 +88,8 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <form th:action="@{/enviar-contacto}" method="post">
+                    <!--Permite la subida de archivos /form-data-->
+                    <form th:action="@{/enviar-contacto}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -104,13 +106,33 @@
                             <label for="mensaje" class="form-label">Mensaje</label>
                             <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-custom"><i class="bi bi-send-fill"></i> Enviar</button>
+                        <!-- Campo para adjuntar archivo -->
+                        <div class="mb-3">
+                            <label for="archivo" class="form-label">Adjuntar archivo</label>
+                            <input type="file" class="form-control" id="archivo" name="archivo">
+                        </div>
+                        <button type="submit" class="btn btn-custom">Enviar</button>
                     </form>
+
+                    <!-- Mensajes de Éxito/Error justo debajo del formulario -->
+                    <div class="mt-4">
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Footer -->
 <footer class="bg-dark text-white py-4 mt-5">
