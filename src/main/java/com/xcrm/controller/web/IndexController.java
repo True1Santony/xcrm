@@ -58,12 +58,27 @@ public class IndexController {
         model.addAttribute("titulo", "Precios de XCRM");
         return "precios";
     }
-
+/*
     @GetMapping("/contacto")
     public String mostrarContacto(Model model) {
         model.addAttribute("titulo", "Contacto de XCRM");
         return "contacto";
     }
+
+ */
+    @GetMapping("/contacto")
+    public String mostrarContacto(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isLoggedIn = (
+                        authentication != null &&
+                        authentication.isAuthenticated() &&
+                        !(authentication instanceof AnonymousAuthenticationToken)
+        );
+        model.addAttribute("loggedIn", isLoggedIn);
+        model.addAttribute("titulo", "Contacto de XCRM");
+        return "contacto";
+    }
+
 
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
