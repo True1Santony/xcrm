@@ -36,15 +36,8 @@ public class IndexController {
     private UserService userService;
 
     @GetMapping("/")
-    public String mostrarIndex(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isLoggedIn = (
-                        authentication != null                                        // 1. Verifica si el objeto de autenticación no es nulo
-                        && authentication.isAuthenticated()                           // 2. Verifica si el usuario está autenticado
-                        && !(authentication instanceof AnonymousAuthenticationToken)  // 3. Verifica que no sea un usuario anónimo(por defecto lo es si no se ha logeado)
-        );
-        model.addAttribute("loggedIn", isLoggedIn);
-        logger.info("Estado de login: " + (isLoggedIn ? "Autenticado" : "No autenticado"));
+        public String mostrarIndex(Model model){
+            logger.info("Página de inicio mostrada");
         return "index";
     }
 

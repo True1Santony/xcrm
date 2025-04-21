@@ -63,13 +63,13 @@
                 </li>
             </ul>
             <div class="d-flex">
-                <div th:if="${loggedIn}" class="d-flex align-items-center">
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
                     <a th:href="@{/mi-cuenta}" class="btn btn-outline-dark me-2"><i class="bi bi-person-circle"></i> Mi Cuenta</a>
                     <form th:action="@{/logout}" method="post">
                         <button class="btn btn-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
                     </form>
                 </div>
-                <div th:unless="${loggedIn}">
+                <div sec:authorize="isAnonymous()">
                     <a th:href="@{/login}" class="btn btn-custom"><i class="bi bi-box-arrow-in-right"></i> Login</a>
                 </div>
             </div>
