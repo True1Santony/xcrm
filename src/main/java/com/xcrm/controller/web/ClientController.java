@@ -2,7 +2,6 @@ package com.xcrm.controller.web;
 
 import com.xcrm.model.Campaign;
 import com.xcrm.model.Client;
-import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.service.CampaignService;
 import com.xcrm.service.ClientService;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -39,15 +37,10 @@ public class ClientController {
 
     @GetMapping
     public String showClientsAdministrationDashboard(Authentication authentication, Model model){
-        Organization organization = organizationService.getCurrentOrganization();
-        List<Client> clients = clientService.findAll();
-        List<Campaign> campaigns = campaignService.findAll();
-        List<User> salesRepresentatives = userService.findAll();
-
-        model.addAttribute("organization", organization);
-        model.addAttribute("clients", clients);
-        model.addAttribute("campaigns", campaigns);
-        model.addAttribute("comerciales", salesRepresentatives);
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
+        model.addAttribute("clients", clientService.findAll());
+        model.addAttribute("campaigns", campaignService.findAll());
+        model.addAttribute("comerciales", userService.findAll());
         model.addAttribute("new_client", new Client());
 
         return "client-administration-dashboard";
@@ -58,18 +51,15 @@ public class ClientController {
             @Valid @ModelAttribute("new_client") Client client,
             BindingResult bindingResult,
             @RequestParam(value = "campaignIds", required = false) List<Long> campaignIds,
-            @RequestParam(value = "comercialIds", required = false) List<UUID> comercialIds,
-            Authentication authentication,
+            @RequestParam(value = "comercialIds", required = false) List<UUID> salesRepresentativesIds,
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             // Pasar todos los errores al modelo
-            bindingResult.getFieldErrors().forEach(error ->
-                    redirectAttributes.addFlashAttribute(
-                            "error_" + error.getField(),
-                            error.getDefaultMessage()
-                    )
-            );
+            bindingResult.getFieldErrors().forEach(
+                    error -> redirectAttributes.addFlashAttribute(
+                            "error_" + error.getField(), error.getDefaultMessage()
+                    ));
             redirectAttributes.addFlashAttribute("error", "Corrija los errores del formulario");
             redirectAttributes.addFlashAttribute("new_client", client); // Mantener los datos ingresados
             return "redirect:/clients";
@@ -77,7 +67,7 @@ public class ClientController {
 
         try {
             // Guardar el cliente y sus relaciones
-            Client savedClient = clientService.createClient(client, campaignIds, comercialIds);
+            Client savedClient = clientService.createClient(client, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente " + savedClient.getNombre() + " creado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear el cliente: " + e.getMessage());
@@ -108,13 +98,13 @@ public class ClientController {
     }
 
     @PostMapping("/update")
-    public String updateClient(@ModelAttribute("client") Client client,
+    public String updateClient(@ModelAttribute("client") Client incomingClient,
                                @RequestParam(value = "campaignIds", required = false) List<Long> campaignIds,
                                @RequestParam(value = "comercialIds", required = false) UUID[] salesRepresentativesIds,
                                RedirectAttributes redirectAttributes) {
 
         try {
-            clientService.updateClient(client, campaignIds, salesRepresentativesIds);
+            clientService.updateClient(incomingClient, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente actualizado correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el cliente: " + e.getMessage());
