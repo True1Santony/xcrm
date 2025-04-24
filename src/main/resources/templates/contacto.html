@@ -32,6 +32,49 @@
             border-color: #4facfe;
         }
     </style>
+    <!-- Agregar el SDK de Dropbox -->
+    <script type="text/javascript"
+            th:src="@{'https://www.dropbox.com/static/api/2/dropins.js'}"
+            id="dropboxjs"
+            th:attr="data-app-key=${dropboxKey}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof Dropbox === 'undefined') {
+                console.error('El SDK de Dropbox no se cargó correctamente.');
+                alert('Hubo un problema al cargar el SDK de Dropbox. Intenta de nuevo más tarde.');
+                return;
+            }
+
+            const dropboxButton = document.getElementById('dropbox-button');
+            const archivoInput = document.getElementById('archivoDropbox');
+            const nombreSpan = document.getElementById('archivoDropboxNombre');
+            const cancelarBtn = document.getElementById('dropbox-cancelar');
+
+            dropboxButton.onclick = function () {
+                Dropbox.choose({
+                    linkType: "direct",
+                    multiselect: false,
+                    success: function (files) {
+                        const selectedFile = files[0];
+                        archivoInput.value = selectedFile.link;
+                        nombreSpan.textContent = '📎 ' + selectedFile.name;
+                        nombreSpan.classList.remove('d-none');
+                        cancelarBtn.classList.remove('d-none');
+                    },
+                    cancel: function () {
+                        console.log("Selección cancelada.");
+                    }
+                });
+            };
+
+            cancelarBtn.onclick = function () {
+                archivoInput.value = '';
+                nombreSpan.textContent = '';
+                nombreSpan.classList.add('d-none');
+                cancelarBtn.classList.add('d-none');
+            };
+        });
+    </script>
 </head>
 <body>
 
@@ -106,13 +149,32 @@
                             <label for="mensaje" class="form-label">Mensaje</label>
                             <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
                         </div>
+                        <!-- Campo para adjuntar archivo desde Dropbox -->
+                        <div class="mb-3">
+                            <label class="form-label">Adjuntar archivo desde <i class="bi bi-cloud-fill text-primary"></i> Dropbox</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-outline-primary" id="dropbox-button">
+                                    <i class="bi bi-box-arrow-in-down"></i> Seleccionar archivo
+                                </button>
+                                <span id="archivoDropboxNombre" class="text-muted small d-none"></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger d-none" id="dropbox-cancelar">
+                                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                                </button>
+                            </div>
+                            <input type="hidden" name="archivoDropbox" id="archivoDropbox">
+                        </div>
                         <!-- Campo para adjuntar archivo -->
                         <div class="mb-3">
-                            <label for="archivo" class="form-label">Adjuntar archivo</label>
-                            <input type="file" class="form-control" id="archivo" name="archivo">
+                            <label for="archivo" class="form-label">Adjuntar archivo desde el ordenador</label>
+                            <!--Evita que el usuario seleccione archivos con extensiones no permitidas-->
+                            <input type="file" class="form-control" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <div class="form-text">Tamaño máximo: 4 MB. Formatos permitidos: PDF, Word, JPG, PNG.</div>
                         </div>
                         <button type="submit" class="btn btn-custom">Enviar</button>
                     </form>
+
+                    <!-- Scripts de Bootstrap -->
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
                     <!-- Mensajes de Éxito/Error justo debajo del formulario -->
                     <div class="mt-4">
@@ -164,9 +226,5 @@
         </div>
     </div>
 </footer>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" th:src="@{/JavaScript/cerrar.js}" defer></script>
 </body>
 </html>

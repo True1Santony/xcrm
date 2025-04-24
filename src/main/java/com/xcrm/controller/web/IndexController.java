@@ -8,6 +8,7 @@ import com.xcrm.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,11 +54,12 @@ public class IndexController {
         return "precios";
     }
 
-    @GetMapping("/contacto")
-    public String mostrarContacto(Model model) {
-        model.addAttribute("titulo", "Contacto de XCRM");
-        return "contacto";
-    }
+    // @GetMapping("/contacto")
+    // public String mostrarContacto(Model model) {
+    //     model.addAttribute("titulo", "Contacto de XCRM");
+    //     return "contacto";
+    // }
+
 
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
