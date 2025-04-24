@@ -127,35 +127,8 @@
 </div>
 
 <!-- Footer -->
-<footer class="bg-dark text-white py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h5>XCRM</h5>
-                <p>La solución de CRM más completa para tu empresa.</p>
-            </div>
-            <div class="col-md-3">
-                <h5>Enlaces</h5>
-                <ul class="list-unstyled">
-                    <li><a th:href="@{/}" class="text-white">Inicio</a></li>
-                    <li><a th:href="@{/contacto}" class="text-white">Contacto</a></li>
-                    <li><a th:href="@{/privacidad}" class="text-white">Política de Privacidad</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>Contacto</h5>
-                <ul class="list-unstyled">
-                    <li><i class="bi bi-envelope"></i> info@xcrm.com</li>
-                    <li><i class="bi bi-telephone"></i> +34 123 456 789</li>
-                </ul>
-            </div>
-        </div>
-        <hr>
-        <div class="text-center">
-            <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
-        </div>
-    </div>
-</footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" th:src="@{/JavaScript/cerrar.js}" defer></script>
