@@ -134,10 +134,6 @@
         </div>
       </div>
 
-
-
-
-
       <!-- Sección de Campañas -->
       <div class="card campaign-table">
         <div class="card-header bg-primary text-white">
@@ -165,15 +161,21 @@
                   <th>Nombre</th>
                   <th>Teléfono</th>
                   <th>Email</th>
-                  <th>Estado Interación</th>
+                  <th>Estado última interación</th>
+                  <th>Fecha última interación</th>
+                  <th>Fecha venta</th>
+                  <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="cliente : ${clients}">
-                  <td th:text="${cliente.nombre}"></td>
-                  <td th:text="${cliente.telefono}"></td>
-                  <td th:text="${cliente.email}"></td>
-                  <td th:text="${lastInteraction}"></td>
+                <tr th:each="client : ${clients}">
+                  <td th:text="${client.nombre}"></td>
+                  <td th:text="${client.telefono}"></td>
+                  <td th:text="${client.email}"></td>
+                  <td th:text="${client.lastInteraction != null ? client.lastInteraction.estado : 'Sin interacciones'}"></td>
+                  <td th:text="${client.lastInteraction != null ? #temporals.format(client.lastInteraction.fechaHora, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                  <td th:text="${client.lastInteraction != null && client.lastInteraction.venta != null ? #temporals.format(client.lastInteraction.venta.fecha, 'dd/MM/yyyy HH:mm') : 'Sin venta'}"></td>
+                  <td><a th:href="@{'/sales/interaction/' + ${client.id}}" class="btn btn-primary btn-sm">Realizar iteracción</a></td>
                 </tr>
                 </tbody>
               </table>

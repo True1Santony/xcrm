@@ -69,12 +69,20 @@ public class Interaccion implements Serializable{
         this.comercial = comercial;
     }
 
-    public Client getCliente() {
+    public Client getClient() {
         return client;
     }
 
-    public void setCliente(Client client) {
+    public void setClient(Client client) {
         this.client = client;
+    }
+
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     public Campaign getCampania() {
