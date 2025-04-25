@@ -50,4 +50,8 @@ public class CampaignService {
     public void deleteById(Long id) {
         campaignRepository.deleteById(id);
     }
+
+    public List<Campaign> findAllByIds(List<Long> campaignIds) {
+       return campaignRepository.findAllById(campaignIds);
+    }
 }

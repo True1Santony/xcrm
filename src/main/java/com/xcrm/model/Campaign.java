@@ -111,7 +111,7 @@ public class Campaign implements Serializable {
 
     public void addComercial(User comercial) {
         comerciales.add(comercial);
-        comercial.getCampanias().add(this); // También agregamos la campaña al comercial
+        comercial.getCampaigns().add(this); // También agregamos la campaña al comercial
     }
 
     public Set<Client> getClientes() {

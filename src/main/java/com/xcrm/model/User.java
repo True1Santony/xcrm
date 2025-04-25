@@ -111,11 +111,11 @@ public class User implements Serializable {
         this.authorities = authorities;
     }
 
-    public Set<Campaign> getCampanias() {
+    public Set<Campaign> getCampaigns() {
         return campaigns;
     }
 
-    public void setCampanias(Set<Campaign> campaigns) {
+    public void setCampaigns(Set<Campaign> campaigns) {
         this.campaigns = campaigns;
     }
 
