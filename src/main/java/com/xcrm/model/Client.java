@@ -46,6 +46,28 @@ public class Client implements Serializable {
     @ManyToMany(mappedBy = "clients")
     private Set<User> comerciales = new HashSet<>(); // Relación con los comerciales
 
+    @Transient //no se debe mapear a la base de datos, solo para la vista
+    private Interaccion lastInteraction;
+
+    public Interaccion getLastInteraction() {
+        return lastInteraction;
+    }
+
+    public void setLastInteraction(Interaccion lastInteraction) {
+        this.lastInteraction = lastInteraction;
+    }
+
+    public Set<Interaccion> getInteracciones() {
+        return interacciones;
+    }
+
+    public void setInteracciones(Set<Interaccion> interacciones) {
+        this.interacciones = interacciones;
+    }
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Interaccion> interacciones = new HashSet<>();
+
     public Set<User> getComerciales() {
         return comerciales;
     }

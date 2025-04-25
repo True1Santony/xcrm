@@ -45,7 +45,7 @@
           <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
         </li>
       </ul>
-      <div class="d-flex">
+      <div class="d-flex ">
         <form th:action="@{/logout}" method="post">
           <button class="btn btn-outline-dark" type="submit">
             <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
@@ -69,26 +69,13 @@
         </div>
         <hr class="border-light">
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" th:href="@{/sales}">
-              <i class="bi bi-megaphone"></i> Dashboard de Ventas
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/mi-cuenta}">
-              <i class="bi bi-person"></i> Mi Perfil
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/clients}">
-              <i class="bi bi-person-lines-fill"></i> Clientes
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/reportes}">
-              <i class="bi bi-bar-chart"></i> Reportes
-            </a>
-          </li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/mi-cuenta}"><i class="bi bi-person"></i> Mi Perfil</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/usuarios/administration}"><i class="bi bi-people-fill"></i> Usuarios</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/campaigns/administration}"><i class="bi bi-megaphone"></i> Campañas</a></li>
+          <li class="nav-item"><a class="nav-link active" th:href="@{/clients}"><i class="bi bi-person-lines-fill"></i> Clientes</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/sales}"><i class="bi bi-journal-text"></i> Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/reportes}"><i class="bi bi-bar-chart"></i> Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/configuracion}"><i class="bi bi-gear"></i> Configuración</a></li>
         </ul>
       </div>
     </nav>
@@ -111,7 +98,7 @@
       </div>
 
 <!--Asignacion de las campañas a los comerciales solo para administrador-->
-      <div sec:authorize="hasRole('ROLE_ADMIN')" class="card mt-4">
+      <div sec:authorize="hasRole('ROLE_ADMIN')" class="card mt-4 mb-4">
         <div class="card-header bg-success text-white">
           <h4 class="mb-0"><i class="bi bi-person-plus"></i> Asignar Campañas a Comerciales</h4>
         </div>
@@ -138,12 +125,16 @@
                 <div class="form-text">Mantén Ctrl (Cmd en Mac) para seleccionar múltiples.</div>
               </div>
             </div>
-            <div class="d-grid">
-              <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Asignar Campañas</button>
+            <div class="col-12">
+              <button type="submit" class="btn btn-custom">
+                <i class="bi bi-save"></i> Asignar Campañas
+              </button>
             </div>
           </form>
         </div>
       </div>
+
+
 
 
 
@@ -153,34 +144,42 @@
           <h4 class="mb-0"><i class="bi bi-list-ul"></i> Mis Campañas</h4>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Fin</th>
-                <th>Acciones</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="campaign : ${campaignsForUser}">
-                <td th:text="${campaign.id}"></td>
-                <td th:text="${campaign.nombre}"></td>
-                <td th:text="${campaign.descripcion}"></td>
-                <td th:text="${#temporals.format(campaign.fechaInicio, 'dd/MM/yyyy')}"></td>
-                <td th:text="${#temporals.format(campaign.fechaFin, 'dd/MM/yyyy')}"></td>
-                <td>
-                  <a th:href="@{/sales/campaign/{id}(id=${campaign.id})}" class="btn btn-sm btn-view">
-                    <i class="bi bi-eye"></i> Ver Clientes
-                  </a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+          <form method="get" action="/sales/clientByIdCampaign">
+            <label for="campaignId" class="form-label">Selecciona una campaña</label>
+            <select id="campaignId" name="campaignId" class="form-select" onchange="this.form.submit()">
+              <option value="" disabled selected>Elige una campaña</option>
+              <option th:each="camp : ${campaignsForUser}"
+                      th:value="${camp.id}"
+                      th:text="${camp.nombre}">
+              </option>
+            </select>
+          </form>
+
+          <!-- Tabla de clientes que se muestra al seleccionar una campaña -->
+          <div th:if="${selectedCampaign != null}">
+            <h5 class="mt-4">Clientes de la campaña: <span th:text="${selectedCampaign.nombre}"></span></h5>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Email</th>
+                  <th>Estado Interación</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cliente : ${clients}">
+                  <td th:text="${cliente.nombre}"></td>
+                  <td th:text="${cliente.telefono}"></td>
+                  <td th:text="${cliente.email}"></td>
+                  <td th:text="${lastInteraction}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+
         </div>
       </div>
     </main>
