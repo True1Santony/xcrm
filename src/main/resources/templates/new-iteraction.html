@@ -40,7 +40,7 @@
     </div>
 </nav>
 
-<div class="container mt-5">
+<div class="container-fluid mt-5">
     <h2 class="mb-4"><i class="bi bi-chat-dots"></i> Interacciones con Cliente</h2>
 
     <!-- Información del Cliente -->
@@ -49,44 +49,7 @@
             <h4 class="card-title" th:text="${client.nombre}"></h4>
             <p class="mb-1"><strong>Teléfono:</strong> <span th:text="${client.telefono}"></span></p>
             <p class="mb-1"><strong>Email:</strong> <span th:text="${client.email}"></span></p>
-        </div>
-    </div>
-
-    <!-- Histórico de Interacciones -->
-    <div class="card mb-4 card-custom">
-        <div class="card-header bg-secondary text-white">
-            <i class="bi bi-clock-history"></i> Historial de Interacciones
-        </div>
-        <div class="card-body">
-            <div th:if="${#lists.isEmpty(client.interacciones)}">
-                <p>No hay interacciones registradas.</p>
-            </div>
-            <div th:if="${!#lists.isEmpty(client.interacciones)}">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Tipo</th>
-                            <th>Estado</th>
-                            <th style="width: 30%">Observaciones</th>
-                            <th>Venta</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="interaction : ${client.interacciones}">
-                            <td th:text="${#temporals.format(interaction.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td th:text="${interaction.tipo}"></td>
-                            <td th:text="${interaction.estado}"></td>
-                            <td style="max-width: 300px; max-height: 100px; overflow-y: auto; white-space: pre-wrap;"
-                                th:text="${interaction.notas}">
-                            </td>
-                            <td th:text="${interaction.venta != null ? 'Sí - ' + #temporals.format(interaction.venta.fecha, 'dd/MM/yyyy') : 'No'}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <p class="mb-1"><strong>Dirección:</strong> <span th:text="${client.direccion}"></span></p>
         </div>
     </div>
 
@@ -138,15 +101,97 @@
                     </label>
                 </div>
 
-                <button type="submit" class="btn btn-custom"><i class="bi bi-save"></i> Guardar Interacción</button>
+                <!-- Botones: Guardar Interacción y Llamar -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-custom"><i class="bi bi-save"></i> Guardar Interacción</button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#llamadaModal"><i class="bi bi-telephone"></i> Llamar</button>
+                </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal de Llamada -->
+    <div class="modal fade" id="llamadaModal" tabindex="-1" aria-labelledby="llamadaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="llamadaModalLabel"><i class="bi bi-telephone"></i> Llamando<span id="puntosLlamando">...</span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Estás realizando una llamada a <strong th:text="${client.nombre}">Cliente</strong>.</p>
+                    <p><i class="bi bi-telephone-inbound-fill" style="font-size: 3rem;"></i></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <i class="bi bi-telephone-x"></i> Colgar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico de Interacciones -->
+    <div class="card mb-4 card-custom">
+        <div class="card-header bg-secondary text-white">
+            <i class="bi bi-clock-history"></i> Historial de Interacciones
+        </div>
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(client.interacciones)}">
+                <p>No hay interacciones registradas.</p>
+            </div>
+            <div th:if="${!#lists.isEmpty(client.interacciones)}">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th style="width: 30%">Observaciones</th>
+                            <th>Venta</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="interaction : ${client.interacciones}">
+                            <td th:text="${#temporals.format(interaction.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${interaction.tipo}"></td>
+                            <td th:text="${interaction.estado}"></td>
+                            <td style="max-width: 300px; max-height: 100px; overflow-y: auto; white-space: pre-wrap;"
+                                th:text="${interaction.notas}">
+                            </td>
+                            <td th:text="${interaction.venta != null ? 'Sí - ' + #temporals.format(interaction.venta.fecha, 'dd/MM/yyyy') : 'No'}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Footer -->
 <div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Script para animar "Llamando..." -->
+<script>
+    let puntosInterval;
+    const puntos = document.getElementById('puntosLlamando');
+
+    document.getElementById('llamadaModal').addEventListener('show.bs.modal', function () {
+        let count = 0;
+        puntos.textContent = '';
+        puntosInterval = setInterval(() => {
+            count = (count + 1) % 4; // 0, 1, 2, 3
+            puntos.textContent = '.'.repeat(count);
+        }, 500);
+    });
+
+    document.getElementById('llamadaModal').addEventListener('hide.bs.modal', function () {
+        clearInterval(puntosInterval);
+    });
+</script>
 </body>
 </html>

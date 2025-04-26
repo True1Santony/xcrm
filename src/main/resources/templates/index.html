@@ -49,18 +49,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/caracteristicas}"><i class="bi bi-star"></i> Características</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/precios}"><i class="bi bi-tag"></i> Precios</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/contacto}"><i class="bi bi-envelope"></i> Contacto</a>
-                </li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/caracteristicas}"><i class="bi bi-star"></i> Características</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/precios}"><i class="bi bi-tag"></i> Precios</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contacto}"><i class="bi bi-envelope"></i> Contacto</a></li>
             </ul>
             <div class="d-flex">
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
@@ -84,7 +76,6 @@
         <p class="lead mb-4">La solución todo en uno para la gestión de tus clients y campañas de marketing</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a th:href="@{/registro}" class="btn btn-custom btn-lg px-4 gap-3">Regístrate Gratis</a>
-            <a th:href="@{/}" class="btn btn-outline-dark btn-lg px-4">Ver Demo</a>
         </div>
     </div>
 </section>

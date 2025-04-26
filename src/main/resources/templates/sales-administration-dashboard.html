@@ -100,7 +100,7 @@
 <!--Asignacion de las campañas a los comerciales solo para administrador-->
       <div sec:authorize="hasRole('ROLE_ADMIN')" class="card mt-4 mb-4">
         <div class="card-header bg-success text-white">
-          <h4 class="mb-0"><i class="bi bi-person-plus"></i> Asignar Campañas a Comerciales</h4>
+          <h4 class="mb-0"><i class="bi bi-person-plus"></i> Asignar a Comerciales Campañas</h4>
         </div>
         <div class="card-body">
           <form th:action="@{/sales/assign}" method="post">
@@ -153,7 +153,7 @@
 
           <!-- Tabla de clientes que se muestra al seleccionar una campaña -->
           <div th:if="${selectedCampaign != null}">
-            <h5 class="mt-4">Clientes de la campaña: <span th:text="${selectedCampaign.nombre}"></span></h5>
+            <h5 class="mt-4">Clientes de la campaña: <span class="badge bg-primary" th:text="${selectedCampaign.nombre}"></span></h5>
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -175,7 +175,7 @@
                   <td th:text="${client.lastInteraction != null ? client.lastInteraction.estado : 'Sin interacciones'}"></td>
                   <td th:text="${client.lastInteraction != null ? #temporals.format(client.lastInteraction.fechaHora, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
                   <td th:text="${client.lastInteraction != null && client.lastInteraction.venta != null ? #temporals.format(client.lastInteraction.venta.fecha, 'dd/MM/yyyy HH:mm') : 'Sin venta'}"></td>
-                  <td><a th:href="@{'/sales/interaction/' + ${client.id}}" class="btn btn-primary btn-sm">Realizar iteracción</a></td>
+                  <td><a th:href="@{'/sales/interaction/' + ${client.id}}" class="btn btn-primary btn-sm">Interactuar</a></td>
                 </tr>
                 </tbody>
               </table>
