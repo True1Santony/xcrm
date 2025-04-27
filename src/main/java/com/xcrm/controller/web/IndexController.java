@@ -54,6 +54,7 @@ public class IndexController {
         return "precios";
     }
 
+    // SE ENCUENTRA EN ContactoController
     // @GetMapping("/contacto")
     // public String mostrarContacto(Model model) {
     //     model.addAttribute("titulo", "Contacto de XCRM");
