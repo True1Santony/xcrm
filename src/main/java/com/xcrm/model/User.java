@@ -15,7 +15,7 @@ import java.util.UUID;
 public class User implements Serializable {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;
 
     @NotBlank(message = "El nombre de usuario es obligatorio")
