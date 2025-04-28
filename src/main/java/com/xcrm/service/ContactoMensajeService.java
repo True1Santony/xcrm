@@ -23,11 +23,11 @@ public class ContactoMensajeService {
         // Se establece la fecha y hora del envío para el mensaje
         mensaje.setFechaEnvio(LocalDateTime.now());
 
-        // Si el usuario está logueado, se obtiene su ID desde el ContactoController.java
-        // Genera un UUID si el usuario no está logueado (para usuarios anónimos)
-        UUID usuarioId = UUID.randomUUID();  // Generamos un UUID para el mensaje si no hay usuario logueado
-        mensaje.setUsuarioId(usuarioId.toString());  // Asignamos el UUID generado o el ID del usuario logueado
-
+        if (mensaje.getUsuarioId() == null) {
+            // Solo genera UUID si no se ha asignado previamente
+            UUID usuarioId = UUID.randomUUID();
+            mensaje.setUsuarioId(usuarioId.toString());
+        }
         // Guarda el mensaje en la base de datos
         return contactoMensajeRepository.save(mensaje);  // Persistimos el mensaje en la base de datos
     }

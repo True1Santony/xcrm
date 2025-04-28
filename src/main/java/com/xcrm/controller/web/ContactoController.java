@@ -3,6 +3,7 @@ package com.xcrm.controller.web;
 import com.xcrm.model.ContactoMensaje;
 import com.xcrm.model.User;
 import com.xcrm.repository.ContactoMensajeRepository;
+import com.xcrm.service.ContactoMensajeService;
 import com.xcrm.service.EmailSender;
 import com.xcrm.service.UserService;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Controller
 public class ContactoController {
@@ -31,6 +33,9 @@ public class ContactoController {
 
     @Autowired
     private ContactoMensajeRepository contactoMensajeRepository;
+
+    @Autowired
+    private ContactoMensajeService contactoMensajeService;
 
     @Autowired
     private UserService userService;
@@ -91,7 +96,6 @@ public class ContactoController {
             contacto.setAsunto(asunto);
             contacto.setMensaje(mensaje);
             contacto.setArchivoDropboxUrl(archivoDropbox);
-            contacto.setFechaEnvio(LocalDateTime.now());
 
             // Si se ha adjuntado un archivo, se guarda su nombre
             if (archivo != null && !archivo.isEmpty()) {
@@ -106,10 +110,13 @@ public class ContactoController {
                 if (user != null) {
                     contacto.setUsuarioId(user.getId().toString());  // Asigna el UUID del usuario logueado
                 }
+            } else {
+                UUID anonId = UUID.randomUUID();  // UUID aleatorio para anónimos
+                contacto.setUsuarioId(anonId.toString());
             }
 
             // Guarda el mensaje en la base de datos
-            contactoMensajeRepository.save(contacto);
+            contactoMensajeService.guardarMensaje(contacto);
             redirectAttributes.addFlashAttribute("success", "¡Mensaje enviado correctamente!");
         } catch (IllegalArgumentException e) {
             logger.warn("Validación fallida: {}", e.getMessage());
