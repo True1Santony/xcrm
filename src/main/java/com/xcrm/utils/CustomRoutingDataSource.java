@@ -65,8 +65,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
    @Override
     protected DataSource determineTargetDataSource() {
         String tenantId = (String) determineCurrentLookupKey();
-
-
+        
        // Si el tenantId es "default", utiliza el DataSource predeterminado sin crear uno nuevo
        if (tenantId == null || tenantId.equals("default")) {
            // Si el tenantId es nulo o es "default", utiliza el DataSource predeterminado
@@ -76,12 +75,13 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
        // Convertir el tenantId a minúsculas
        tenantId = tenantId.toLowerCase().replaceAll("\\s+", "_");
 
+       String dbUrl = dbUrlPrefix + tenantId;
+
         // Verifica si ya tenemos un DataSource en caché para esta organización
        synchronized (this) {//condicion de carrera
            if (!dataSources.containsKey(tenantId)) {
-               // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
-               String dbUrl = dbUrlPrefix + tenantId;
 
+               // Si no existe, crear un nuevo DataSource y almacenarlo en el caché
                DataSource newDataSource = DataSourceBuilder.create()
                        .url(dbUrl)
                        .username(username)
@@ -91,7 +91,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
                dataSources.put(tenantId, newDataSource);
            }
        }
-
+       logger.info(String.format("Generated DB URL for tenant %s: %s", tenantId, dbUrl));
         // Retornar el DataSource correspondiente al tenantId
         return dataSources.get(tenantId);
     }
