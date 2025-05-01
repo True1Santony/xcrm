@@ -1,7 +1,6 @@
 package com.xcrm.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -29,18 +28,25 @@ public class Campaign implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacion_id", nullable = false)
-    private Organization organization;// Relación con la organización
+    private Organization organization;
 
-    @ManyToMany(mappedBy = "campaigns")
-    private Set<Client> clients = new HashSet<>(); // Relación con los clientes
+    // Relación con los clientes
+    @ManyToMany
+    @JoinTable(
+            name = "clientes_campanias",
+            joinColumns = @JoinColumn(name = "campania_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id")
+    )
+    private Set<Client> clientes = new HashSet<>();
 
+    // Relación con los comerciales
     @ManyToMany
     @JoinTable(
             name = "comerciales_campanias",
             joinColumns = @JoinColumn(name = "campania_id"),
             inverseJoinColumns = @JoinColumn(name = "comercial_id")
     )
-    private Set<User> comerciales = new HashSet<>();// Relación con los comerciales
+    private Set<User> comerciales = new HashSet<>();
 
     public Campaign() {
     }
@@ -101,6 +107,14 @@ public class Campaign implements Serializable {
         this.organization = organization;
     }
 
+    public Set<Client> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(Set<Client> clients) {
+        this.clientes = clients;
+    }
+
     public Set<User> getComerciales() {
         return comerciales;
     }
@@ -111,14 +125,6 @@ public class Campaign implements Serializable {
 
     public void addComercial(User comercial) {
         comerciales.add(comercial);
-        comercial.getCampaigns().add(this); // También agregamos la campaña al comercial
-    }
-
-    public Set<Client> getClientes() {
-        return clients;
-    }
-
-    public void setClientes(Set<Client> clients) {
-        this.clients = clients;
+        comercial.getCampaigns().add(this);
     }
 }

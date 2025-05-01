@@ -33,6 +33,10 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
+    public List<Client> findAllByIds(List<Long> ids) {
+        return clientRepository.findAllById(ids);
+    }
+
     public Client createClient(Client client, List<Long> campaignIds, List<UUID> comercialIds) {
 
         client.setOrganizacion(organizationService.getCurrentOrganization());

@@ -30,6 +30,11 @@
             background-color: #4facfe;
             border-color: #4facfe;
         }
+        .badge-cliente {
+            background-color: #17a2b8; /* azul claro */
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -152,6 +157,19 @@
                                     <label for="fechaFin" class="form-label">Fecha de Fin</label>
                                     <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}" required>
                                 </div>
+
+                                <!-- Selección de Clientes -->
+                                <div class="col-md-6">
+                                    <label for="clientes" class="form-label">Seleccionar Clientes</label>
+                                    <select class="form-select" id="clientes" name="clientes" multiple>
+                                        <option th:each="cliente : ${allClients}"
+                                                th:value="${cliente.id}"
+                                                th:text="${cliente.nombre}">
+                                        </option>
+                                    </select>
+                                    <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
+                                </div>
+
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-custom">
                                         <i class="bi bi-save"></i> Crear Campaña
@@ -176,6 +194,7 @@
                                     <th>Descripción</th>
                                     <th>Fecha Inicio</th>
                                     <th>Fecha Fin</th>
+                                    <th>Clientes</th>
                                     <th>Comerciales</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -187,6 +206,29 @@
                                     <td th:text="${campaign.descripcion}"></td>
                                     <td th:text="${#temporals.format(campaign.fechaInicio, 'dd/MM/yyyy')}"></td>
                                     <td th:text="${#temporals.format(campaign.fechaFin, 'dd/MM/yyyy')}"></td>
+                                    <td>
+                                        <div th:if="${campaign.clientes.size() > 0}">
+                                            <a class="d-block" data-bs-toggle="collapse"
+                                               th:attr="data-bs-target='#clientes-'+${campaign.id}"
+                                               href="javascript:void(0)">
+                                                <span class="badge bg-info">
+                                                    <span th:text="${campaign.clientes.size()}"></span> cliente(s)
+                                                    <i class="bi bi-chevron-down collapse-icon ms-1"></i>
+                                                </span>
+                                            </a>
+                                            <div class="collapse" th:id="'clientes-'+${campaign.id}">
+                                                <div class="mt-2">
+                                                    <span th:each="cliente : ${campaign.clientes}"
+                                                          class="badge badge-cliente d-inline-block mb-1">
+                                                        <i class="bi bi-person"></i>
+                                                        <span th:text="${cliente.nombre}"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span th:if="${campaign.clientes.size() == 0}" class="text-muted">Ninguno</span>
+                                    </td>
+
                                     <td>
                                                 <span th:each="comercial : ${campaign.comerciales}"
                                                       th:text="${comercial.username + ', '}"
@@ -204,7 +246,8 @@
                                                              data-nombre=${campaign.nombre},
                                                              data-descripcion=${campaign.descripcion},
                                                              data-fechaInicio=${campaign.fechaInicio},
-                                                             data-fechaFin=${campaign.fechaFin}">
+                                                             data-fechaFin=${campaign.fechaFin}"
+                                                             data-clientes=${#fields.arrayToString(campaign.clientes)}>
                                                 <i class="bi bi-pencil"></i> Editar
                                             </button>
                                         </th:block>
@@ -246,7 +289,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form id="editCampaignForm" method="post" th:action="@{/campaigns/update}">
+                <form id="editCampaignForm" method="post" th:action="@{/campaigns/update}" th:object="${new_campaign}">
                     <!-- ID oculto -->
                     <input type="hidden" id="campaignId" name="id" />
 
@@ -274,6 +317,18 @@
                         <input type="date" class="form-control" id="editfechaFin" name="fechaFin" required>
                     </div>
 
+                    <!-- Selección de Clientes -->
+                    <div class="col-md-6">
+                        <label for="editClientes" class="form-label">Seleccionar Clientes</label>
+                        <select class="form-select" id="editClientes" name="clientes" multiple>
+                            <option th:each="cliente : ${allClients}"
+                                    th:value="${cliente.id}"
+                                    th:text="${cliente.nombre}">
+                            </option>
+                        </select>
+                        <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
+                    </div>
+
                     <!-- Botones -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -297,6 +352,7 @@
                 const campaignDescripcion = this.getAttribute('data-descripcion');
                 const campaignFechaInicio = this.getAttribute('data-fechaInicio');
                 const campaignFechaFin = this.getAttribute('data-fechaFin');
+                const clientesData = this.getAttribute('data-clientes');
 
                 // Rellenar los campos del formulario del modal
                 document.getElementById('campaignId').value = campaignId || '';
@@ -304,6 +360,16 @@
                 document.getElementById('editdescripcion').value = campaignDescripcion || '';
                 document.getElementById('editfechaInicio').value = campaignFechaInicio || '';
                 document.getElementById('editfechaFin').value = campaignFechaFin || '';
+
+                // Marcar clientes seleccionados
+                const select = document.getElementById('editClientes');
+                const clienteIds = clientesData.split(',');  // Convertir la cadena en un array
+
+                // Asegurarse de que el select permita múltiples opciones seleccionadas
+                Array.from(select.options).forEach(option => {
+                    // Asegúrate de que el clienteId es un número si las opciones son números
+                    option.selected = clienteIds.includes(option.value.toString());
+                });
 
                 // Mostrar modal (no necesario si usas data-bs-toggle y data-bs-target)
                 // new bootstrap.Modal(document.getElementById('editCampaignModal')).show();

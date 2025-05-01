@@ -51,6 +51,7 @@ public class CampaignService {
         campaignRepository.deleteById(id);
     }
 
+
     // Implementación del método update
     public Campaign update(Campaign campaign) {
         // Asegurarse de que la campaña tenga un id y exista en la base de datos
@@ -64,6 +65,7 @@ public class CampaignService {
                 updatedCampaign.setFechaInicio(campaign.getFechaInicio());
                 updatedCampaign.setFechaFin(campaign.getFechaFin());
                 updatedCampaign.setOrganizacion(campaign.getOrganizacion());
+                updatedCampaign.setClientes(campaign.getClientes());
                 // Guardar la campaña actualizada
                 return campaignRepository.save(updatedCampaign);
             } else {
