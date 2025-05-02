@@ -51,6 +51,30 @@ public class CampaignService {
         campaignRepository.deleteById(id);
     }
 
+
+    // Implementación del método update
+    public Campaign update(Campaign campaign) {
+        // Asegurarse de que la campaña tenga un id y exista en la base de datos
+        if (campaign != null && campaign.getId() != null) {
+            Optional<Campaign> existingCampaign = campaignRepository.findById(campaign.getId());
+            if (existingCampaign.isPresent()) {
+                // Actualizar los detalles de la campaña existente
+                Campaign updatedCampaign = existingCampaign.get();
+                updatedCampaign.setNombre(campaign.getNombre());
+                updatedCampaign.setDescripcion(campaign.getDescripcion());
+                updatedCampaign.setFechaInicio(campaign.getFechaInicio());
+                updatedCampaign.setFechaFin(campaign.getFechaFin());
+                updatedCampaign.setOrganizacion(campaign.getOrganizacion());
+                updatedCampaign.setClientes(campaign.getClientes());
+                // Guardar la campaña actualizada
+                return campaignRepository.save(updatedCampaign);
+            } else {
+                throw new IllegalArgumentException("La campaña con id " + campaign.getId() + " no existe");
+            }
+        }
+        throw new IllegalArgumentException("Campaña inválida o sin id");
+    }
+
     public List<Campaign> findAllByIds(List<Long> campaignIds) {
        return campaignRepository.findAllById(campaignIds);
     }
