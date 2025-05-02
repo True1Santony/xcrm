@@ -36,7 +36,6 @@ public class DataSourceConfig {
     private String baseUrl; // URL base para la conexión predeterminada
 
     @Bean
-    @Primary
     public DataSource defaultDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
@@ -46,6 +45,7 @@ public class DataSourceConfig {
         return dataSource;
     }
 
+    @Primary
     @Bean
     public DataSource routingDataSource() {
         CustomRoutingDataSource routingDataSource = new CustomRoutingDataSource(defaultDataSource());

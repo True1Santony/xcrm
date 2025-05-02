@@ -1,7 +1,5 @@
 package com.xcrm.service.report;
 
-import com.xcrm.utils.CustomRoutingDataSource;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -14,6 +12,7 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -24,9 +23,9 @@ import java.util.Map;
 @Service
 public class ReportService {
 
-    private CustomRoutingDataSource dataSource;
+    private DataSource dataSource;
 
-    public ReportService(CustomRoutingDataSource dataSource) {
+    public ReportService(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -38,6 +37,12 @@ public class ReportService {
         }
 
         Map<String, Object> parameters = new HashMap<>();
+
+        InputStream logoStream = this.getClass().getResourceAsStream("/static/images/logo5.jpeg");
+        if (logoStream == null) {
+            throw new RuntimeException("No se encontró el logo");
+        }
+        parameters.put("logo", logoStream);
 
         try (Connection connection = dataSource.getConnection()) {
 
