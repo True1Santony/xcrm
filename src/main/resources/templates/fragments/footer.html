@@ -3,28 +3,37 @@
 <body>
 <footer class="bg-dark text-white py-4" th:fragment="footer">
   <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h5>XCRM</h5>
-        <p>La solución de CRM más completa para tu empresa.</p>
-      </div>
-      <div class="col-md-3">
+    <div class="row text-center text-md-start align-items-center">
+
+      <!-- Enlaces a la izquierda -->
+      <div class="col-md-4 mb-3 mb-md-0">
         <h5>Enlaces</h5>
         <ul class="list-unstyled">
           <li><a th:href="@{/}" class="text-white">Inicio</a></li>
           <li><a th:href="@{/contacto}" class="text-white">Contacto</a></li>
-          <li><a th:href="@{/privacidad}" class="text-white">Política de Privacidad</a></li>
+          <li><a th:href="@{/aviso-legal}" class="text-white">Aviso Legal</a></li>
         </ul>
       </div>
-      <div class="col-md-3">
+
+      <!-- Contacto en el centro -->
+      <div class="col-md-4 mb-3 mb-md-0">
         <h5>Contacto</h5>
         <ul class="list-unstyled">
           <li><i class="bi bi-envelope"></i> info@xcrm.com</li>
           <li><i class="bi bi-telephone"></i> +34 123 456 789</li>
         </ul>
       </div>
+
+      <!-- Redes sociales a la derecha -->
+      <div class="col-md-4 text-md-end">
+        <h5>Síguenos</h5>
+        <a href="https://www.instagram.com/" class="text-white me-3" target="_blank"><i class="bi bi-instagram fs-4"></i></a>
+        <a href="https://x.com/?lang=es" class="text-white me-3" target="_blank"><i class="bi bi-twitter fs-4"></i></a>
+        <a href="https://www.linkedin.com/home" class="text-white" target="_blank"><i class="bi bi-linkedin fs-4"></i></a>
+      </div>
+
     </div>
-    <hr>
+    <hr class="bg-white">
     <div class="text-center">
       <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
     </div>
@@ -32,3 +41,4 @@
 </footer>
 </body>
 </html>
+

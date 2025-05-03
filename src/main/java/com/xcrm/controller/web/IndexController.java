@@ -90,6 +90,12 @@ public class IndexController {
     }
 
 
+    @GetMapping("/aviso-legal")
+    public String mostrarAvisoLegal(Model model) {
+        model.addAttribute("titulo", "Aviso Legal de XCRM");
+        return "aviso-legal";  // Este es el nombre del archivo HTML sin la extensión .html
+    }
+
 
     @GetMapping("/registro")
     public String muestraRegistro(Model model){
