@@ -46,7 +46,7 @@ public class OrganizationService {
 		}
 		// Crear una nueva instancia de Organizacion
 		Organization nuevaOrganization = new Organization();
-		nuevaOrganization.setId(organizationRepository.count()+30);
+		nuevaOrganization.setId(organizationRepository.count()+40);
 		nuevaOrganization.setNombre(nombre);
 		nuevaOrganization.setEmail(email);
 		nuevaOrganization.setPlan(plan);
@@ -56,14 +56,14 @@ public class OrganizationService {
 		databaseRepository.createDatabase(nuevaOrganization.getNombreDB());
 		databaseRepository.createTables(nuevaOrganization.getNombreDB());
 
-		// Insertar la organización en la base de datos de la organización
+		// Insertar la organización en la base de datos de la organización creada
 		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre, nuevaOrganization.getId(),email,plan, nuevaOrganization.getNombreDB());
 
-		// Guardar la organización
-		System.out.println("Se va a guardar la organización");
+		// Guardar la organización en la base de datos central.
+		System.out.println("Se va a guardar la organización en la base de datos central");
 		return organizationRepository.save(nuevaOrganization);
 	}
-
+	
 	private String creaNombreBDporNombreEmpresa(String nombreEmpresa){
 		String nombreDB = "xcrm_"+nombreEmpresa.toLowerCase().replaceAll("\\s+", "_");
 		return nombreDB;

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` binary(16) NOT NULL, -- UUID almacenado como string
+  `id` binary(16) NOT NULL, -- UUID almacenado
   `username` varchar(255) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `enabled` tinyint(1) NOT NULL,

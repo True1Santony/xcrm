@@ -28,7 +28,7 @@ XCRM es una aplicación CRM (Customer Relationship Management) desarrollada con 
 - Gestión de campañas comerciales
 - Asignación de clientes a campañas
 - Registro de interacciones (tipo, estado, fecha, resultado)
-- Generación de reportes PDF por campaña y cliente
+- Generación de reportes PDF, EXCEL, HTML por campaña y cliente
 - Métricas clave del rendimiento
 - Acceso por roles: administrador y comercial
 
@@ -47,5 +47,5 @@ Antes de ejecutar la aplicación asegúrate de tener instalado:
 
 1. Clona el repositorio  
    ```bash
-   git clone https://github.com/usuario/xcrm.git
+   git clone https://github.com/True1Santony/xcrm.git
    cd xcrm

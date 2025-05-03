@@ -1,5 +1,7 @@
 package com.xcrm.service.report;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -10,6 +12,7 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -23,11 +26,8 @@ import java.util.Map;
 @Service
 public class ReportService {
 
-    private DataSource dataSource;
-
-    public ReportService(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public byte[] generateReport(String reportName, String format) throws JRException {
         InputStream reportStream = this.getClass().getResourceAsStream("/reports/" + reportName + ".jasper");
@@ -44,8 +44,9 @@ public class ReportService {
         }
         parameters.put("logo", logoStream);
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Session session = entityManager.unwrap(Session.class)) {
 
+            Connection connection = session.doReturningWork(conn -> conn);
             JasperPrint jasperPrint = JasperFillManager.fillReport(reportStream, parameters, connection);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -77,7 +78,7 @@ public class ReportService {
             }
 
             return out.toByteArray();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error al generar el reporte: " + e.getMessage(), e);
         }
     }

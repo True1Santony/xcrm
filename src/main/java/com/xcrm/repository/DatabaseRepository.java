@@ -102,7 +102,7 @@ public class DatabaseRepository {
         // Insertar datos de la organización en la tabla `organizaciones`
         String sqlInsert = "INSERT INTO organizaciones (id, nombre, email, plan, nombreDB, creado) VALUES (?, ?, ?, ?,?, NOW())";
         jdbcTemplate.update(sqlInsert, organizacionId, nombre, email, plan, nombreDB);
-        System.out.println("insertando a "+nombre+" en la base de datos central");
+        System.out.println("insertando a "+nombre+" en su propia base de datos");
     }
 
     @Transactional
@@ -115,7 +115,7 @@ public class DatabaseRepository {
         // Insertar el usuario administrador en la tabla `users`
         String sqlInsertAdmin = "INSERT INTO users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
         jdbcTemplate.update(sqlInsertAdmin,userIdBytes, username, password, 1, organizacionId);
-        System.out.println("insertando a "+username+" en la base de datos central");
+        System.out.println("insertando a "+username+" en la base de datos de su organizacion");
     }
 
     @Transactional

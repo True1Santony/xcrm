@@ -35,6 +35,7 @@ public class DataSourceConfig {
     @Value("${spring.datasource.url}")
     private String baseUrl; // URL base para la conexión predeterminada
 
+    @Primary
     @Bean
     public DataSource defaultDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -45,7 +46,6 @@ public class DataSourceConfig {
         return dataSource;
     }
 
-    @Primary
     @Bean
     public DataSource routingDataSource() {
         CustomRoutingDataSource routingDataSource = new CustomRoutingDataSource(defaultDataSource());
