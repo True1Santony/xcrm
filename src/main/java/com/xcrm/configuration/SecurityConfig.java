@@ -24,33 +24,6 @@ public class SecurityConfig {
     @Autowired
     private CustomRoutingDataSource customRoutingDataSource;
 
-   /* @Bean seguridad para el caso de usar Api Rest
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/caracteristicas", "/precios", "/contacto","/registro" ,"/css/**","/JavaScript/**", "/images/**").permitAll()
-                        .requestMatchers("/api/**").hasRole("ADMIN")
-                        .requestMatchers("/", "/caracteristicas", "/precios", "/contacto","/registro" ,"/css/**","/JavaScript/**", "/images/**").hasRole("USER")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .addLogoutHandler((request, response, authentication) -> {
-                            customRoutingDataSource.resetToDefaultDataSource(); // Llama al reset en el logout usando dataSourceConfig
-                        })
-                )
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                ).build();
-    }*/
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -76,8 +49,6 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/**") // Ignorar CSRF para las rutas de la API
                 ).build();
     }
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

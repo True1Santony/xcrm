@@ -175,7 +175,7 @@
                   <td th:text="${client.lastInteraction != null ? client.lastInteraction.estado : 'Sin interacciones'}"></td>
                   <td th:text="${client.lastInteraction != null ? #temporals.format(client.lastInteraction.fechaHora, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
                   <td th:text="${client.lastInteraction != null && client.lastInteraction.venta != null ? #temporals.format(client.lastInteraction.venta.fecha, 'dd/MM/yyyy HH:mm') : 'Sin venta'}"></td>
-                  <td><a th:href="@{'/sales/interaction/' + ${client.id}}" class="btn btn-primary btn-sm">Interactuar</a></td>
+                  <td><a th:href="@{'/sales/interaction/' + ${client.id} + '?campaignId=' + ${selectedCampaign.id}}" class="btn btn-primary btn-sm">Interactuar</a></td>
                 </tr>
                 </tbody>
               </table>

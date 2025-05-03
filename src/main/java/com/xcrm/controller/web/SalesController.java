@@ -85,9 +85,11 @@ public class SalesController {
     }
 
     @GetMapping("/interaction/{id}")
-    public String newInteraction(@PathVariable Long id, Model model){
+    public String newInteraction(@PathVariable Long id, @RequestParam (name = "campaignId") Long campaignId, Model model){
         model.addAttribute("client",clientService.findById(id).get());
+        model.addAttribute("selectedCampaign", campaignService.findById(campaignId).get());
         model.addAttribute("newInteraction", new Interaccion());
+
         return "new-iteraction";
     }
 
@@ -95,11 +97,18 @@ public class SalesController {
     public String saveInteraction(@ModelAttribute("newInteraction") Interaccion interaction,
                                   @RequestParam Long clientId,
                                   @RequestParam(required = false) Boolean crearVenta,
+                                  @RequestParam Long campaignId,
                                   Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
         // Obtener el cliente, controlar el null
         Client client = clientService.findById(clientId).get();
         interaction.setClient(client);
+
+        // Obtener la campaña y asignarla a la interacción
+        Campaign campaign = campaignService.findById(campaignId).orElse(null);  // Obtener campaña
+        if (campaign != null) {
+            interaction.setCampaign(campaign);  // Asigno la campaña
+        }
 
         // Obtener el usuario autenticado (comercial)
         String username = authentication.getName();
@@ -122,6 +131,5 @@ public class SalesController {
         redirectAttributes.addFlashAttribute("mensaje", "Interación registrada de : " + client.getNombre());
         return "redirect:/sales";
     }
-
 
 }
