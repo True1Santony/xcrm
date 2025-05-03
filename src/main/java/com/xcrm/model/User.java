@@ -51,6 +51,8 @@ public class User implements Serializable {
     )
     private Set<Client> clients = new HashSet<>(); // Relación con los clientes
 
+    private String fotoUrl;
+
     // Constructor, getters y setters
     public User() {
     }
@@ -143,6 +145,15 @@ public class User implements Serializable {
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
+
 
     @Override
     public int hashCode() {

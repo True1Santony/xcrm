@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Perfil - XCRM</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    .navbar-custom { background-color: #a8e6cf; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .sidebar { background-color: #343a40; min-height: 100vh; }
+    .profile-form { background-color: #f8f9fa; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}">
+      <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a></li>
+      </ul>
+      <div class="d-flex">
+        <form th:action="@{/logout}" method="post">
+          <button class="btn btn-outline-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar text-light">
+      <div class="position-sticky pt-3">
+        <div class="text-center mb-4">
+          <i class="bi bi-person-circle fs-1"></i>
+          <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
+          <small class="text-muted" th:text="${organization?.nombre}"></small>
+        </div>
+        <hr class="border-light">
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link active" th:href="@{/mi-cuenta}"><i class="bi bi-person"></i> Mi Perfil</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="col-md-9 col-lg-10 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-pencil-square"></i> Editar Perfil</h2>
+        <a th:href="@{/mi-cuenta}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+      </div>
+
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <div class="card profile-form">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Información de Usuario</h4>
+        </div>
+
+
+        <form th:action="@{/usuarios/edit-mi-perfil/update}" method="post" enctype="multipart/form-data" th:object="${usuario}">
+          <input type="hidden" th:field="*{id}">
+          <input type="hidden" th:field="*{organizacionId}">
+
+          <div class="card-body">
+            <div class="mb-4 text-center">
+              <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
+              <img id="previewImagen"
+                   th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                   alt="Foto de Perfil"
+                   class="rounded-circle mb-2"
+                   style="width: 150px; height: 150px; object-fit: cover;">
+              <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
+            </div>
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary me-2"><i class="bi bi-save"></i> Guardar Cambios</button>
+              <a th:href="@{/mi-cuenta}" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+<!--Mostrar vista previa-->
+<script>
+  function mostrarVistaPrevia(event) {
+    const input = event.target;
+    const preview = document.getElementById('previewImagen');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

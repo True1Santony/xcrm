@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,12 +69,33 @@ public class IndexController {
         return "login";
     }
 
+    /*
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
         model.addAttribute("organization", organizationService.getCurrentOrganization()); // Paso la organización activa
         model.addAttribute("nuevoUsuario", new User());
         return "mi-cuenta";
     }
+
+     */
+    @GetMapping("/mi-cuenta")
+    public String mostrarMiCuenta(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        model.addAttribute("organization", organizationService.getCurrentOrganization()); // ya lo tienes bien
+
+        // Se añade el usuario autenticado al modelo
+        User usuario = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("usuario", usuario);
+
+        return "mi-cuenta";
+    }
+
+
+    @GetMapping("/aviso-legal")
+    public String mostrarAvisoLegal(Model model) {
+        model.addAttribute("titulo", "Aviso Legal de XCRM");
+        return "aviso-legal";  // Este es el nombre del archivo HTML sin la extensión .html
+    }
+
 
     @GetMapping("/registro")
     public String muestraRegistro(Model model){

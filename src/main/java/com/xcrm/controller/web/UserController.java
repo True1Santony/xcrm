@@ -1,17 +1,22 @@
 package com.xcrm.controller.web;
 
+import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
+import com.xcrm.service.ImageService;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import java.util.UUID;
 
 @Controller
@@ -22,6 +27,13 @@ public class UserController {
 
     @Autowired
     private OrganizationService organizationService;
+
+    @Autowired
+    private ImageService imageService;
+
+    // Ruta configurable para almacenamiento externo
+    @Value("${uploads.dir}")
+    private String uploadDir;
 
     @ModelAttribute("titulo")
     public String title() {
@@ -71,4 +83,154 @@ public class UserController {
         redirectAttributes.addFlashAttribute("mensaje", "Usuario eliminado correctamente");
         return "redirect:/usuarios/administration";
     }
+
+
+/*
+    //MI PERFIL edit-mi-perfil
+    @GetMapping("/edit-mi-perfil")
+    public String mostrarPerfilDelUsuario(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User usuario = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("usuario", usuario);
+        return "edit-mi-perfil"; // nombre de tu nueva vista HTML
+    }
+
+ */
+@GetMapping("/edit-mi-perfil")
+public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    User actual = userService.findByUsername(userDetails.getUsername());
+
+    EditarFotoDTO dto = new EditarFotoDTO();
+    dto.setId(actual.getId());
+    dto.setOrganizacionId(actual.getOrganizacion().getId());
+    dto.setFotoUrl(actual.getFotoUrl());
+
+    model.addAttribute("usuario", dto);
+    return "edit-mi-perfil";
+}
+
+/*
+    @PostMapping("/edit-mi-perfil/update")
+public String actualizarPerfil(@Valid @ModelAttribute("usuario") User usuario,
+                               BindingResult result,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               @RequestParam(value = "foto", required = false) MultipartFile foto,
+                               RedirectAttributes redirectAttributes) {
+    System.out.println("== Guardando perfil ==");
+    System.out.println("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
+    System.out.println("ContentType: " + (foto != null ? foto.getContentType() : "NULO"));
+    System.out.println("Tamaño: " + (foto != null ? foto.getSize() : "NULO"));
+
+
+    if (result.hasErrors()) {
+        if (result.hasErrors()) {
+            System.out.println("Errores de validación detectados:");
+            result.getAllErrors().forEach(e -> System.out.println(" - " + e.getDefaultMessage()));
+            return "edit-mi-perfil";
+        }
+
+        return "edit-mi-perfil";
+    }
+
+    User actual = userService.findByUsername(userDetails.getUsername());
+
+    if (!usuario.getId().equals(actual.getId())) {
+        redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
+        return "redirect:/mi-cuenta";
+    }
+
+    System.out.println("actual.getId(): " + (actual != null ? actual.getId() : "null"));
+    System.out.println("foto: " + (foto != null ? foto.getOriginalFilename() : "null"));
+    // Guardar la foto si fue cargada
+    if (foto != null && !foto.isEmpty()) {
+
+        // Validación de tipo y tamaño de imagen para proteger de archivos no deseados
+        if (!foto.getContentType().startsWith("image/")) {
+            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
+            return "redirect:/mi-cuenta";
+        }
+
+        if (foto.getSize() > (2 * 1024 * 1024)) {
+            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
+            return "redirect:/mi-cuenta";
+        }
+
+        try {
+
+            String originalNombre = foto.getOriginalFilename();
+            String extension = originalNombre != null && originalNombre.contains(".") ?
+                    originalNombre.substring(originalNombre.lastIndexOf(".")) : "";
+            String nombreArchivo = actual.getId() + extension;
+            String rutaDestino = uploadDir + nombreArchivo;
+
+            System.out.println("Nombre de archivo generado: " + nombreArchivo);
+
+            // Guardado delegando al servicio
+            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+
+            // Ruta accesible por el navegador
+            actual.setFotoUrl(rutaPublica);
+            System.out.println("Ruta pública guardada: " + rutaPublica);
+        } catch (Exception e) {
+            System.out.println("Error al guardar imagen: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
+            return "redirect:/mi-cuenta";
+        }
+    }
+
+    // Guardar cambios del usuario
+    userService.save(actual);
+    redirectAttributes.addFlashAttribute("success", "Perfil actualizado correctamente.");
+    return "redirect:/mi-cuenta";
+}
+
+ */
+@PostMapping("/edit-mi-perfil/update")
+public String actualizarFoto(@ModelAttribute("usuario") EditarFotoDTO dto,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             @RequestParam(value = "foto", required = false) MultipartFile foto,
+                             RedirectAttributes redirectAttributes) {
+
+    System.out.println("== Guardando nueva foto de perfil ==");
+    System.out.println("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
+
+    User actual = userService.findByUsername(userDetails.getUsername());
+
+    if (!dto.getId().equals(actual.getId())) {
+        redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
+        return "redirect:/mi-cuenta";
+    }
+
+    if (foto != null && !foto.isEmpty()) {
+        if (!foto.getContentType().startsWith("image/")) {
+            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
+            return "redirect:/mi-cuenta";
+        }
+
+        if (foto.getSize() > (2 * 1024 * 1024)) {
+            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
+            return "redirect:/mi-cuenta";
+        }
+
+        try {
+            String originalNombre = foto.getOriginalFilename();
+            String extension = originalNombre != null && originalNombre.contains(".")
+                    ? originalNombre.substring(originalNombre.lastIndexOf("."))
+                    : "";
+            String nombreArchivo = actual.getId() + extension;
+
+            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+
+            actual.setFotoUrl(rutaPublica);
+            System.out.println("Ruta pública guardada: " + rutaPublica);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
+            return "redirect:/mi-cuenta";
+        }
+    }
+
+    userService.save(actual);
+    redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
+    return "redirect:/mi-cuenta";
+}
+
 }
