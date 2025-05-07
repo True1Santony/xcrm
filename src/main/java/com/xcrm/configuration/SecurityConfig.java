@@ -45,8 +45,11 @@ public class SecurityConfig {
                             customRoutingDataSource.resetToDefaultDataSource(); // Llama al reset en el logout usando dataSourceConfig
                         })
                 )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin()) // <-- permite el embed del PDF
+                )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Ignorar CSRF para las rutas de la API
+                        .ignoringRequestMatchers("/api/**", "/report/**") // Ignorar CSRF para las rutas de la API
                 ).build();
     }
 

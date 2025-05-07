@@ -152,7 +152,8 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <!-- Campañas Activas -->
+                            <div class="col-md-4 col-12 mb-3">
                                 <div class="card stat-card h-100">
                                     <div class="card-body">
                                         <h5 class="card-title"><i class="bi bi-megaphone"></i> Campañas Activas</h5>
@@ -161,7 +162,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <!-- Comerciales -->
+                            <div class="col-md-4 col-12 mb-3">
                                 <div class="card stat-card h-100">
                                     <div class="card-body">
                                         <h5 class="card-title"><i class="bi bi-people-fill"></i> Comerciales</h5>
@@ -170,7 +172,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <!-- Oportunidades -->
+                            <div class="col-md-4 col-12 mb-3">
                                 <div class="card stat-card h-100">
                                     <div class="card-body">
                                         <h5 class="card-title"><i class="bi bi-graph-up"></i> Oportunidades</h5>
@@ -179,10 +182,55 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Ventas por Comercial -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="card stat-card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-bar-chart-line"></i> Ventas por Comercial</h5>
+                                        <embed src="/report/admin/ventas" type="application/pdf" width="100%" height="400px" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nueva Columna 1 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="card stat-card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-credit-card"></i> Nueva Tarjeta 1</h5>
+                                        <p class="display-6">Datos</p>
+                                        <a th:href="@{/nuevo/recurso1}" class="btn btn-sm btn-custom">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nueva Columna 2 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="card stat-card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-cash"></i> Nueva Tarjeta 2</h5>
+                                        <p class="display-6">Datos</p>
+                                        <a th:href="@{/nuevo/recurso2}" class="btn btn-sm btn-custom">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nueva Columna 3 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="card stat-card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="bi bi-graph-down"></i> Nueva Tarjeta 3</h5>
+                                        <p class="display-6">Datos</p>
+                                        <a th:href="@{/nuevo/recurso3}" class="btn btn-sm btn-custom">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- Información del Usuario -->
             <div class="card profile-card">

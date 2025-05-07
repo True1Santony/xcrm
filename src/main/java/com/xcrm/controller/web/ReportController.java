@@ -1,8 +1,12 @@
 package com.xcrm.controller.web;
 
+import com.xcrm.DTO.ReportResponseDto;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.report.ReportService;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Log4j2
+@AllArgsConstructor
 @Controller
 @RequestMapping("/report")
 public class ReportController {
 
     private final ReportService reportService;
     private final OrganizationService organizationService;
-
-    public ReportController(ReportService reportService, OrganizationService organizationService) {
-        this.reportService = reportService;
-        this.organizationService = organizationService;
-    }
 
     @GetMapping()
     public String showReportsDashboard(Model model) {
@@ -36,37 +37,27 @@ public class ReportController {
             @RequestParam("tipoReporte") String reportType,
             @RequestParam("formato") String format) {
         try {
-            byte[] reportBytes = reportService.generateReport(reportType, format);
-
-            String contentType;
-            String fileExtension;
-
-            switch (format.toLowerCase()) {
-                case "pdf":
-                    contentType = MediaType.APPLICATION_PDF_VALUE;
-                    fileExtension = ".pdf";
-                    break;
-                case "html":
-                    contentType = MediaType.TEXT_HTML_VALUE;
-                    fileExtension = ".html";
-                    break;
-                case "xlsx":
-                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    fileExtension = ".xlsx";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Formato no soportado: " + format);
-            }
+            ReportResponseDto response = reportService.generateReport(reportType, format);
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + reportType + fileExtension)
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .body(reportBytes);
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + response.getFileName())
+                    .contentType(MediaType.parseMediaType(response.getContentType()))
+                    .body(response.getContent());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @GetMapping("/admin/ventas")
+    public ResponseEntity<byte[]> ventasPorComercial() throws JRException {
+        ReportResponseDto response = reportService.generateReport("ComercialesVentas", "pdf");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=ventas_comerciales.pdf")
+                .body(response.getContent());
     }
 
 }
