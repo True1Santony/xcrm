@@ -60,4 +60,14 @@ public class ReportController {
                 .body(response.getContent());
     }
 
+    @GetMapping("/admin/interacionesPorVenta")
+    public ResponseEntity<byte[]> interacionesPorVenta() throws JRException {
+        ReportResponseDto response = reportService.generateReport("interporVenta", "pdf");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=ventas_comerciales.pdf")
+                .body(response.getContent());
+    }
+
 }

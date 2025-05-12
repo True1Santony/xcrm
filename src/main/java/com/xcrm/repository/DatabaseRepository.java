@@ -1,6 +1,7 @@
 package com.xcrm.repository;
 
 import com.xcrm.model.Authority;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,10 +13,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@Log4j2
 @Repository
 @Transactional
 public class DatabaseRepository {
@@ -33,9 +34,9 @@ public class DatabaseRepository {
         try {
             // Intento crear la base de datos
             jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS " + dbName);
-            System.out.println("Base de datos creada: " + dbName);
+            log.info("Base de datos creada: " + dbName);
         } catch (Exception e) {
-            System.out.println("Error al crear la base de datos: " + dbName);
+            log.error("Error al crear la base de datos: " + dbName);
             throw new RuntimeException("No se pudo crear la base de datos", e);
         }
     }
@@ -59,16 +60,17 @@ public class DatabaseRepository {
             executeTableScript("db/comerciales_clientes.sql");
             executeTableScript("db/interacciones.sql");
             executeTableScript("db/ventas.sql");
+            executeTableScript("db/contacto_mensaje.sql");
 
             // Habilitar las restricciones de claves foráneas nuevamente
             jdbcTemplate.execute("SET foreign_key_checks = 1");
 
-            System.out.println("Tablas creadas exitosamente.");
+            log.info("Tablas creadas exitosamente.");
 
         } catch (Exception e) {
             // Si ocurre un error, eliminamos la base de datos
             jdbcTemplate.execute("DROP DATABASE IF EXISTS " + dbName);
-            System.out.println("Error al crear las tablas. Se ha eliminado la base de datos: " + dbName);
+            log.error("Error al crear las tablas. Se ha eliminado la base de datos: " + dbName);
             throw new RuntimeException("Error al crear las tablas, la base de datos fue eliminada", e);
         }
 
@@ -77,7 +79,7 @@ public class DatabaseRepository {
     private void executeTableScript(String filename) {
         String createTableScript = loadSqlScript(filename);
         jdbcTemplate.execute(createTableScript);
-        System.out.println("Tabla creada desde el script: " + filename);
+        log.info("Tabla creada desde el script: " + filename);
     }
 
     private String loadSqlScript(String filename) {
@@ -102,7 +104,7 @@ public class DatabaseRepository {
         // Insertar datos de la organización en la tabla `organizaciones`
         String sqlInsert = "INSERT INTO organizaciones (id, nombre, email, plan, nombreDB, creado) VALUES (?, ?, ?, ?,?, NOW())";
         jdbcTemplate.update(sqlInsert, organizacionId, nombre, email, plan, nombreDB);
-        System.out.println("insertando a "+nombre+" en su propia base de datos");
+        log.info("insertando a "+nombre+" en su propia base de datos");
     }
 
     @Transactional
@@ -115,7 +117,7 @@ public class DatabaseRepository {
         // Insertar el usuario administrador en la tabla `users`
         String sqlInsertAdmin = "INSERT INTO users (id, username, password, enabled, organizacion_id) VALUES (?,?, ?, ?, ?)";
         jdbcTemplate.update(sqlInsertAdmin,userIdBytes, username, password, 1, organizacionId);
-        System.out.println("insertando a "+username+" en la base de datos de su organizacion");
+        log.info("insertando a "+username+" en la base de datos de su organizacion");
     }
 
     @Transactional
@@ -160,7 +162,7 @@ public class DatabaseRepository {
             jdbcTemplate.update(sqlInsertAuthority, idAuthority, userIdBytes, auth.getAuthority());
         }
 
-        System.out.println("Usuario y roles actualizados en la base central.");
+        log.info("Usuario y roles actualizados en la base central.");
     }
 
 
@@ -185,6 +187,6 @@ public class DatabaseRepository {
         String deleteUser = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(deleteUser, userIdBytes);
 
-        System.out.println("Usuario y roles eliminados en la base central.");
+        log.info("Usuario y roles eliminados en la base central.");
     }
 }
