@@ -13,10 +13,6 @@
             background-color: #a8e6cf; /* Verde claro */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .sidebar {
-            background-color: #343a40;
-            min-height: 100vh;
-        }
         .campaign-form {
             background-color: #f8f9fa;
             border-radius: 10px;
@@ -66,29 +62,39 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Menú Lateral -->
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar text-light">
+        <!-- Botón del menú solo visible en pantallas pequeñas -->
+        <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
             <div class="position-sticky pt-3">
                 <div class="text-center mb-4">
                     <div class="mb-3">
-                        <i class="bi bi-person-circle fs-1"></i>
+                        <img th:src="${usuario?.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                             alt="Foto de Perfil"
+                             class="rounded-circle shadow"
+                             style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
                     <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
                     <small class="text-muted" th:text="${organization?.nombre}"></small>
                 </div>
+
                 <hr class="border-light">
+
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/mi-cuenta}">
+                        <a class="nav-link active" th:href="@{/mi-cuenta}">
                             <i class="bi bi-person"></i> Mi Perfil
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/usuarios/administration}">
-                            <i class="bi bi-people-fill"></i> Usuarios
+                            <i class="bi bi-people"></i> Usuarios
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/campaigns/administration}">
+                        <a class="nav-link" th:href="@{/campaigns/administration}">
                             <i class="bi bi-megaphone"></i> Campañas
                         </a>
                     </li>
@@ -108,13 +114,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/configuracion}">
+                        <a class="nav-link" th:href="@{/usuarios/edit-mi-perfil}">
                             <i class="bi bi-gear"></i> Configuración
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
+
         <!-- Contenido Principal -->
         <main class="col-md-9 col-lg-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">

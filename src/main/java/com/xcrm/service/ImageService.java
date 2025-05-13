@@ -10,7 +10,7 @@ import java.io.IOException;
 @Service
 public class ImageService {
 
-    @Value("${uploads.dir}") // Asegúrate que termina en "/" en application.properties
+    @Value("${uploads.dir}")
     private String uploadDir;
 
     /**
@@ -35,9 +35,17 @@ public class ImageService {
             throw new IllegalArgumentException("La imagen debe pesar menos de 2MB.");
         }
 
+
+        File directorio = new File(uploadDir);
+        if (!directorio.exists()) {
+            boolean creada = directorio.mkdirs();
+            if (!creada) {
+                throw new IOException("No se pudo crear el directorio: " + directorio.getAbsolutePath());
+            }
+        }
+
         // Crear archivo de destino
         File destino = new File(uploadDir, filename);
-        destino.getParentFile().mkdirs(); // Asegura que los directorios existan
 
         // Mostrar ruta absoluta para verificación
         System.out.println("Guardando imagen en: " + destino.getAbsolutePath());
@@ -46,7 +54,6 @@ public class ImageService {
         System.out.println("== GUARDANDO EN: " + destino.getAbsolutePath());
         file.transferTo(destino);
 
-        // Devolver ruta accesible por navegador
         return "/uploads/" + filename;
     }
 }
