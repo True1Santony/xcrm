@@ -157,6 +157,7 @@
                             <th style="width: 30%">Observaciones</th>
                             <th>Venta</th>
                             <th>Campaña</th>
+                            <th>Traradao por</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -169,6 +170,7 @@
                             </td>
                             <td th:text="${interaction.venta != null ? 'Sí - ' + #temporals.format(interaction.venta.fecha, 'dd/MM/yyyy') : 'No'}"></td>
                             <td th:text="${interaction.campaign.nombre}"></td>
+                            <th th:text="${interaction.comercial.username}"></th>
                         </tr>
                         </tbody>
                     </table>
