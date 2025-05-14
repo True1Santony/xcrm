@@ -156,6 +156,7 @@
                             <th>Estado</th>
                             <th style="width: 30%">Observaciones</th>
                             <th>Venta</th>
+                            <th>Campaña</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -167,6 +168,7 @@
                                 th:text="${interaction.notas}">
                             </td>
                             <td th:text="${interaction.venta != null ? 'Sí - ' + #temporals.format(interaction.venta.fecha, 'dd/MM/yyyy') : 'No'}"></td>
+                            <td th:text="${interaction.campaign.nombre}"></td>
                         </tr>
                         </tbody>
                     </table>

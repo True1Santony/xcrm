@@ -70,8 +70,9 @@ public class SalesController {
         clients.forEach(client -> {
             client.setLastInteraction(
                     client.getInteracciones().stream()
-                            .max(Comparator.comparing(Interaccion::getFechaHora)) // Ordenamos por fechaHora
-                            .orElse(null) // Si no hay interacciones, asignamos null
+                            .filter(interaccion -> interaccion.getCampaign().getId().equals(campaignId)) // Filtrar por campaña seleccionada
+                            .max(Comparator.comparing(Interaccion::getFechaHora)) // Obtener la más reciente
+                            .orElse(null)
             );
         });
 
