@@ -8,6 +8,7 @@ import com.xcrm.service.ClientService;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -19,20 +20,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping("/clients")
 public class ClientController {
 
-    @Autowired
     private ClientService clientService;
-
-    @Autowired
     private CampaignService campaignService;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private OrganizationService organizationService;
 
     @GetMapping

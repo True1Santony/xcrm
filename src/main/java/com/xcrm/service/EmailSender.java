@@ -2,7 +2,7 @@ package com.xcrm.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailException;
@@ -13,15 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class EmailSender {
 
     private final JavaMailSender mailSender;
-
-    @Autowired
-    public EmailSender(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
 
     public void enviarCorreo(String nombre, String email, String asunto, String mensaje,
                              MultipartFile archivo, String archivoDropbox)

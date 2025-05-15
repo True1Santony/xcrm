@@ -5,6 +5,7 @@ import com.xcrm.model.User;
 import com.xcrm.repository.UserRepository;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
+@AllArgsConstructor
 @Controller
 public class IndexController {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
-
-    @Autowired
     private OrganizationService organizationService;
-
-    @Autowired
     private UserService userService;
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     @GetMapping("/")
         public String mostrarIndex(Model model){
@@ -56,28 +54,11 @@ public class IndexController {
         return "precios";
     }
 
-    // SE ENCUENTRA EN ContactoController
-    // @GetMapping("/contacto")
-    // public String mostrarContacto(Model model) {
-    //     model.addAttribute("titulo", "Contacto de XCRM");
-    //     return "contacto";
-    // }
-
-
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
         return "login";
     }
 
-    /*
-    @GetMapping("/mi-cuenta")
-    public String mostrarMiCuenta(Model model) {
-        model.addAttribute("organization", organizationService.getCurrentOrganization()); // Paso la organización activa
-        model.addAttribute("nuevoUsuario", new User());
-        return "mi-cuenta";
-    }
-
-     */
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("organization", organizationService.getCurrentOrganization()); // ya lo tienes bien

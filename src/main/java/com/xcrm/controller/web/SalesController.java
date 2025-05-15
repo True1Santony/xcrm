@@ -2,6 +2,7 @@ package com.xcrm.controller.web;
 
 import com.xcrm.model.*;
 import com.xcrm.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping("/sales")
 public class SalesController {
@@ -23,15 +25,6 @@ public class SalesController {
     private final ClientService clientService;
     private final InteractionService interactionService;
     private final VentaService ventaService;
-
-    public SalesController(CampaignService campaignService, UserService userService, OrganizationService organizationService, ClientService clientService, InteractionService interactionService, VentaService ventaService){
-        this.campaignService = campaignService;
-        this.userService = userService;
-        this.organizationService = organizationService;
-        this.clientService = clientService;
-        this.interactionService = interactionService;
-        this.ventaService = ventaService;
-    }
 
     @GetMapping
     public String getSalesAdministrationDashboard(Authentication authentication, Model model){

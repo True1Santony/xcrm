@@ -70,8 +70,6 @@ public class CampaignController {
         return "redirect:/campaigns/administration";
     }
 
-
-    // Método para cargar el formulario de edición con los datos de la campaña
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Optional<Campaign> optionalCampaign = campaignService.findById(id);
@@ -134,7 +132,6 @@ public class CampaignController {
 
         return "redirect:/campaigns/administration";
     }
-
 
     @PostMapping("/delete")
     public String deleteCampaign(@RequestParam Long id, RedirectAttributes redirectAttributes){

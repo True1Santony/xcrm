@@ -84,28 +84,17 @@ public class UserController {
         return "redirect:/usuarios/administration";
     }
 
-
-/*
-    //MI PERFIL edit-mi-perfil
     @GetMapping("/edit-mi-perfil")
-    public String mostrarPerfilDelUsuario(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User usuario = userService.findByUsername(userDetails.getUsername());
-        model.addAttribute("usuario", usuario);
-        return "edit-mi-perfil"; // nombre de tu nueva vista HTML
-    }
+    public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User actual = userService.findByUsername(userDetails.getUsername());
 
- */
-@GetMapping("/edit-mi-perfil")
-public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-    User actual = userService.findByUsername(userDetails.getUsername());
+        EditarFotoDTO dto = new EditarFotoDTO();
+        dto.setId(actual.getId());
+        dto.setOrganizacionId(actual.getOrganizacion().getId());
+        dto.setFotoUrl(actual.getFotoUrl());
 
-    EditarFotoDTO dto = new EditarFotoDTO();
-    dto.setId(actual.getId());
-    dto.setOrganizacionId(actual.getOrganizacion().getId());
-    dto.setFotoUrl(actual.getFotoUrl());
-
-    model.addAttribute("usuario", dto);
-    return "edit-mi-perfil";
+        model.addAttribute("usuario", dto);
+        return "edit-mi-perfil";
 }
 
 /*

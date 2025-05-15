@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -116,5 +118,58 @@ public class ReportService {
             default -> throw new IllegalArgumentException("Formato no soportado: " + format);
         };
     }
+
+    public List<Map<String, Object>> getVentasPorComercial() {
+        String sql = """
+        SELECT u.username AS comercial, COUNT(v.id) AS total_ventas
+        FROM users u
+        LEFT JOIN interacciones i ON i.comercial_id = u.id
+        LEFT JOIN ventas v ON v.interaccion_id = i.id
+        GROUP BY u.username
+        ORDER BY total_ventas DESC
+    """;
+
+        List<Object[]> results = entityManager.createNativeQuery(sql).getResultList();
+
+        List<Map<String, Object>> mapped = new ArrayList<>();
+        for (Object[] row : results) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("comercial", row[0]);
+            m.put("total_ventas", ((Number) row[1]).intValue());
+            mapped.add(m);
+        }
+
+        return mapped;
+    }
+
+    public List<Map<String, Object>> getInteraccionesPorVenta() {
+        String sql = """
+        SELECT 
+            u.username AS comercial_username,
+            CONCAT('Venta #', v.id) AS venta_label,
+            COUNT(i_cont.id) AS total_interacciones
+        FROM ventas v
+        JOIN interacciones i ON v.interaccion_id = i.id
+        JOIN clientes c ON i.cliente_id = c.id
+        JOIN users u ON i.comercial_id = u.id
+        JOIN interacciones i_cont ON i_cont.cliente_id = c.id AND i_cont.comercial_id = u.id
+        GROUP BY v.id, u.id
+        ORDER BY u.username
+    """;
+
+        List<Object[]> results = entityManager.createNativeQuery(sql).getResultList();
+
+        List<Map<String, Object>> mapped = new ArrayList<>();
+        for (Object[] row : results) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("comercial", row[0]);
+            m.put("venta", row[1]);
+            m.put("interacciones", ((Number) row[2]).intValue());
+            mapped.add(m);
+        }
+
+        return mapped;
+    }
+
 }
 
