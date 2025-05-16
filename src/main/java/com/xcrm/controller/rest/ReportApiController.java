@@ -26,4 +26,8 @@ public class ReportApiController {
         return reportService.getInteraccionesPorVenta();
     }
 
+    @GetMapping("/ventas-por-campania")
+    public List<Map<String, Object>> getVentasPorCampania(){
+       return reportService.getVentasPorCompania();
+    }
 }
