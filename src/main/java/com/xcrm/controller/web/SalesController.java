@@ -125,5 +125,4 @@ public class SalesController {
         redirectAttributes.addFlashAttribute("mensaje", "Interación registrada de : " + client.getNombre());
         return "redirect:/sales";
     }
-
 }

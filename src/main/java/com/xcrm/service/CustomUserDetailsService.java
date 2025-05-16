@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.xcrm.configuration.DataSourceConfig;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,5 +65,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .disabled(!user.isEnabled()) // Controlar si el usuario está habilitado
                 .build();
     }
-
 }

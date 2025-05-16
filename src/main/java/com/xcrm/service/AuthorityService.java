@@ -32,5 +32,4 @@ public class AuthorityService {
         }
         usuario.setAuthorities(authorities);
     }
-
 }

@@ -170,6 +170,4 @@ public class ReportService {
 
         return mapped;
     }
-
 }
-

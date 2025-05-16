@@ -107,5 +107,4 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         setTargetDataSources(targetDataSources);
         super.afterPropertiesSet();
     }
-
 }

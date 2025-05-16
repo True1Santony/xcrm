@@ -2,18 +2,12 @@ package com.xcrm.controller.web;
 
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
-import com.xcrm.repository.UserRepository;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -152,6 +146,4 @@ public class IndexController {
         redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "redirect:/login"; // Redirigir al login después de registrarse
     }
-
-
 }
