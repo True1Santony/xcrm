@@ -5,6 +5,7 @@ import com.xcrm.model.User;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Log4j2
 @AllArgsConstructor
 @Controller
 public class IndexController {
@@ -28,11 +30,9 @@ public class IndexController {
     private OrganizationService organizationService;
     private UserService userService;
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
-
     @GetMapping("/")
         public String mostrarIndex(Model model){
-            logger.info("Página de inicio mostrada");
+            log.info("Página de inicio mostrada");
         return "index";
     }
 
@@ -59,13 +59,8 @@ public class IndexController {
     }
 
     @GetMapping("/mi-cuenta")
-    public String mostrarMiCuenta(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        model.addAttribute("organization", organizationService.getCurrentOrganization()); // ya lo tienes bien
-
-        // Se añade el usuario autenticado al modelo
-        User usuario = userService.findByUsername(userDetails.getUsername());
-        model.addAttribute("usuario", usuario);
-
+    public String mostrarMiCuenta(Model model) {
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
         return "mi-cuenta";
     }
 
@@ -73,7 +68,7 @@ public class IndexController {
     @GetMapping("/aviso-legal")
     public String mostrarAvisoLegal(Model model) {
         model.addAttribute("titulo", "Aviso Legal de XCRM");
-        return "aviso-legal";  // Este es el nombre del archivo HTML sin la extensión .html
+        return "aviso-legal";
     }
 
 
