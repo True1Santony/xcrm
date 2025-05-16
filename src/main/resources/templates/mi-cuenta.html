@@ -177,31 +177,45 @@
                         <div class="row">
                             <!-- Campañas Activas -->
                             <div class="col-md-4 col-12 mb-3">
-                                <div class="card stat-card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="bi bi-megaphone"></i> Campañas Activas</h5>
-                                        <p class="display-6">12</p>
-                                        <a th:href="@{/campaigns/administration}" class="btn btn-sm btn-custom">Ver todas</a>
+                                <div class="card stat-card h-100 d-flex align-items-center">
+                                    <div class="card-body d-flex flex-wrap justify-content-between align-items-center w-100 text-center text-md-left">
+                                        <div>
+                                            <h5 class="card-title mb-0"><i class="bi bi-megaphone"></i> Campañas Activas</h5>
+                                        </div>
+                                        <div class="display-6 my-2">12</div>
+                                        <div>
+                                            <a th:href="@{/campaigns/administration}" class="btn btn-sm btn-custom">Ver todas</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Comerciales -->
                             <div class="col-md-4 col-12 mb-3">
-                                <div class="card stat-card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="bi bi-people-fill"></i> Comerciales</h5>
-                                        <p class="display-6">8</p>
-                                        <a th:href="@{/usuarios/administration}" class="btn btn-sm btn-custom">Gestionar</a>
+                                <div class="card stat-card h-100 d-flex align-items-center">
+                                    <div class="card-body d-flex flex-wrap justify-content-between align-items-center w-100 text-center text-md-left">
+                                        <div>
+                                            <h5 class="card-title mb-0"><i class="bi bi-people-fill"></i> Comerciales</h5>
+                                        </div>
+                                        <div class="display-6 my-2">8</div>
+                                        <div>
+                                            <a th:href="@{/usuarios/administration}" class="btn btn-sm btn-custom">Gestionar</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Oportunidades -->
                             <div class="col-md-4 col-12 mb-3">
-                                <div class="card stat-card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="bi bi-graph-up"></i> Oportunidades</h5>
-                                        <p class="display-6">24</p>
-                                        <a th:href="@{/reportes}" class="btn btn-sm btn-custom">Analizar</a>
+                                <div class="card stat-card h-100 d-flex align-items-center">
+                                    <div class="card-body d-flex flex-wrap justify-content-between align-items-center w-100 text-center text-md-left">
+                                        <div>
+                                            <h5 class="card-title mb-0"><i class="bi bi-graph-up"></i> Oportunidades</h5>
+                                        </div>
+                                        <div class="display-6 my-2">24</div>
+                                        <div>
+                                            <a th:href="@{/reportes}" class="btn btn-sm btn-custom">Analizar</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +225,7 @@
                                 <div class="card stat-card h-100 d-flex flex-column">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <h5 class="card-title mb-0">
-                                            <i class="bi bi-bar-chart-line"></i> Ventas por Comercial
+                                            <i class="bi bi-bar-chart-line"></i> Ventas por Comercial (éxito comercial)
                                         </h5>
                                         <a href="/report/admin/ventas" download="ventas.pdf" class="btn btn-sm btn-outline-primary"
                                            title="Descargar reporte PDF">
@@ -229,7 +243,7 @@
                                 <div class="card stat-card h-100 d-flex flex-column">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <h5 class="card-title mb-0">
-                                            <i class="bi bi-credit-card"></i> Interacciones por Venta
+                                            <i class="bi bi-credit-card"></i> Interacciones por Venta (coste real para obtener una venta).
                                         </h5>
                                         <a href="/report/admin/interacionesPorVenta" download="interacciones.pdf" class="btn btn-sm btn-outline-primary"
                                            title="Descargar reporte PDF">
@@ -242,24 +256,14 @@
                                 </div>
                             </div>
 
-                            <!-- Nueva Columna 2 -->
-                            <div class="col-md-6 col-12 mb-3">
+                            <!-- Gráfica: Ventas por Campaña -->
+                            <div class="col-md-12 col-12 mb-3">
                                 <div class="card stat-card h-100">
                                     <div class="card-body">
-                                        <h5 class="card-title"><i class="bi bi-cash"></i> Nueva Tarjeta 2</h5>
-                                        <p class="display-6">Datos</p>
-                                        <a th:href="@{/nuevo/recurso2}" class="btn btn-sm btn-custom">Ver más</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Nueva Columna 3 -->
-                            <div class="col-md-6 col-12 mb-3">
-                                <div class="card stat-card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="bi bi-graph-down"></i> Nueva Tarjeta 3</h5>
-                                        <p class="display-6">Datos</p>
-                                        <a th:href="@{/nuevo/recurso3}" class="btn btn-sm btn-custom">Ver más</a>
+                                        <h5 class="card-title"><i class="bi bi-graph-up-arrow"></i> Número de ventas por Campaña (el éxito de ésta).</h5>
+                                        <div style="height: 300px;">
+                                            <canvas id="ventasPorCampaniaChart" width="100%" height="100%"></canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
