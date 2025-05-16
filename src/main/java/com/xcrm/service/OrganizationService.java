@@ -7,6 +7,7 @@ import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.DatabaseRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,17 +16,13 @@ import org.springframework.stereotype.Service;
 import com.xcrm.repository.OrganizationRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+@AllArgsConstructor
 @Service
 public class OrganizationService {
 
-	@Autowired
-	private OrganizationRepository organizationRepository;
-
-	@Autowired
-	private DatabaseRepository databaseRepository;
-
-	@Autowired
-	UserService userService;
+	private final OrganizationRepository organizationRepository;
+	private final DatabaseRepository databaseRepository;
+	private final UserService userService;
 
 	public List<Organization> obtenerTodasLasOrganizaciones(){
 		return organizationRepository.findAll();

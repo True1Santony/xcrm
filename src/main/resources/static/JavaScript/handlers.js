@@ -48,7 +48,7 @@ export async function renderVentasChart(ctxId) {
                         labels: {
                             font: {
                                 family: 'Roboto',
-                                size: 14
+                                size: 11
                             },
                             boxWidth: 20,
                             padding: 20,
@@ -166,8 +166,12 @@ export async function renderInteraccionesChart(ctxId) {
 export async function renderVentasPorCampaniaChart(ctxId) {
     try {
         const data = await fetchData('/api/ventas-por-campania');
-
         const ctx = document.getElementById(ctxId).getContext('2d');
+
+        // Gradiente de color para la línea
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(75, 192, 192, 0.6)');
+        gradient.addColorStop(1, 'rgba(75, 192, 192, 0)');
 
         new Chart(ctx, {
             type: 'line',
@@ -176,19 +180,38 @@ export async function renderVentasPorCampaniaChart(ctxId) {
                 datasets: [{
                     label: 'Número de Ventas',
                     data: data.map(d => d.ventas),
-                    fill: false,
+                    fill: true,
                     borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.4)',
-                    tension: 0.1,
-                    pointRadius: 4,
+                    backgroundColor: gradient,
+                    tension: 0.3, // curva más suave
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
                     pointBackgroundColor: 'rgb(75, 192, 192)',
+                    pointBorderColor: '#fff',
+                    pointHoverBorderWidth: 2,
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
                 plugins: {
+                    title: {
+                        display: true,
+                        font: {
+                            size: 18,
+                            family: 'Roboto',
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 30
+                        }
+                    },
                     legend: {
                         display: true,
                         position: 'top'

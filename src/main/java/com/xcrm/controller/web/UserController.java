@@ -91,7 +91,8 @@ public class UserController {
         model.addAttribute("usuario",EditarFotoDTO.builder()
                                             .fotoUrl(actual.getFotoUrl())
                                             .id(actual.getId())
-                                            .organizacionId(actual.getOrganizacion().getId()));
+                                            .organizacionId(actual.getOrganizacion().getId())
+                                            .build());
         return "edit-mi-perfil";
 }
 

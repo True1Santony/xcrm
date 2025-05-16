@@ -1,4 +1,4 @@
-package com.xcrm.DTO;
+package com.xcrm.dto;
 
 
 public class UserCreateInOrganizationDTO {

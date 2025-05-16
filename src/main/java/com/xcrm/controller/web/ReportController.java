@@ -1,6 +1,6 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.DTO.ReportResponseDto;
+import com.xcrm.dto.ReportResponseDto;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.report.ReportService;
 

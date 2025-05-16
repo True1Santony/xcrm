@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,9 +44,9 @@ public class SecurityConfig {
                             customRoutingDataSource.resetToDefaultDataSource(); // Llama al reset en el logout usando dataSourceConfig
                         })
                 )
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()) // <-- permite el embed del PDF
-                )
+               // .headers(headers -> headers
+               //         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // <-- permite el embed del PDF
+               // )
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/api/**", "/report/**") // Ignorar CSRF para las rutas de la API
                 ).build();

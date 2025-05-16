@@ -1,6 +1,6 @@
 package com.xcrm.service.report;
 
-import com.xcrm.DTO.ReportResponseDto;
+import com.xcrm.dto.ReportResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;

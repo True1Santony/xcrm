@@ -1,4 +1,4 @@
-package com.xcrm.DTO;
+package com.xcrm.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
