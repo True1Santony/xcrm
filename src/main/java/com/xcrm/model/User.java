@@ -19,7 +19,7 @@ public class User implements Serializable {
     private UUID id;
 
     @NotBlank(message = "El nombre de usuario es obligatorio")
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs")
     private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")

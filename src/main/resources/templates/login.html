@@ -54,6 +54,9 @@
     <div th:if="${success}" class="success-message">
         <p th:text="${success}"></p>
     </div>
+    <div th:if="${error}" class="alert alert-danger text-center" role="alert">
+        <p th:text="${error}"></p>
+    </div>
 
     <form th:action="@{/login}" method="post">
         <div class="mb-3">

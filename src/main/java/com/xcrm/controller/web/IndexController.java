@@ -55,7 +55,12 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public String mostrarLogin(Model model) {
+    public String mostrarLogin(Model model, @RequestParam(value = "error", required = false) String error,
+                               @RequestParam(value = "logout", required = false) String logout) {
+        if (error != null) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos");
+        }
+        model.addAttribute("titulo", "Inicio de Sesión");
         return "login";
     }
 

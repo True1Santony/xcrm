@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS `comerciales_campanias` (
   KEY `fk_campania` (`campania_id`),
   CONSTRAINT `fk_comercial` FOREIGN KEY (`comercial_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_campania` FOREIGN KEY (`campania_id`) REFERENCES `campanias` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs;

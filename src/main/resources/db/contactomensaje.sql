@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS contactomensaje (
     CONSTRAINT fk_usuarioId FOREIGN KEY (usuarioId) REFERENCES users (id)  -- Relación con la tabla 'users'
         ON DELETE CASCADE                  -- Si el usuario se elimina, también se eliminan sus mensajes
         ON UPDATE CASCADE                  -- Si el ID del usuario cambia, también se actualiza el ID en los mensajes
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs;

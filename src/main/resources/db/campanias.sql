@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `campanias` (
   PRIMARY KEY (`id`),
   KEY `fk_campania_organizacion` (`organizacion_id`),
   CONSTRAINT `fk_campania_organizacion` FOREIGN KEY (`organizacion_id`) REFERENCES `organizaciones` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs;

@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS `ventas` (
   PRIMARY KEY (`id`),
   KEY `fk_venta_interaccion` (`interaccion_id`),
   CONSTRAINT `fk_venta_interaccion` FOREIGN KEY (`interaccion_id`) REFERENCES `interacciones` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs;

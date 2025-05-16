@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS `organizaciones` (
   `nombreDB` varchar(50) NOT NULL,
   `creado` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs;
