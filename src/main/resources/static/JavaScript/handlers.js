@@ -162,3 +162,63 @@ export async function renderInteraccionesChart(ctxId) {
         console.error("Error al renderizar Interacciones por Venta:", err);
     }
 }
+
+export async function renderVentasPorCampaniaChart(ctxId) {
+    try {
+        const data = await fetchData('/api/ventas-por-campania');
+
+        const ctx = document.getElementById(ctxId).getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.campania),
+                datasets: [{
+                    label: 'Número de Ventas',
+                    data: data.map(d => d.ventas),
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                    tension: 0.1,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgb(75, 192, 192)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: context => `Ventas: ${context.parsed.y}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: { family: 'Roboto', size: 12 }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { family: 'Roboto', size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    } catch (err) {
+        console.error("Error al renderizar Ventas por Campaña:", err);
+    }
+}

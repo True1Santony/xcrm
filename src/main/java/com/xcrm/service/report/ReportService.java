@@ -170,4 +170,35 @@ public class ReportService {
 
         return mapped;
     }
+
+    public List<Map<String, Object>> getVentasPorCompania() {
+        String sql = """
+        SELECT\s
+                        c.nombre AS nombre_campania,
+                        COUNT(v.id) AS total_ventas
+                    FROM\s
+                        campanias c
+                    LEFT JOIN\s
+                        interacciones i ON c.id = i.campania_id
+                    LEFT JOIN\s
+                        ventas v ON v.interaccion_id = i.id
+                    GROUP BY\s
+                        c.nombre
+                    ORDER BY\s
+                        total_ventas DESC;
+    """;
+
+        List<Object[]> results = entityManager.createNativeQuery(sql).getResultList();
+
+        List<Map<String, Object>> mapped = new ArrayList<>();
+        for (Object[] row : results) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("campania", row[0]);
+            m.put("ventas", ((Number) row[1]).intValue());
+            mapped.add(m);
+        }
+
+        return mapped;
+    }
 }
+
