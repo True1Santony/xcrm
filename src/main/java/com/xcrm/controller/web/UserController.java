@@ -99,7 +99,6 @@ public class UserController {
                                             .build());
         return "edit-mi-perfil";
 
-
 }
 
     @PostMapping("/edit-mi-perfil/update")
