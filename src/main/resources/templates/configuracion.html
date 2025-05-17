@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - XCRM</title>
+
+    <!-- Fuente Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #a8e6cf;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-custom {
+            background-color: #4facfe;
+            border: none;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #3a8acf;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Barra de navegación verde clara -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <div th:if="${usuario?.organizacion}" class="badge bg-primary fs-6">
+                    Organización: <span th:text="${usuario.organizacion.nombre}"></span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Menú Lateral -->
+        <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
+                </div>
+                <hr class="border-light">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/mi-cuenta}">
+                            <i class="bi bi-person"></i> Panel Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/usuarios/administration}">
+                            <i class="bi bi-people"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/campaigns/administration}">
+                            <i class="bi bi-megaphone"></i> Campañas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/clients}">
+                            <i class="bi bi-person-lines-fill"></i> Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/sales}">
+                            <i class="bi bi-journal-text"></i> Ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/usuarios/configuracion}">
+                            <i class="bi bi-gear"></i> Configuración
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-gear"></i> Configuración de Perfil
+                </h2>
+                <div th:if="${usuario?.organizacion}" class="badge bg-primary fs-6">
+                    Organización: <span th:text="${usuario.organizacion.nombre}"></span>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Formulario -->
+            <div class="card profile-card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-gear"></i> Información Completa</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/usuarios/actualizar-configuracion}" method="post">
+                        <div class="row">
+                            <!-- Compañía -->
+                            <div class="col-md-6 mb-3">
+                                <label for="compania" class="form-label">Nombre de la Compañía</label>
+                                <input type="text" class="form-control" id="compania" name="compania"
+                                       th:value="${usuario.organizacion?.nombre}" required>
+                            </div>
+
+                            <!-- Nombre de usuario -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">Nombre del Usuario</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre"
+                                       th:value="${usuario.username}" required>
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="Dejar en blanco para mantener actual">
+                            </div>
+                        </div>
+
+                        <!-- Botón -->
+                        <div class="text-end mt-4">
+                            <a th:href="@{/usuarios/edit-mi-perfil}" class="btn btn-custom"> <!-- th:href= te redirije a la vista indicada -->
+                                <i class="bi bi-pencil-square"></i> Editar Perfil
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

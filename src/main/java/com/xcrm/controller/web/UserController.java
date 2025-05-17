@@ -3,6 +3,7 @@ package com.xcrm.controller.web;
 import com.xcrm.dto.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
+import com.xcrm.repository.OrganizationRepository;
 import com.xcrm.service.ImageService;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
@@ -27,6 +28,9 @@ public class UserController {
 
     @Autowired
     private OrganizationService organizationService;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @Autowired
     private ImageService imageService;
@@ -94,6 +98,8 @@ public class UserController {
                                             .organizacionId(actual.getOrganizacion().getId())
                                             .build());
         return "edit-mi-perfil";
+
+
 }
 
     @PostMapping("/edit-mi-perfil/update")
@@ -143,5 +149,60 @@ public class UserController {
         userService.save(actual);
         redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
         return "redirect:/mi-cuenta";
+    }
+
+    @GetMapping("/configuracion")
+    public String mostrarConfiguracion(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User actual = userService.findByUsername(userDetails.getUsername());
+        model.addAttribute("usuario", actual);
+        return "configuracion";
+    }
+    @PostMapping("/actualizar-configuracion")
+    public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
+                                          @RequestParam("compania") String compania,
+                                          @RequestParam("nombre") String nombre,
+//                                          @RequestParam("correo") String correo,
+                                          @RequestParam(value = "password", required = false) String password,
+                                          RedirectAttributes redirectAttributes) {
+
+        User actual = userService.findByUsername(userDetails.getUsername());
+
+        // Validaciones básicas (puedes extender con @Valid y DTO si quieres mayor control)
+        if (nombre == null || nombre.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "El nombre del usuario no puede estar vacío.");
+            return "redirect:/usuarios/configuracion";
+        }
+
+//        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+//            redirectAttributes.addFlashAttribute("error", "Debes proporcionar un correo válido.");
+//            return "redirect:/usuarios/configuracion";
+//        }
+
+        if (compania == null || compania.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "El nombre de la compañía no puede estar vacío.");
+            return "redirect:/usuarios/configuracion";
+        }
+
+        // Actualización de datos
+        actual.setUsername(nombre);
+        //actual.setEmail(correo); // ⚠️ Asegurarse de que `email` exista en el modelo `User`
+
+        if (password != null && !password.trim().isEmpty()) {
+            if (password.length() < 6) {
+                redirectAttributes.addFlashAttribute("error", "La contraseña debe tener al menos 6 caracteres.");
+                return "redirect:/usuarios/configuracion";
+            }
+
+            actual.setPassword(password); // ⚠️ hay que cifrar con Spring Security
+        }
+
+        Organization org = actual.getOrganizacion();
+        org.setNombre(compania);
+        organizationRepository.save(org); // Actualizar la organización
+
+        userService.save(actual); // Guardar usuario actualizado
+
+        redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
+        return "redirect:/usuarios/configuracion";
     }
 }
