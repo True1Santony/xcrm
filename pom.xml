@@ -35,7 +35,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -144,9 +144,15 @@
 		<!-- https://mvnrepository.com/artifact/com.itextpdf/itext7-core -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
-			<artifactId>itext7-core</artifactId>
+			<artifactId>itext-core</artifactId>
 			<version>9.0.0</version>
 			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>8.10.0</version>
 		</dependency>
 
 	</dependencies>
