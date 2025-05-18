@@ -148,6 +148,15 @@
                 <div class="card-body">
                     <form th:action="@{/usuarios/actualizar-configuracion}" method="post">
                         <div class="row">
+                            <!-- Foto Perfil-->
+                            <div class="mb-4 text-center">
+                                <label class="form-label">Foto de Perfil</label><br>
+                                <img
+                                        th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                                        alt="Foto de Perfil"
+                                        class="rounded-circle mb-2"
+                                        style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
                             <!-- Compañía -->
                             <div class="col-md-6 mb-3">
                                 <label for="compania" class="form-label">Nombre de la Compañía</label>
