@@ -189,11 +189,11 @@
                             <i class="bi bi-pencil-square"></i> Solicitar Cambio
                         </a>
                     </div>
-<!--                    &lt;!&ndash; Correo Electrónico &ndash;&gt;-->
-<!--                    <div class="col-md-6 mb-3">-->
-<!--                        <h5>Correo Electrónico</h5>-->
-<!--                        <p class="fs-5" th:text="${usuario.email}">correo@ejemplo.com</p>-->
-<!--                    </div>-->
+                    <!-- Correo Electrónico -->
+                    <div class="col-md-6 mb-3">
+                        <h5>Correo Electrónico</h5>
+                        <p class="fs-5" th:text="${usuario.email}">correo@ejemplo.com</p>
+                    </div>
 
                     <!-- Contraseña -->
                     <div class="col-md-6 mb-3">
@@ -201,13 +201,13 @@
                         <p class="fs-5">********</p> <!-- Nunca muestres la contraseña real -->
                     </div>
 
-<!--                    &lt;!&ndash; Plan &ndash;&gt;-->
-<!--                    <div class="col-md-6 mb-3">-->
-<!--                        <h5>Plan Contratado</h5>-->
-<!--                        <span class="badge bg-secondary" th:if="${usuario.plan == 'GRATUITO'}">Gratuito</span>-->
-<!--                        <span class="badge bg-info text-dark" th:if="${usuario.plan == 'STANDART'}">Standart</span>-->
-<!--                        <span class="badge bg-warning text-dark" th:if="${usuario.plan == 'PREMIUM'}">Premium</span>-->
-<!--                    </div>-->
+                    <!-- Plan -->
+                    <div class="col-md-6 mb-3">
+                        <h5>Plan Contratado</h5>
+                        <span class="badge bg-secondary" th:if="${usuario.plan == 'GRATUITO'}">Gratuito</span>
+                        <span class="badge bg-info text-dark" th:if="${usuario.plan == 'STANDART'}">Standart</span>
+                        <span class="badge bg-warning text-dark" th:if="${usuario.plan == 'PREMIUM'}">Premium</span>
+                    </div>
                 </div>
             </div>
         </main>

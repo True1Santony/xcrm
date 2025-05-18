@@ -27,10 +27,32 @@ public class User implements Serializable {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
-//     //@Email(message = "Debe ser un correo electrónico válido")
-//     @NotBlank(message = "El correo electrónico es obligatorio")
-//     @Column(unique = true, nullable = false)
-//     private String email;
+     @Email(message = "Debe ser un correo electrónico válido")
+     @NotBlank(message = "El correo electrónico es obligatorio")
+     @Column(unique = true, nullable = false)
+     private String email;
+
+    @NotBlank(message = "El plan es obligatorio")
+    @Column(nullable = false)
+    private String plan;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
+    }
+
+
 
     private boolean enabled;
 
@@ -103,15 +125,6 @@ public class User implements Serializable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-//    // Email
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
 
     public Organization getOrganizacion() {
         return organization;

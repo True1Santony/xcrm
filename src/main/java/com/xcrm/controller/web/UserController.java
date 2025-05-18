@@ -160,7 +160,7 @@ public class UserController {
     public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestParam("compania") String compania,
                                           @RequestParam("nombre") String nombre,
-//                                          @RequestParam("correo") String correo,
+                                          @RequestParam("correo") String correo,
                                           @RequestParam(value = "password", required = false) String password,
                                           RedirectAttributes redirectAttributes) {
 
@@ -172,10 +172,10 @@ public class UserController {
             return "redirect:/usuarios/configuracion";
         }
 
-//        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-//            redirectAttributes.addFlashAttribute("error", "Debes proporcionar un correo válido.");
-//            return "redirect:/usuarios/configuracion";
-//        }
+        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            redirectAttributes.addFlashAttribute("error", "Debes proporcionar un correo válido.");
+            return "redirect:/usuarios/configuracion";
+        }
 
         if (compania == null || compania.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "El nombre de la compañía no puede estar vacío.");
@@ -184,7 +184,7 @@ public class UserController {
 
         // Actualización de datos
         actual.setUsername(nombre);
-        //actual.setEmail(correo); // ⚠️ Asegurarse de que `email` exista en el modelo `User`
+        actual.setEmail(correo); // ⚠️ Asegurarse de que `email` exista en el modelo `User`
 
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
