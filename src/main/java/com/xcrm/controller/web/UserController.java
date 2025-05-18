@@ -1,6 +1,6 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.dto.EditarFotoDTO;
+import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.OrganizationRepository;
@@ -92,14 +92,19 @@ public class UserController {
     public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User actual = userService.findByUsername(userDetails.getUsername());
 
-        model.addAttribute("usuario",EditarFotoDTO.builder()
-                                            .fotoUrl(actual.getFotoUrl())
-                                            .id(actual.getId())
-                                            .organizacionId(actual.getOrganizacion().getId())
-                                            .build());
-        return "edit-mi-perfil";
+        EditarFotoDTO dto = new EditarFotoDTO();
+        dto.setId(actual.getId());
+        dto.setOrganizacionId(actual.getOrganizacion().getId());
+        dto.setFotoUrl(actual.getFotoUrl());
+        dto.setCompania(actual.getOrganizacion().getNombre());
+        dto.setNombre(actual.getUsername());
+        dto.setCorreo(actual.getEmail());
+        dto.setPlan(actual.getPlan());
 
-}
+        model.addAttribute("usuario", dto);
+        return "edit-mi-perfil";
+    }
+
 
     @PostMapping("/edit-mi-perfil/update")
     public String actualizarFoto(@ModelAttribute("usuario") EditarFotoDTO dto,

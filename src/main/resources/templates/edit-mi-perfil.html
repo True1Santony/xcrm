@@ -106,24 +106,63 @@
           <h4 class="mb-0">Información de Usuario</h4>
         </div>
 
-        <form th:action="@{/usuarios/edit-mi-perfil/update}" method="post" enctype="multipart/form-data" th:object="${usuario}">
-          <input type="hidden" th:field="*{id}">
-          <input type="hidden" th:field="*{organizacionId}">
+        <div class="card-body">
+          <div class="mb-4 text-center">
+            <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
+            <img id="previewImagen"
+                 th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                 alt="Foto de Perfil"
+                 class="rounded-circle mb-2"
+                 style="width: 150px; height: 150px; object-fit: cover;">
+            <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
+          </div>
 
-          <div class="card-body">
-            <div class="mb-4 text-center">
-              <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
-              <img id="previewImagen"
-                   th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
-                   alt="Foto de Perfil"
-                   class="rounded-circle mb-2"
-                   style="width: 150px; height: 150px; object-fit: cover;">
-              <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
-            </div>
-            <div class="mt-4">
-              <button type="submit" class="btn btn-primary me-2"><i class="bi bi-save"></i> Guardar Foto</button>
-              <a th:href="@{/usuarios/configuracion}" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
-            </div>
+        <form th:action="@{/usuarios/enviar-ticket-edicion}" method="post">
+          <input type="hidden" th:value="${usuario.id}" name="usuarioId">
+          <input type="hidden" th:value="${usuario.organizacionId}" name="organizacionId">
+
+          <div class="mb-3">
+            <label for="compania" class="form-label">Nombre de la compañía</label>
+            <input type="text" class="form-control" id="compania" name="compania"
+                   th:value="${usuario.compania}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del usuario</label>
+            <input type="text" class="form-control" id="nombre" name="nombre"
+                   th:value="${usuario.nombre}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="correo" name="correo"
+                   th:value="${usuario.correo}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="plan" class="form-label">Plan contratado</label>
+            <input type="text" class="form-control" id="plan" name="plan"
+                   th:value="${usuario.plan}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="motivo" class="form-label">Motivo de la solicitud</label>
+            <textarea class="form-control" id="motivo" name="motivo" rows="4"
+                      placeholder="Describe qué deseas cambiar y por qué" required></textarea>
+          </div>
+
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" name="accion" value="guardar" class="btn btn-primary">
+              <i class="bi bi-save"></i> Guardar Foto
+            </button>
+
+            <button type="submit" name="accion" value="ticket" class="btn btn-primary">
+              <i class="bi bi-send"></i> Enviar Ticket
+            </button>
+
+            <a th:href="@{/usuarios/configuracion}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </a>
           </div>
         </form>
       </div>
