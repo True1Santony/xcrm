@@ -141,51 +141,73 @@
             </div>
 
             <!-- Formulario -->
+            <!-- Información Completa SOLO VISUAL -->
             <div class="card profile-card">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0"><i class="bi bi-gear"></i> Información Completa</h4>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/usuarios/actualizar-configuracion}" method="post">
-                        <div class="row">
-                            <!-- Foto Perfil-->
-                            <div class="mb-4 text-center">
-                                <label class="form-label">Foto de Perfil</label><br>
-                                <img
-                                        th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
-                                        alt="Foto de Perfil"
-                                        class="rounded-circle mb-2"
-                                        style="width: 150px; height: 150px; object-fit: cover;">
-                            </div>
-                            <!-- Compañía -->
-                            <div class="col-md-6 mb-3">
-                                <label for="compania" class="form-label">Nombre de la Compañía</label>
-                                <input type="text" class="form-control" id="compania" name="compania"
-                                       th:value="${usuario.organizacion?.nombre}" required>
-                            </div>
-
-                            <!-- Nombre de usuario -->
-                            <div class="col-md-6 mb-3">
-                                <label for="nombre" class="form-label">Nombre del Usuario</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre"
-                                       th:value="${usuario.username}" required>
-                            </div>
-
-                            <!-- Contraseña -->
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="Dejar en blanco para mantener actual">
-                            </div>
+                    <div class="row">
+                        <!-- Foto Perfil -->
+                        <div class="mb-4 text-center">
+                            <label class="form-label">Foto de Perfil</label><br>
+                            <img
+                                    th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                                    alt="Foto de Perfil"
+                                    class="rounded-circle mb-2"
+                                    style="width: 150px; height: 150px; object-fit: cover;">
                         </div>
 
-                        <!-- Botón -->
-                        <div class="text-end mt-4">
-                            <a th:href="@{/usuarios/edit-mi-perfil}" class="btn btn-custom"> <!-- th:href= te redirije a la vista indicada -->
-                                <i class="bi bi-pencil-square"></i> Ir a Solicitud
-                            </a>
+                        <!-- Compañía -->
+                        <div class="col-md-6 mb-3">
+                            <h5>Nombre de la Compañía</h5>
+                            <p class="fs-5" th:text="${usuario.organizacion?.nombre}"></p>
                         </div>
-                    </form>
+
+                        <!-- Nombre de usuario -->
+                        <div class="col-md-6 mb-3">
+                            <h5>Nombre del Usuario</h5>
+                            <p class="fs-5" th:text="${usuario.username}"></p>
+                        </div>
+
+                        <!-- Rol -->
+                        <div class="col-md-6 mb-3">
+                            <h5>Rol</h5>
+                            <span sec:authorize="hasRole('ROLE_ADMIN')" class="badge bg-danger">Administrador</span>
+                            <span sec:authorize="hasRole('ROLE_USER')" class="badge bg-primary">Usuario</span>
+                        </div>
+
+                        <!-- Fecha de registro (si la tienes disponible) -->
+                        <div class="col-md-6 mb-3">
+                            <h5>Miembro desde</h5>
+                            <p class="fs-5">15/03/2024</p> <!-- Puedes reemplazar con fecha real -->
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <a th:href="@{/usuarios/edit-mi-perfil}" class="btn btn-custom">
+                            <i class="bi bi-pencil-square"></i> Solicitar Cambio
+                        </a>
+                    </div>
+<!--                    &lt;!&ndash; Correo Electrónico &ndash;&gt;-->
+<!--                    <div class="col-md-6 mb-3">-->
+<!--                        <h5>Correo Electrónico</h5>-->
+<!--                        <p class="fs-5" th:text="${usuario.email}">correo@ejemplo.com</p>-->
+<!--                    </div>-->
+
+                    <!-- Contraseña -->
+                    <div class="col-md-6 mb-3">
+                        <h5>Contraseña</h5>
+                        <p class="fs-5">********</p> <!-- Nunca muestres la contraseña real -->
+                    </div>
+
+<!--                    &lt;!&ndash; Plan &ndash;&gt;-->
+<!--                    <div class="col-md-6 mb-3">-->
+<!--                        <h5>Plan Contratado</h5>-->
+<!--                        <span class="badge bg-secondary" th:if="${usuario.plan == 'GRATUITO'}">Gratuito</span>-->
+<!--                        <span class="badge bg-info text-dark" th:if="${usuario.plan == 'STANDART'}">Standart</span>-->
+<!--                        <span class="badge bg-warning text-dark" th:if="${usuario.plan == 'PREMIUM'}">Premium</span>-->
+<!--                    </div>-->
                 </div>
             </div>
         </main>
