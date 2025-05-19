@@ -1,6 +1,7 @@
 package com.xcrm.service.report;
 
 import com.xcrm.dto.ReportResponseDto;
+import com.xcrm.service.OrganizationService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +16,8 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.hibernate.Session;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +35,13 @@ public class ReportService {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private OrganizationService organizationService;
 
+    public ReportService(OrganizationService organizationService){
+        this.organizationService = organizationService;
+    }
+
+    @Cacheable(value = "generatedReports", key = "'generateReport_' + #reportName + '_' + #format + '_' + @organizationService.getCurrentOrganization().id")
     public ReportResponseDto generateReport(String reportName, String format) throws JRException {
         InputStream reportStream = getReportStream(reportName);
         Map<String, Object> parameters = prepareReportParameters();
@@ -119,6 +128,7 @@ public class ReportService {
         };
     }
 
+    @Cacheable(value = "ventasPorComercial", key = "'ventasPorComercial_' + @organizationService.getCurrentOrganization().id")
     public List<Map<String, Object>> getVentasPorComercial() {
         String sql = """
         SELECT u.username AS comercial, COUNT(v.id) AS total_ventas
@@ -142,6 +152,7 @@ public class ReportService {
         return mapped;
     }
 
+    @Cacheable(value = "interaccionesPorVenta", key = "'interaccionesPorVenta_' + @organizationService.getCurrentOrganization().id")
     public List<Map<String, Object>> getInteraccionesPorVenta() {
         String sql = """
         SELECT 
@@ -171,6 +182,7 @@ public class ReportService {
         return mapped;
     }
 
+    @Cacheable(value = "ventasPorCompania", key = "'ventasPorCompania_' + @organizationService.getCurrentOrganization().id")
     public List<Map<String, Object>> getVentasPorCompania() {
         String sql = """
         SELECT\s
@@ -199,6 +211,12 @@ public class ReportService {
         }
 
         return mapped;
+    }
+
+    @CacheEvict(value = {"ventasPorComercial", "interaccionesPorVenta", "ventasPorCompania", "generatedReports"}, allEntries = true)
+    public String clearAllCaches() {
+        log.info("Todos los cachés han sido limpiados.");
+        return "Todos los cachés han sido limpiados";
     }
 }
 

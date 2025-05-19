@@ -29,8 +29,17 @@ public class SecurityConfig {
         return http
                 .addFilterBefore(loginRateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/caracteristicas", "/precios", "/contacto", "/enviar-contacto", "/registro", "/css/**", "/JavaScript/**", "/images/**")
+                        .requestMatchers("/",
+                                "/caracteristicas",
+                                "/precios",
+                                "/contacto",
+                                "/enviar-contacto",
+                                "/registro",
+                                "/css/**",
+                                "/JavaScript/**",
+                                "/images/**")
                         .permitAll()
+                        .requestMatchers("/api/cache/clear").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

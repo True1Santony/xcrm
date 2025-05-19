@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar todos los archivos dentro de /logs, pero no la carpeta
+/logs/*.log
