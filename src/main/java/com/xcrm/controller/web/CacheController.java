@@ -17,7 +17,7 @@ public class CacheController {
     @PostMapping("/clear")
     public String clearCache(RedirectAttributes redirectAttrs) {
         reportService.clearAllCaches();
-        redirectAttrs.addFlashAttribute("message", "Caché limpiado exitosamente.");
+        redirectAttrs.addFlashAttribute("message", "Caché limpiado con éxito.");
         return "redirect:/mi-cuenta";
     }
 }

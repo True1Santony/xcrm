@@ -161,6 +161,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
+            <!-- Mensaje de éxito -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <!-- Sección de Admin -->
             <div sec:authorize="hasRole('ROLE_ADMIN')" class="mb-5">
                 <div class="card profile-card mb-4">
