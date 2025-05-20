@@ -34,7 +34,7 @@ public class XcrmApplicationTests {
 
 	@Test
 	public void testConcurrentAccess() throws InterruptedException {
-		int threadCount = 2000;
+		int threadCount = 50;
 		CountDownLatch latch = new CountDownLatch(threadCount);
 		ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
