@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -161,6 +163,17 @@ public class UserController {
         model.addAttribute("usuario", actual);
         return "configuracion";
     }
+
+    @GetMapping("/usuarios/configuracion")
+    public String mostrarConfiguracion(Model model, Principal principal) {
+        User usuario = userService.findByUsername(principal.getName());
+
+        model.addAttribute("usuario", usuario);
+
+        return "configuracion";
+    }
+
+
     @PostMapping("/actualizar-configuracion")
     public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestParam("compania") String compania,
