@@ -73,11 +73,11 @@ public class UserController {
                                 @RequestParam("nuevoUsername") String nuevoUsername,
                                 @RequestParam(value = "roles", required = false) String[] roles,
                                 @RequestParam(value = "nuevoPassword", required = false) String nuevoPassword,
-                                Model model) {
+                                RedirectAttributes redirectAttributes) {
 
         userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
 
-        model.addAttribute("mensaje", "Usuario actualizado correctamente");
+        redirectAttributes.addFlashAttribute("mensaje", "Usuario actualizado correctamente");
         return "redirect:/usuarios/administration";
     }
 

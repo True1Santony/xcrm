@@ -1,256 +1,170 @@
-/* Estilos para el botón de Logout */
-.logout-button {
-    padding: 0.8rem 1.5rem;
-    background-color: #f44336; /* Color rojo para el botón de logout */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin: 0; /* Espacio a la izquierda */
-    transition: background-color 0.3s; /* Transición suave */
-}
 
+        html {
+            overflow-y: scroll;
+        }
+        .navbar-custom {
+            background-color: #a8e6cf; /* Verde claro */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 5rem 0;
+        }
+        .feature-card {
+            transition: transform 0.3s;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-custom {
+            background-color: #4facfe;
+            border: none;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #3a8acf;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
+        /********mi-cuenta***********/
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
 
-/* Reset básico */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        .stat-card {
+            border-left: 4px solid #4facfe;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* Estilos generales */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-}
+        .card-body {
+            flex-shrink: 0;
+        }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #4CAF50;
-    color: white;
-}
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
 
-h1, h2, h3 {
-    margin: 1rem 0;
-    text-align: center;
-}
+        .chart-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
 
-.logo img {
-    height: 50px;
-}
+        /************user-administration-dashboard*****************************/
+        .user-form {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .table-actions {
+            white-space: nowrap;
+        }
+        .role-checkbox {
+            margin-right: 10px;
+        }
+        .btn-edit {
+            background-color: #4facfe;
+                border-color: #4facfe;
+                color: white;
+                border-radius: 5px;
+                padding: 0.375rem 0.75rem;
+                cursor: pointer;
+                transition: background-color 0.3s, box-shadow 0.3s;
+        }
 
-.nav-menu {
-    list-style: none;
-    display: flex;
-}
+        /************campaigns-administration-dashboard*****************************/
+                .campaign-form {
+                    background-color: #f8f9fa;
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                .badge-cliente {
+                    background-color: #17a2b8; /* azul claro */
+                    margin-right: 5px;
+                    margin-bottom: 5px;
+                }
 
-.nav-menu li {
-    margin-left: 1.5rem;
-}
+        /******************client-administration-dashboard**************************/
+        .client-form {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
 
-.nav-menu a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
+        .badge-campaign {
+            background-color: #6f42c1;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
 
-.nav-menu a:hover {
-    text-decoration: underline;
-}
+        .badge-comercial {
+            background-color: #20c997;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
 
-/* Hero section */
-.hero {
-    background-color: #f4f4f4;
-    padding: 3rem 1rem;
-    text-align: center;
-    background-size: cover;
-    color: #333;
-}
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
 
-.hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+        /******************sales-administration-dashboard*************************/
+        .campaign-table {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
 
-.hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-}
+        /********************new-interaction****************************************************/
+        .card-custom {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /***************report-administration-dashboard*******************************/
+        .report-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-generate {
+            background-color: #4facfe;
+            border-color: #4facfe;
+        }
 
-.btn {
-    padding: 0.8rem 1.5rem;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    text-decoration: none;
-}
+        /* Animación de desvanecimiento al cargar la página */
+        .fade-in {
+            animation: fadeInAnimation 0.8s ease-in-out;
+        }
 
-.btn:hover {
-    background-color: #45a049;
-}
-
-/* Footer */
-footer {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
-
-.footer-links {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    padding-top: 0.5rem;
-}
-
-.footer-links li {
-    margin: 0 1rem;
-}
-
-.footer-links a {
-    color: white;
-    text-decoration: none;
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
-}
-
-/* Estilos Responsivos */
-@media (max-width: 768px) {
-    .nav-menu {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .nav-menu li {
-        margin: 0.5rem 0;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .hero-content p {
-        font-size: 1rem;
-    }
-}
-/* Estilos para el formulario de inicio de sesión */
-.login-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    margin: 2rem auto; /* Centrado vertical y horizontal */
-}
-
-.login-container h1 {
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    color: #4CAF50; /* Color del encabezado */
-}
-
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.login-form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.login-form button:hover {
-    background-color: #45a049;
-}
-
-.logout-button:hover {
-    background-color: #d32f2f; /* Color más oscuro al pasar el ratón */
-}
-
-.register-link {
-    margin-top: 15px;
-}
-
-.register-link a {
-    color: #4CAF50;
-    text-decoration: none;
-}
-
-.register-link a:hover {
-    text-decoration: underline;
-}
-
-.organization-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-}
-
-.organization-table th, .organization-table td {
-    padding: 1rem;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.organization-table th {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.organization-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Formularios */
-.registro-form {
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.registro-form div {
-    margin-bottom: 1rem;
-}
-
-.registro-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.registro-form input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.registro-form input:focus {
-    border-color: #4CAF50;
-    outline: none;
-}
+        /* Keyframes para la animación */
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }

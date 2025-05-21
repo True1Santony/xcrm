@@ -6,69 +6,16 @@
     <title>Características - XCRM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        .navbar-custom {
-            background-color: #a8e6cf;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .intro-section {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 5rem 0;
-        }
-        .feature-card {
-            transition: transform 0.3s;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-        .btn-custom {
-            background-color: #4facfe;
-            border: none;
-            color: white;
-        }
-        .btn-custom:hover {
-            background-color: #3a8acf;
-        }
-    </style>
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
-<body>
+<body class="fade-in">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a></li>
-                <li class="nav-item"><a class="nav-link active" th:href="@{/caracteristicas}"><i class="bi bi-star"></i> Características</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/precios}"><i class="bi bi-tag"></i> Precios</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/contacto}"><i class="bi bi-envelope"></i> Contacto</a></li>
-            </ul>
-            <div class="d-flex">
-                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
-                    <a th:href="@{/mi-cuenta}" class="btn btn-outline-dark me-2"><i class="bi bi-person-circle"></i> Mi Cuenta</a>
-                    <form th:action="@{/logout}" method="post">
-                        <button class="btn btn-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-                    </form>
-                </div>
-                <div sec:authorize="isAnonymous()">
-                    <a th:href="@{/login}" class="btn btn-custom"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
+<!-- Barra de navegación verde clara -->
+<div th:replace="~{fragments/navbar-anonymous :: navbar}"></div>
 
 <!-- Intro Section -->
-<section class="intro-section text-center">
+<section class="hero-section text-center">
     <div class="container">
         <h1 class="display-4 fw-bold mb-3">Conoce el poder de XCRM</h1>
         <p class="lead">Todas las funcionalidades que tu equipo necesita, en un solo lugar</p>
