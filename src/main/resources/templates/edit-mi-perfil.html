@@ -144,10 +144,15 @@
           </div>
 
           <div class="mb-3">
-            <label for="plan" class="form-label">Plan contratado</label>
-            <input type="text" class="form-control" id="plan" name="plan"
-                   th:value="${usuario.organizacion?.plan}" required>
+            <label for="plan" class="form-label">Selecciona un Plan:</label>
+            <select class="form-select" name="plan" id="plan" required>
+              <option value="" disabled>-- Elige un Plan --</option>
+              <option value="Gratuito" th:selected="${usuario.organizacion?.plan == 'Gratuito'}">Gratuito</option>
+              <option value="Standard" th:selected="${usuario.organizacion?.plan == 'Standard'}">Standard</option>
+              <option value="Premium" th:selected="${usuario.organizacion?.plan == 'Premium'}">Premium</option>
+            </select>
           </div>
+
 
           <div class="mb-3">
             <label for="motivo" class="form-label">Motivo de la solicitud</label>

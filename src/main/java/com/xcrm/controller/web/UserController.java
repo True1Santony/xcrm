@@ -94,15 +94,17 @@ public class UserController {
     public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User actual = userService.findByUsername(userDetails.getUsername());
 
+        // Crear el DTO y asignar los datos correspondientes
         EditarFotoDTO dto = new EditarFotoDTO();
         dto.setId(actual.getId());
         dto.setOrganizacionId(actual.getOrganizacion().getId());
         dto.setFotoUrl(actual.getFotoUrl());
         dto.setCompania(actual.getOrganizacion().getNombre());
         dto.setNombre(actual.getUsername());
+        dto.setOrganizacion(actual.getOrganizacion());
 
-        model.addAttribute("usuario", dto);
-        return "edit-mi-perfil";
+        model.addAttribute("usuario", dto); // Pasar el DTO al modelo
+        return "edit-mi-perfil"; // Redirigir a la vista
     }
 
 
