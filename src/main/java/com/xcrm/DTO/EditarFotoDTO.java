@@ -1,5 +1,6 @@
 package com.xcrm.DTO;
 
+import com.xcrm.model.Organization;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,5 @@ public class EditarFotoDTO {
 
     private String compania;
     private String nombre;
-    private String correo;
-    private String plan;
+    private Organization organizacion;
 }

@@ -5,8 +5,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `enabled` tinyint(1) NOT NULL,                    -- Indica si el usuario está activo (1) o no (0)
   `fotoUrl` varchar(255),                           -- URL de la foto del usuario, opcional
   `organizacion_id` bigint(11) DEFAULT NULL,        -- ID de la organización (clave foránea), puede ser nulo
-  `email` varchar(255) NOT NULL,                    -- Correo electrónico del usuario obligatorio
-  `plan` varchar(255) DEFAULT NULL,                 -- Columna plan, opcional
   PRIMARY KEY (`id`),                               -- Clave primaria basada en el UUID
   KEY `fk_organizacion` (`organizacion_id`),        -- Índice para búsquedas rápidas por organización
   CONSTRAINT `fk_organizacion`                      -- Clave foránea que enlaza con `organizaciones`

@@ -100,8 +100,6 @@ public class UserController {
         dto.setFotoUrl(actual.getFotoUrl());
         dto.setCompania(actual.getOrganizacion().getNombre());
         dto.setNombre(actual.getUsername());
-        dto.setCorreo(actual.getEmail());
-        dto.setPlan(actual.getPlan());
 
         model.addAttribute("usuario", dto);
         return "edit-mi-perfil";
@@ -202,7 +200,6 @@ public class UserController {
 
         // Actualización de datos
         actual.setUsername(nombre);
-        actual.setEmail(correo); // ⚠️ Asegurarse de que `email` exista en el modelo `User`
 
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
@@ -222,4 +219,53 @@ public class UserController {
         redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
         return "redirect:/usuarios/configuracion";
     }
+
+    @PostMapping("/guardar-foto")
+    public String guardarFotoPerfil(@RequestParam("usuarioId") UUID userId,
+                                    @RequestParam("foto") MultipartFile foto,
+                                    RedirectAttributes redirectAttributes,
+                                    @AuthenticationPrincipal UserDetails userDetails) {
+
+        User actual = userService.findByUsername(userDetails.getUsername());
+
+        if (!actual.getId().equals(userId)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (foto == null || foto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Debe seleccionar una imagen.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (!foto.getContentType().startsWith("image/")) {
+            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (foto.getSize() > (2 * 1024 * 1024)) {
+            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        try {
+            String originalNombre = foto.getOriginalFilename();
+            String extension = originalNombre != null && originalNombre.contains(".")
+                    ? originalNombre.substring(originalNombre.lastIndexOf("."))
+                    : "";
+            String nombreArchivo = actual.getId() + extension;
+
+            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+            actual.setFotoUrl(rutaPublica);
+
+            userService.save(actual);
+            redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
+        }
+
+        return "redirect:/usuarios/edit-mi-perfil";
+    }
+
 }

@@ -106,7 +106,9 @@
           <h4 class="mb-0">Información de Usuario</h4>
         </div>
 
-        <div class="card-body">
+        <!-- FORMULARIO PARA GUARDAR FOTO (sin validaciones del resto del formulario) -->
+        <form th:action="@{/usuarios/guardar-foto}" method="post" enctype="multipart/form-data" id="guardarFotoForm" class="d-inline">
+          <input type="hidden" th:value="${usuario.id}" name="usuarioId">
           <div class="mb-4 text-center">
             <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
             <img id="previewImagen"
@@ -116,7 +118,9 @@
                  style="width: 150px; height: 150px; object-fit: cover;">
             <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
           </div>
+        </form>
 
+        <!-- FORMULARIO PARA ENVIAR TICKET -->
         <form th:action="@{/usuarios/enviar-ticket-edicion}" method="post">
           <input type="hidden" th:value="${usuario.id}" name="usuarioId">
           <input type="hidden" th:value="${usuario.organizacionId}" name="organizacionId">
@@ -136,13 +140,13 @@
           <div class="mb-3">
             <label for="correo" class="form-label">Correo electrónico</label>
             <input type="email" class="form-control" id="correo" name="correo"
-                   th:value="${usuario.correo}" required>
+                   th:value="${usuario.organizacion?.email}" required>
           </div>
 
           <div class="mb-3">
             <label for="plan" class="form-label">Plan contratado</label>
             <input type="text" class="form-control" id="plan" name="plan"
-                   th:value="${usuario.plan}" required>
+                   th:value="${usuario.organizacion?.plan}" required>
           </div>
 
           <div class="mb-3">
@@ -151,20 +155,26 @@
                       placeholder="Describe qué deseas cambiar y por qué" required></textarea>
           </div>
 
-          <div class="mt-4 d-flex gap-2">
-            <button type="submit" name="accion" value="guardar" class="btn btn-primary">
+          <!-- Botones alineados al final, todos juntos -->
+          <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <!-- Botón Guardar Foto (con su propio formulario) -->
+            <button type="submit" form="guardarFotoForm" name="accion" value="guardar" class="btn btn-primary">
               <i class="bi bi-save"></i> Guardar Foto
             </button>
 
+            <!-- Botón Enviar Ticket -->
             <button type="submit" name="accion" value="ticket" class="btn btn-primary">
               <i class="bi bi-send"></i> Enviar Ticket
             </button>
 
+            <!-- Botón Cancelar -->
             <a th:href="@{/usuarios/configuracion}" class="btn btn-outline-secondary">
               <i class="bi bi-x-circle"></i> Cancelar
             </a>
           </div>
         </form>
+
+
       </div>
     </main>
   </div>

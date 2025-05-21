@@ -2,7 +2,6 @@ package com.xcrm.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -26,33 +25,6 @@ public class User implements Serializable {
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
-
-     @Email(message = "Debe ser un correo electrónico válido")
-     @NotBlank(message = "El correo electrónico es obligatorio")
-     @Column(unique = true, nullable = false)
-     private String email;
-
-    @NotBlank(message = "El plan es obligatorio")
-    @Column(nullable = false)
-    private String plan;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPlan() {
-        return plan;
-    }
-
-    public void setPlan(String plan) {
-        this.plan = plan;
-    }
-
-
 
     private boolean enabled;
 
