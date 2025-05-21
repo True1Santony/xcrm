@@ -204,9 +204,9 @@
                     <!-- Plan -->
                     <div class="col-md-6 mb-3">
                         <h5>Plan Contratado</h5>
-                        <span class="badge bg-secondary" th:if="${usuario.plan == 'GRATUITO'}">Gratuito</span>
-                        <span class="badge bg-info text-dark" th:if="${usuario.plan == 'STANDART'}">Standart</span>
-                        <span class="badge bg-warning text-dark" th:if="${usuario.plan == 'PREMIUM'}">Premium</span>
+                        <span class="badge bg-secondary" th:if="${usuario.organizacion?.plan == 'Gratuito'}">Gratuito</span>
+                        <span class="badge bg-info text-dark" th:if="${usuario.organizacion?.plan == 'Standard'}">Standart</span>
+                        <span class="badge bg-warning text-dark" th:if="${usuario.organizacion?.plan == 'Premium'}">Premium</span>
                     </div>
                 </div>
             </div>
