@@ -21,17 +21,17 @@ import java.util.UUID;
 @RequestMapping("/clients")
 public class ClientController {
 
-    private ClientService clientServiceImpl;
-    private CampaignService campaignServiceImpl;
-    private UserService userServiceImpl;
-    private OrganizationService organizationServiceImpl;
+    private final ClientService clientService;
+    private final CampaignService campaignService;
+    private final UserService userService;
+    private final OrganizationService organizationService;
 
     @GetMapping
     public String showClientsAdministrationDashboard(Authentication authentication, Model model){
-        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
-        model.addAttribute("clients", clientServiceImpl.findAll());
-        model.addAttribute("campaigns", campaignServiceImpl.findAll());
-        model.addAttribute("comerciales", userServiceImpl.findAll());
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
+        model.addAttribute("clients", clientService.findAll());
+        model.addAttribute("campaigns", campaignService.findAll());
+        model.addAttribute("comerciales", userService.findAll());
         model.addAttribute("new_client", new Client());
 
         return "client-administration-dashboard";
@@ -57,8 +57,7 @@ public class ClientController {
         }
 
         try {
-            // Guardar el cliente y sus relaciones
-            Client savedClient = clientServiceImpl.createClient(client, campaignIds, salesRepresentativesIds);
+            Client savedClient = clientService.createClient(client, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente " + savedClient.getNombre() + " creado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear el cliente: " + e.getMessage());
@@ -69,17 +68,17 @@ public class ClientController {
 
     @PostMapping("/delete")
     public String deleteClient(@RequestParam Long id){
-        clientServiceImpl.deleteById(id);
+        clientService.deleteById(id);
         return "redirect:/clients";
     }
 
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
-        Client client = clientServiceImpl.findById(id)
+        Client client = clientService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
         
-        List<Campaign> allCampaigns = campaignServiceImpl.findAll();
-        List<User> allComerciales = userServiceImpl.findAll();
+        List<Campaign> allCampaigns = campaignService.findAll();
+        List<User> allComerciales = userService.findAll();
 
         model.addAttribute("client", client);
         model.addAttribute("allCampaigns", allCampaigns);
@@ -95,7 +94,7 @@ public class ClientController {
                                RedirectAttributes redirectAttributes) {
 
         try {
-            clientServiceImpl.updateClient(incomingClient, campaignIds, salesRepresentativesIds);
+            clientService.updateClient(incomingClient, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente actualizado correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el cliente: " + e.getMessage());

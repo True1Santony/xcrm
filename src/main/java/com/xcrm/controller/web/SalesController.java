@@ -19,21 +19,21 @@ import java.util.*;
 @RequestMapping("/sales")
 public class SalesController {
 
-    private final CampaignService campaignServiceImpl;
-    private final UserService userServiceImpl;
-    private final OrganizationService organizationServiceImpl;
-    private final ClientService clientServiceImpl;
-    private final InteractionService interactionServiceImpl;
-    private final VentaService ventaServiceImpl;
+    private final CampaignService campaignService;
+    private final UserService userService;
+    private final OrganizationService organizationService;
+    private final ClientService clientService;
+    private final InteractionService interactionService;
+    private final VentaService ventaService;
 
     @GetMapping
     public String getSalesAdministrationDashboard(Authentication authentication, Model model){
         String username = authentication.getName();
-        User user = userServiceImpl.findByUsername(username);
+        User user = userService.findByUsername(username);
 
-        model.addAttribute("allComerciales", userServiceImpl.findAll());
-        model.addAttribute("allCampaigns", campaignServiceImpl.findAll());
-        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+        model.addAttribute("allComerciales", userService.findAll());
+        model.addAttribute("allCampaigns", campaignService.findAll());
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
         model.addAttribute("campaignsForUser", (user.getCampaigns()));
         return "sales-administration-dashboard";
     }
@@ -42,10 +42,10 @@ public class SalesController {
     public String assignCampaignsToUser(@RequestParam("userId") UUID userId,
                                         @RequestParam("campaignIds") List<Long> campaignIds,
                                         RedirectAttributes redirectAttributes) {
-        User user = userServiceImpl.findById(userId);
-        Set<Campaign> selectedCampaigns = new HashSet<>(campaignServiceImpl.findAllByIds(campaignIds));
+        User user = userService.findById(userId);
+        Set<Campaign> selectedCampaigns = new HashSet<>(campaignService.findAllByIds(campaignIds));
         user.setCampaigns(selectedCampaigns);
-        userServiceImpl.save(user);
+        userService.save(user);
         redirectAttributes.addFlashAttribute("mensaje", "Campañas asignadas correctamente a " + user.getUsername());
         return "redirect:/sales";
     }
@@ -54,9 +54,9 @@ public class SalesController {
     public String getClientsByCampaign(@RequestParam(name = "campaignId") Long campaignId,
                                        Authentication authentication, Model model){
         String username = authentication.getName();
-        User user = userServiceImpl.findByUsername(username);
+        User user = userService.findByUsername(username);
 
-        Campaign selectedCampaign = campaignServiceImpl.findById(campaignId).orElse(null);
+        Campaign selectedCampaign = campaignService.findById(campaignId).orElse(null);
 
         Set<Client> clients = selectedCampaign.getClientes();
 
@@ -69,9 +69,9 @@ public class SalesController {
             );
         });
 
-        model.addAttribute("allComerciales", userServiceImpl.findAll());
-        model.addAttribute("allCampaigns", campaignServiceImpl.findAll());
-        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+        model.addAttribute("allComerciales", userService.findAll());
+        model.addAttribute("allCampaigns", campaignService.findAll());
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
         model.addAttribute("campaignsForUser", (user.getCampaigns()));
         model.addAttribute("selectedCampaign", selectedCampaign);
         model.addAttribute("clients", clients);
@@ -80,8 +80,8 @@ public class SalesController {
 
     @GetMapping("/interaction/{id}")
     public String newInteraction(@PathVariable Long id, @RequestParam (name = "campaignId") Long campaignId, Model model){
-        model.addAttribute("client", clientServiceImpl.findById(id).get());
-        model.addAttribute("selectedCampaign", campaignServiceImpl.findById(campaignId).get());
+        model.addAttribute("client", clientService.findById(id).get());
+        model.addAttribute("selectedCampaign", campaignService.findById(campaignId).get());
         model.addAttribute("newInteraction", new Interaccion());
 
         return "new-iteraction";
@@ -94,24 +94,20 @@ public class SalesController {
                                   @RequestParam Long campaignId,
                                   Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
-        // Obtener el cliente, controlar el null
-        Client client = clientServiceImpl.findById(clientId).get();
+
+        Client client = clientService.findById(clientId).get();
         interaction.setClient(client);
 
-        // Obtener la campaña y asignarla a la interacción
-        Campaign campaign = campaignServiceImpl.findById(campaignId).orElse(null);  // Obtener campaña
-        if (campaign != null) {
-            interaction.setCampaign(campaign);  // Asigno la campaña
-        }
+        campaignService.findById(campaignId).ifPresent(interaction::setCampaign);
 
-        // Obtener el usuario autenticado (comercial)
-        String username = authentication.getName();
-        User comercial = userServiceImpl.findByUsername(username);
-        interaction.setComercial(comercial);
+        interaction.setComercial(
+                userService.findByUsername(
+                        authentication.getName())
+        );
 
         interaction.setFechaHora(LocalDateTime.now());
 
-        Interaccion savedInteraction = interactionServiceImpl.save(interaction);
+        Interaccion savedInteraction = interactionService.save(interaction);
 
         // Si se marcó como venta
         if (crearVenta != null && crearVenta) {
@@ -120,7 +116,7 @@ public class SalesController {
             venta.setInteraccion(savedInteraction);
             venta.setMonto(BigDecimal.valueOf(200.00));
             venta.setProducto("prueba controller");
-            ventaServiceImpl.save(venta);
+            ventaService.save(venta);
         }
         redirectAttributes.addFlashAttribute("mensaje", "Interación registrada de : " + client.getNombre());
         return "redirect:/sales";

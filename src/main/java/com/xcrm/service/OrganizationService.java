@@ -12,4 +12,5 @@ public interface OrganizationService {
     Organization crearOrganizacion(String nombre, String email, String plan);
     Organization getCurrentOrganization();
     Optional<Organization> findByNombre(String nombreEmpresa);
+    void save(Organization organization);
 }

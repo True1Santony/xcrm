@@ -3,9 +3,9 @@ package com.xcrm.controller.web;
 import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
-import com.xcrm.repository.OrganizationRepository;
 import com.xcrm.service.*;
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.security.Principal;
 import java.util.UUID;
 
+@Log4j2
 @Controller
 @RequestMapping("/usuarios")
 public class UserController {
@@ -27,18 +28,14 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private OrganizationServiceImpl organizationServiceImpl;
-
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private OrganizationService organizationService;
 
     @Autowired
     private ImageService imageService;
 
     @Autowired
-    private EmailSender emailSender; // Inyecto el servicio de envío de correos
+    private EmailSender emailSender;
 
-    // Ruta configurable para almacenamiento externo
     @Value("${uploads.dir}")
     private String uploadDir;
 
@@ -48,13 +45,11 @@ public class UserController {
     }
 
     @PostMapping("/registro")
-    public String registrarUsuario(@Valid
-                                       @ModelAttribute("nuvoUsuario") User nuevoUsuario,
+    public String registrarUsuario(@Valid @ModelAttribute("nuvoUsuario") User nuevoUsuario,
                                    @RequestParam Long organizacionId, BindingResult almacenErrores,
-                                   Model model,
-                                   RedirectAttributes redirectAttributes) {
-        Organization organization = organizationServiceImpl.findById(organizacionId).get();
+                                   Model model, RedirectAttributes redirectAttributes) {
 
+        Organization organization = organizationService.findById(organizacionId).get();
         try {
             userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organization);
             redirectAttributes.addFlashAttribute("success", "Usuario registrado exitosamente.");
@@ -66,7 +61,7 @@ public class UserController {
 
     @GetMapping("/administration")
     public String getUserAdministrationDashboard(Model model){
-        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization()); // Paso la organización activa
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
         model.addAttribute("nuevoUsuario", new User());
         return "user-administration-dashboard";
     }
@@ -79,7 +74,6 @@ public class UserController {
                                 RedirectAttributes redirectAttributes) {
 
         userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
-
         redirectAttributes.addFlashAttribute("mensaje", "Usuario actualizado correctamente");
         return "redirect:/usuarios/administration";
     }
@@ -104,19 +98,19 @@ public class UserController {
         dto.setNombre(actual.getUsername());
         dto.setOrganizacion(actual.getOrganizacion());
 
-        model.addAttribute("usuario", dto); // Pasar el DTO al modelo
-        return "edit-mi-perfil"; // Redirigir a la vista
+        model.addAttribute("usuario", dto);
+        return "edit-mi-perfil";
     }
 
-
+//refact
     @PostMapping("/edit-mi-perfil/update")
     public String actualizarFoto(@ModelAttribute("usuario") EditarFotoDTO dto,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  @RequestParam(value = "foto", required = false) MultipartFile foto,
                                  RedirectAttributes redirectAttributes) {
 
-        System.out.println("== Guardando nueva foto de perfil ==");
-        System.out.println("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
+        log.info("== Guardando nueva foto de perfil ==");
+        log.info("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
 
         User actual = userService.findByUsername(userDetails.getUsername());
 
@@ -146,7 +140,7 @@ public class UserController {
                 String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
 
                 actual.setFotoUrl(rutaPublica);
-                System.out.println("Ruta pública guardada: " + rutaPublica);
+                log.info("Ruta pública guardada: " + rutaPublica);
             } catch (Exception e) {
                 redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
                 return "redirect:/mi-cuenta";
@@ -168,13 +162,11 @@ public class UserController {
     @GetMapping("/usuarios/configuracion")
     public String mostrarConfiguracion(Model model, Principal principal) {
         User usuario = userService.findByUsername(principal.getName());
-
         model.addAttribute("usuario", usuario);
-
         return "configuracion";
     }
 
-
+    //ojo rompe multitenant
     @PostMapping("/actualizar-configuracion")
     public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestParam("compania") String compania,
@@ -185,7 +177,6 @@ public class UserController {
 
         User actual = userService.findByUsername(userDetails.getUsername());
 
-        // Validaciones básicas (puedes extender con @Valid y DTO si quieres mayor control)
         if (nombre == null || nombre.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "El nombre del usuario no puede estar vacío.");
             return "redirect:/usuarios/configuracion";
@@ -210,14 +201,13 @@ public class UserController {
                 return "redirect:/usuarios/configuracion";
             }
 
-            actual.setPassword(password); // ⚠️ hay que cifrar con Spring Security
+            actual.setPassword(password); // ⚠️ hay que cifrar con Spring Security, si
         }
 
         Organization org = actual.getOrganizacion();
         org.setNombre(compania);
-        organizationRepository.save(org); // Actualizar la organización
-
-        userService.save(actual); // Guardar usuario actualizado
+        organizationService.save(org); // solo se actualiza en su bd, no en central
+        userService.save(actual);
 
         redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
         return "redirect:/usuarios/configuracion";
@@ -265,6 +255,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
 
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
         }
 
@@ -293,12 +284,10 @@ public class UserController {
         );
 
         try {
-            // Llama al método de enviar correo con campos vacíos para archivo y dropbox
             emailSender.enviarCorreo(nombre, correo, asunto, mensaje, null, null);
-
             redirectAttributes.addFlashAttribute("success", "El ticket fue enviado correctamente.");
         } catch (Exception e) {
-            e.printStackTrace(); // útil en desarrollo
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error al enviar el ticket: " + e.getMessage());
         }
 

@@ -83,4 +83,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 	public Optional<Organization> findByNombre(String nombreEmpresa) {
 		return organizationRepository.findByNombre(nombreEmpresa);
 	}
+
+	@Override
+	public void save(Organization organization) {
+		organizationRepository.save(organization);
+	}
 }

@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 @Controller
 public class IndexController {
 
-    private OrganizationService organizationService;
-    private UserService userService;
+    private final OrganizationService organizationService;
+    private final UserService userService;
 
     @GetMapping("/")
         public String mostrarIndex(Model model){
@@ -115,25 +115,21 @@ public class IndexController {
             errores.add("La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y al menos 6 caracteres.");
         }
 
-       // Si hay errores, devolver al formulario con los errores
         if (!errores.isEmpty()) {
             model.addAttribute("errores", errores);
-            return "registro"; // Regresamos al formulario con los mensajes de error
+            return "registro";
         }
 
         try {
-            // Guardar una nueva organización
             Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
-
-            // Guardar al usuario administrador
             userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
 
         } catch (IllegalArgumentException e) {
-            errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo
+            errores.add( e.getMessage());
             model.addAttribute("errores",errores);
-            return "registro"; // Regresamos al formulario con el mensaje de error
+            return "registro";
         }
         redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
-        return "redirect:/login"; // Redirigir al login después de registrarse
+        return "redirect:/login";
     }
 }
