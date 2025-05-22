@@ -1,118 +1,17 @@
 package com.xcrm.service;
 
-import com.xcrm.model.Campaign;
 import com.xcrm.model.Client;
-import com.xcrm.model.User;
-import com.xcrm.repository.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-@Service
-public class ClientService {
-
-    @Autowired
-    private ClientRepository clientRepository;
-
-    @Autowired
-    private OrganizationService organizationService;
-
-    @Autowired
-    private CampaignService campaignService;
-
-    @Autowired
-    private UserService userService;
-
-    public Optional<Client> findById(Long id) {
-        return clientRepository.findById(id);
-    }
-
-    public List<Client> findAll() {
-        return clientRepository.findAll();
-    }
-
-    public List<Client> findAllByIds(List<Long> ids) {
-        return clientRepository.findAllById(ids);
-    }
-
-    public Client createClient(Client client, List<Long> campaignIds, List<UUID> comercialIds) {
-
-        client.setOrganizacion(organizationService.getCurrentOrganization());
-
-        if (campaignIds != null && !campaignIds.isEmpty()){
-            Set<Campaign> campaignSet = new HashSet<>();
-            for (Long id: campaignIds){
-                campaignSet.add(campaignService.findById(id).orElse(null));
-            }
-            client.setCampaigns(campaignSet);
-        }
-
-        if (comercialIds != null && !comercialIds.isEmpty()) {
-            Set<User> userSet = new HashSet<>();
-            for (UUID id: comercialIds){
-                User comercial = userService.findById(id);
-                if (comercial != null) {
-                    userSet.add(comercial);
-
-                    comercial.getClientes().add(client);//agregar al user el cliente (Ya que es el propietario)
-                }
-            }
-            client.setComerciales(userSet);
-        }
-
-        return clientRepository.save(client);
-    }
-
-    public void deleteById(Long id) {
-        clientRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void updateClient(Client incomingClient, List<Long> campaignIds, UUID[] salesRepresentativesIds) {
-
-        Client client = clientRepository.findById(incomingClient.getId())
-                .orElseThrow(()-> new RuntimeException("Cliente no encontrado"));
-
-        // 2. Actualizar los campos simples (nombre, dirección, etc.)
-        client.setNombre(incomingClient.getNombre());
-        client.setEmail(incomingClient.getEmail());
-        client.setTelefono(incomingClient.getTelefono());
-        client.setDireccion(incomingClient.getDireccion());
-
-        if (campaignIds != null &&  !campaignIds.isEmpty()) {
-            Set<Campaign> campaigns = new HashSet<>();
-            for (Long id : campaignIds) {
-                campaigns.add(campaignService.findById(id).orElse(null));
-            }
-            client.setCampaigns(campaigns);
-        } else {
-            client.setCampaigns(new HashSet<>());
-        }
-
-        if (salesRepresentativesIds != null && salesRepresentativesIds.length > 0) {
-            for (User oldComercial : client.getComerciales()) {
-                oldComercial.getClientes().remove(client);
-            }
-
-            Set<User> newSalesReps = new HashSet<>();
-            for (UUID id : salesRepresentativesIds) {
-                User comercial = userService.findById(id);
-                if (comercial != null) {
-                    comercial.getClientes().add(client);
-                    newSalesReps.add(comercial);
-                }
-            }
-
-            client.setComerciales(newSalesReps);
-        } else {
-            for (User oldComercial : client.getComerciales()) {
-                oldComercial.getClientes().remove(client);
-            }
-            client.setComerciales(new HashSet<>());
-        }
-
-        clientRepository.save(client);
-    }
+public interface ClientService {
+    Optional<Client> findById(Long id);
+    List<Client> findAll();
+    List<Client> findAllByIds(List<Long> ids);
+    Client createClient(Client client, List<Long> campaignIds, List<UUID> comercialIds);
+    void deleteById(Long id);
+    void updateClient(Client incomingClient, List<Long> campaignIds, UUID[] salesRepresentativesIds);
+    void save(Client client);
 }

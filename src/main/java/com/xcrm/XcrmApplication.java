@@ -9,9 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableCaching
 public class XcrmApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(XcrmApplication.class, args);
 	}
-	
 }

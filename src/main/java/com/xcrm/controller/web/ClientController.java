@@ -3,10 +3,10 @@ package com.xcrm.controller.web;
 import com.xcrm.model.Campaign;
 import com.xcrm.model.Client;
 import com.xcrm.model.User;
-import com.xcrm.service.CampaignService;
-import com.xcrm.service.ClientService;
-import com.xcrm.service.OrganizationService;
-import com.xcrm.service.UserService;
+import com.xcrm.service.CampaignServiceImpl;
+import com.xcrm.service.ClientServiceImpl;
+import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -24,17 +24,17 @@ import java.util.UUID;
 @RequestMapping("/clients")
 public class ClientController {
 
-    private ClientService clientService;
-    private CampaignService campaignService;
-    private UserService userService;
-    private OrganizationService organizationService;
+    private ClientServiceImpl clientServiceImpl;
+    private CampaignServiceImpl campaignServiceImpl;
+    private UserServiceImpl userServiceImpl;
+    private OrganizationServiceImpl organizationServiceImpl;
 
     @GetMapping
     public String showClientsAdministrationDashboard(Authentication authentication, Model model){
-        model.addAttribute("organization", organizationService.getCurrentOrganization());
-        model.addAttribute("clients", clientService.findAll());
-        model.addAttribute("campaigns", campaignService.findAll());
-        model.addAttribute("comerciales", userService.findAll());
+        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+        model.addAttribute("clients", clientServiceImpl.findAll());
+        model.addAttribute("campaigns", campaignServiceImpl.findAll());
+        model.addAttribute("comerciales", userServiceImpl.findAll());
         model.addAttribute("new_client", new Client());
 
         return "client-administration-dashboard";
@@ -61,7 +61,7 @@ public class ClientController {
 
         try {
             // Guardar el cliente y sus relaciones
-            Client savedClient = clientService.createClient(client, campaignIds, salesRepresentativesIds);
+            Client savedClient = clientServiceImpl.createClient(client, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente " + savedClient.getNombre() + " creado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear el cliente: " + e.getMessage());
@@ -72,17 +72,17 @@ public class ClientController {
 
     @PostMapping("/delete")
     public String deleteClient(@RequestParam Long id){
-        clientService.deleteById(id);
+        clientServiceImpl.deleteById(id);
         return "redirect:/clients";
     }
 
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
-        Client client = clientService.findById(id)
+        Client client = clientServiceImpl.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
         
-        List<Campaign> allCampaigns = campaignService.findAll();
-        List<User> allComerciales = userService.findAll();
+        List<Campaign> allCampaigns = campaignServiceImpl.findAll();
+        List<User> allComerciales = userServiceImpl.findAll();
 
         model.addAttribute("client", client);
         model.addAttribute("allCampaigns", allCampaigns);
@@ -98,7 +98,7 @@ public class ClientController {
                                RedirectAttributes redirectAttributes) {
 
         try {
-            clientService.updateClient(incomingClient, campaignIds, salesRepresentativesIds);
+            clientServiceImpl.updateClient(incomingClient, campaignIds, salesRepresentativesIds);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente actualizado correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el cliente: " + e.getMessage());

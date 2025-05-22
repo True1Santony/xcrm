@@ -1,9 +1,9 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.model.Campaign;
-import com.xcrm.service.CampaignService;
-import com.xcrm.service.ClientService;
-import com.xcrm.service.OrganizationService;
+import com.xcrm.service.CampaignServiceImpl;
+import com.xcrm.service.ClientServiceImpl;
+import com.xcrm.service.OrganizationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,20 +20,20 @@ import java.util.Optional;
 public class CampaignController {
 
     @Autowired
-    CampaignService campaignService;
+    CampaignServiceImpl campaignServiceImpl;
 
     @Autowired
-    OrganizationService organizationService;
+    OrganizationServiceImpl organizationServiceImpl;
 
     @Autowired
-    private ClientService clientService; //Ahora busca clientes por su ID
+    private ClientServiceImpl clientServiceImpl; //Ahora busca clientes por su ID
 
     @GetMapping("/administration")
     public String getCampaignsAdministrationDashboard(Model model){
-        model.addAttribute("organization", organizationService.getCurrentOrganization());
-        model.addAttribute("campaigns", campaignService.findAll());
+        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+        model.addAttribute("campaigns", campaignServiceImpl.findAll());
         model.addAttribute("new_campaign", new Campaign());
-        model.addAttribute("allClients", clientService.findAll());
+        model.addAttribute("allClients", clientServiceImpl.findAll());
 
         return "campaigns-administration-dashboard";
     }
@@ -47,20 +47,20 @@ public class CampaignController {
             RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            model.addAttribute("organization", organizationService.getCurrentOrganization());
-            model.addAttribute("campaigns", campaignService.findAll());
+            model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+            model.addAttribute("campaigns", campaignServiceImpl.findAll());
             return "campaigns-administration-dashboard";
         }
 
         try {
-            campaign.setOrganizacion(organizationService.getCurrentOrganization());
+            campaign.setOrganizacion(organizationServiceImpl.getCurrentOrganization());
 
             // Asociar clientes seleccionados si los hay
             if (clientIds != null && !clientIds.isEmpty()) {
-                campaign.setClientes(new HashSet<>(clientService.findAllByIds(clientIds)));
+                campaign.setClientes(new HashSet<>(clientServiceImpl.findAllByIds(clientIds)));
             }
 
-            campaignService.save(campaign);
+            campaignServiceImpl.save(campaign);
             redirectAttributes.addFlashAttribute("mensaje", "Campaña creada exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear campaña: " + e.getMessage());
@@ -72,7 +72,7 @@ public class CampaignController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Optional<Campaign> optionalCampaign = campaignService.findById(id);
+        Optional<Campaign> optionalCampaign = campaignServiceImpl.findById(id);
 
         if (optionalCampaign.isPresent()) {
             Campaign campaign = optionalCampaign.get(); // Obtén la campaña si está presente
@@ -95,7 +95,7 @@ public class CampaignController {
             @RequestParam(value = "clientes", required = false) List<Long> clientIds,
             RedirectAttributes redirectAttributes) {
 
-        Optional<Campaign> optionalCampaign = campaignService.findById(id);
+        Optional<Campaign> optionalCampaign = campaignServiceImpl.findById(id);
 
         if (optionalCampaign.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Campaña no encontrada");
@@ -114,16 +114,16 @@ public class CampaignController {
             campaign.setDescripcion(descripcion);
             campaign.setFechaInicio(LocalDate.parse(fechaInicio));
             campaign.setFechaFin(LocalDate.parse(fechaFin));
-            campaign.setOrganizacion(organizationService.getCurrentOrganization());
+            campaign.setOrganizacion(organizationServiceImpl.getCurrentOrganization());
 
             // Asociar clientes seleccionados
             if (clientIds != null && !clientIds.isEmpty()) {
-                campaign.setClientes(new HashSet<>(clientService.findAllByIds(clientIds)));
+                campaign.setClientes(new HashSet<>(clientServiceImpl.findAllByIds(clientIds)));
             } else {
                 campaign.setClientes(new HashSet<>()); // Limpia los clientes si se elimina todo
             }
 
-            campaignService.update(campaign);
+            campaignServiceImpl.update(campaign);
             redirectAttributes.addFlashAttribute("mensaje", "Campaña actualizada exitosamente");
 
         } catch (Exception e) {
@@ -135,7 +135,7 @@ public class CampaignController {
 
     @PostMapping("/delete")
     public String deleteCampaign(@RequestParam Long id, RedirectAttributes redirectAttributes){
-        campaignService.deleteById(id);
+        campaignServiceImpl.deleteById(id);
         redirectAttributes.addFlashAttribute("mensaje", "Campaña eliminada exitosamente");
         return "redirect:/campaigns/administration";
     }

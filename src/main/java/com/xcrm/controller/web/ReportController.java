@@ -1,8 +1,8 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.dto.ReportResponseDto;
-import com.xcrm.service.OrganizationService;
-import com.xcrm.service.report.ReportService;
+import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.report.ReportServiceImpl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/report")
 public class ReportController {
 
-    private final ReportService reportService;
-    private final OrganizationService organizationService;
+    private final ReportServiceImpl reportServiceImpl;
+    private final OrganizationServiceImpl organizationServiceImpl;
 
     @GetMapping()
     public String showReportsDashboard(Model model) {
-        model.addAttribute("organization", organizationService.getCurrentOrganization());
+        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
         return "reports-administration-dashboard";
     }
 
@@ -37,7 +37,7 @@ public class ReportController {
             @RequestParam("tipoReporte") String reportType,
             @RequestParam("formato") String format) {
         try {
-            ReportResponseDto response = reportService.generateReport(reportType, format);
+            ReportResponseDto response = reportServiceImpl.generateReport(reportType, format);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + response.getFileName())
@@ -52,7 +52,7 @@ public class ReportController {
 
     @GetMapping("/admin/ventas")
     public ResponseEntity<byte[]> ventasPorComercial() throws JRException {
-        ReportResponseDto response = reportService.generateReport("ComercialesVentas", "pdf");
+        ReportResponseDto response = reportServiceImpl.generateReport("ComercialesVentas", "pdf");
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -62,7 +62,7 @@ public class ReportController {
 
     @GetMapping("/admin/interacionesPorVenta")
     public ResponseEntity<byte[]> interacionesPorVenta() throws JRException {
-        ReportResponseDto response = reportService.generateReport("interporVenta", "pdf");
+        ReportResponseDto response = reportServiceImpl.generateReport("interporVenta", "pdf");
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)

@@ -5,7 +5,7 @@ import com.xcrm.model.User;
 import com.xcrm.repository.ContactoMensajeRepository;
 import com.xcrm.service.ContactoMensajeService;
 import com.xcrm.service.EmailSender;
-import com.xcrm.service.UserService;
+import com.xcrm.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class ContactoController {
     private ContactoMensajeService contactoMensajeService;
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Value("${dropbox.app.key}")
     private String dropboxAppKey;
@@ -105,7 +105,7 @@ public class ContactoController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
                 String username = auth.getName();
-                User user = userService.findByUsername(username);
+                User user = userServiceImpl.findByUsername(username);
                 if (user != null) {
                     contacto.setUsuarioId(user.getId().toString());  // Asigna el UUID del usuario logueado
                 }

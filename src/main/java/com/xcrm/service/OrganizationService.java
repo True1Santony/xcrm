@@ -1,81 +1,15 @@
 package com.xcrm.service;
 
+import com.xcrm.model.Organization;
+
 import java.util.List;
 import java.util.Optional;
 
-import com.xcrm.model.Organization;
-import com.xcrm.model.User;
-import com.xcrm.repository.DatabaseRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import com.xcrm.repository.OrganizationRepository;
-import org.springframework.transaction.annotation.Transactional;
-
-@AllArgsConstructor
-@Service
-public class OrganizationService {
-
-	private final OrganizationRepository organizationRepository;
-	private final DatabaseRepository databaseRepository;
-	private final UserService userService;
-
-	public List<Organization> obtenerTodasLasOrganizaciones(){
-		return organizationRepository.findAll();
-	}
-	
-	public Optional<Organization> findById(Long id){
-		return organizationRepository.findById(id);
-	}
-
-	public Optional<Organization> buscarPorEmail(String email) {
-		return organizationRepository.findByEmail(email);
-	}
-
-	@Transactional
-	public Organization crearOrganizacion(String nombre, String email, String plan) {
-		if(organizationRepository.findByNombre(nombre).isPresent()){
-			throw new IllegalArgumentException("La organización, con este nombre, ya existe.");
-		}
-		// Crear una nueva instancia de Organizacion
-		Organization nuevaOrganization = new Organization();
-		nuevaOrganization.setId(organizationRepository.count()+40);
-		nuevaOrganization.setNombre(nombre);
-		nuevaOrganization.setEmail(email);
-		nuevaOrganization.setPlan(plan);
-		nuevaOrganization.setNombreDB(creaNombreBDporNombreEmpresa(nombre));
-
-		//Creacion de la base de datos de la organizacion
-		databaseRepository.createDatabase(nuevaOrganization.getNombreDB());
-		databaseRepository.createTables(nuevaOrganization.getNombreDB());
-
-		// Insertar la organización en la base de datos de la organización creada
-		databaseRepository.insertarOrganizacionEnBaseDeDatos(nombre, nuevaOrganization.getId(),email,plan, nuevaOrganization.getNombreDB());
-
-		// Guardar la organización en la base de datos central.
-		System.out.println("Se va a guardar la organización en la base de datos central");
-		return organizationRepository.save(nuevaOrganization);
-	}
-	
-	private String creaNombreBDporNombreEmpresa(String nombreEmpresa){
-		String nombreDB = "xcrm_"+nombreEmpresa.toLowerCase().replaceAll("\\s+", "_");
-		return nombreDB;
-	}
-
-    public Organization getCurrentOrganization() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
-
-		User user = userService.findByUsername(username);
-		return findById(user.getOrganizacion().getId())
-				.orElseThrow(()-> new EntityNotFoundException("Organización no encontrada"));
-    }
-
-	public Optional<Organization> findByNombre(String nombreEmpresa) {
-		return organizationRepository.findByNombre(nombreEmpresa);
-	}
+public interface OrganizationService {
+    List<Organization> obtenerTodasLasOrganizaciones();
+    Optional<Organization> findById(Long id);
+    Optional<Organization> findByEmail(String email);
+    Organization crearOrganizacion(String nombre, String email, String plan);
+    Organization getCurrentOrganization();
+    Optional<Organization> findByNombre(String nombreEmpresa);
 }

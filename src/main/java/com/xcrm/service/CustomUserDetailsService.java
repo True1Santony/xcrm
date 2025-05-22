@@ -5,6 +5,8 @@ import com.xcrm.model.User;
 import com.xcrm.repository.AuthorityRepository;
 import com.xcrm.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +20,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
+@AllArgsConstructor
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AuthorityRepository authorityRepository;
-
-    @Autowired
+    private final UserRepository userRepository;
+    private final AuthorityRepository authorityRepository;
     HttpSession httpSession;
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -42,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<Authority> authorities = authorityRepository.findByUser_Username(username);
 
         // Loguear los roles del usuario
-        logger.info("Roles para el usuario {}: {}", username, authorities.stream()
+        log.info("Roles para el usuario {}: {}", username, authorities.stream()
                 .map(Authority::getAuthority)
                 .collect(Collectors.joining(", ")));
 

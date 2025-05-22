@@ -1,16 +1,11 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.model.Organization;
-import com.xcrm.model.User;
-import com.xcrm.service.OrganizationService;
-import com.xcrm.service.UserService;
+import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +22,8 @@ import java.util.regex.Pattern;
 @Controller
 public class IndexController {
 
-    private OrganizationService organizationService;
-    private UserService userService;
+    private OrganizationServiceImpl organizationServiceImpl;
+    private UserServiceImpl userServiceImpl;
 
     @GetMapping("/")
         public String mostrarIndex(Model model){
@@ -60,7 +55,7 @@ public class IndexController {
 
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
-        model.addAttribute("organization", organizationService.getCurrentOrganization());
+        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
         return "mi-cuenta";
     }
 
@@ -93,15 +88,15 @@ public class IndexController {
         List<String> errores = new ArrayList<>();
 
         // Verificar si el email ya está registrado
-        if (organizationService.buscarPorEmail(email).isPresent()) {
+        if (organizationServiceImpl.findByEmail(email).isPresent()) {
             errores.add("El email ya está en uso.");
         }
 
-        if (userService.findByUsername(nombreAdmin) != null) {
+        if (userServiceImpl.findByUsername(nombreAdmin) != null) {
             errores.add("El usuario ya existe");
         }
 
-        if(organizationService.findByNombre(nombreEmpresa).isPresent()){
+        if(organizationServiceImpl.findByNombre(nombreEmpresa).isPresent()){
             errores.add("La organización, con este nombre, ya existe.");
         }
 
@@ -128,10 +123,10 @@ public class IndexController {
 
         try {
             // Guardar una nueva organización
-            Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
+            Organization nuevaOrganization = organizationServiceImpl.crearOrganizacion(nombreEmpresa, email, plan);
 
             // Guardar al usuario administrador
-            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
+            userServiceImpl.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
 
         } catch (IllegalArgumentException e) {
             errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo

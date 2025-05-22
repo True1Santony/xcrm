@@ -27,11 +27,6 @@ public class User implements Serializable {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
-//     //@Email(message = "Debe ser un correo electrónico válido")
-//     @NotBlank(message = "El correo electrónico es obligatorio")
-//     @Column(unique = true, nullable = false)
-//     private String email;
-
     private boolean enabled;
 
     @ManyToOne
