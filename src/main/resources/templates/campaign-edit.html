@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Campaña - XCRM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .navbar-custom {
+            background-color: #a8e6cf;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .client-form {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .badge-campaign {
+            background-color: #6f42c1;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+        footer {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<!-- Barra de Navegación Superior -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenedor Principal -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Menú Lateral -->
+        <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
+                </div>
+                <hr class="border-light">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/mi-cuenta}">
+                            <i class="bi bi-person"></i> Panel Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/usuarios/administration}">
+                            <i class="bi bi-people"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/campaigns/administration}">
+                            <i class="bi bi-megaphone"></i> Campañas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/clients}">
+                            <i class="bi bi-person-lines-fill"></i> Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/sales}">
+                            <i class="bi bi-journal-text"></i> Ventas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/report}">
+                            <i class="bi bi-bar-chart"></i> Reportes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/configuracion}">
+                            <i class="bi bi-gear"></i> Configuración
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-pencil-square"></i> Editar Campaña</h2>
+                <a th:href="@{/campaigns/administration}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al listado
+                </a>
+            </div>
+
+            <!-- Alertas -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Formulario de Edición -->
+            <div class="card client-form">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Editar Campaña ID: <span th:text="${campaign.id}"></span></h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/campaigns/update}" method="post">
+                        <input type="hidden" name="id" th:value="${campaign.id}" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" th:value="${campaign.nombre}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="descripcion" name="descripcion" th:value="${campaign.descripcion}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" th:value="${campaign.fechaInicio}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                                <input type="date" class="form-control" id="fechaFin" name="fechaFin" th:value="${campaign.fechaFin}" required>
+                            </div>
+
+                            <!-- Selección de Clientes -->
+                            <div class="col-md-12">
+                                <label class="form-label">Clientes Asociados</label>
+                                <select class="form-select" name="clientes" multiple size="6">
+                                    <option th:each="cliente : ${allClients}"
+                                            th:value="${cliente.id}"
+                                            th:text="${cliente.nombre}"
+                                            th:selected="${#lists.contains(campaign.clientes.![id], cliente.id)}">
+                                    </option>
+                                </select>
+                                <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-save"></i> Guardar Cambios
+                                </button>
+                                <a th:href="@{/campaigns/administration}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

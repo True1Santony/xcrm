@@ -68,20 +68,43 @@ public class CampaignController {
         return "redirect:/campaigns/administration";
     }
 
+//    @GetMapping("/edit/{id}")
+//    public String showEditForm(@PathVariable("id") Long id, Model model) {
+//        Optional<Campaign> optionalCampaign = campaignServiceImpl.findById(id);
+//
+//        if (optionalCampaign.isPresent()) {
+//            Campaign campaign = optionalCampaign.get(); // Obtén la campaña si está presente
+//            model.addAttribute("campaign", campaign); // Pasa la campaña al modelo
+//            return "editCampaign"; // La vista del formulario de edición
+//        } else {
+//            // Manejo si la campaña no existe
+//            model.addAttribute("error", "Campaña no encontrada");
+//            return "error"; // Redirige a una página de error
+//        }
+//    }
+
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
+    public String showEditForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Campaign> optionalCampaign = campaignServiceImpl.findById(id);
 
-        if (optionalCampaign.isPresent()) {
-            Campaign campaign = optionalCampaign.get(); // Obtén la campaña si está presente
-            model.addAttribute("campaign", campaign); // Pasa la campaña al modelo
-            return "editCampaign"; // La vista del formulario de edición
-        } else {
-            // Manejo si la campaña no existe
-            model.addAttribute("error", "Campaña no encontrada");
-            return "error"; // Redirige a una página de error
+        if (optionalCampaign.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Campaña no encontrada");
+            return "redirect:/campaigns/administration";
         }
+
+        Campaign campaign = optionalCampaign.get();
+
+        if (campaign.getFechaInicio().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "No se puede editar una campaña que ya ha comenzado.");
+            return "redirect:/campaigns/administration";
+        }
+
+        model.addAttribute("campaign", campaign);
+        model.addAttribute("allClients", clientServiceImpl.findAll());
+
+        return "campaign-edit"; // Esta es la vista que contiene el formulario completo
     }
+
 
     @PostMapping("/update")
     public String updateCampaign(
