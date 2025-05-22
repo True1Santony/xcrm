@@ -2,11 +2,10 @@ package com.xcrm.controller.web;
 
 import com.xcrm.model.ContactoMensaje;
 import com.xcrm.model.User;
-import com.xcrm.repository.ContactoMensajeRepository;
+
 import com.xcrm.service.ContactoMensajeService;
 import com.xcrm.service.EmailSender;
 import com.xcrm.service.UserService;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +25,7 @@ import java.util.UUID;
 @Log4j2
 @Controller
 public class ContactoController {
+
     @Autowired
     private EmailSender emailSender;
 
