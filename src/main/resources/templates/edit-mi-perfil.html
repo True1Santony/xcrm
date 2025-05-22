@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,18 +12,26 @@
   </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
   <div class="container">
     <a class="navbar-brand" th:href="@{/}">
       <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
     </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a></li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+        </li>
       </ul>
       <div class="d-flex">
         <form th:action="@{/logout}" method="post">
-          <button class="btn btn-outline-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+          <button class="btn btn-outline-dark" type="submit">
+            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+          </button>
         </form>
       </div>
     </div>
@@ -48,7 +56,7 @@
 
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/mi-cuenta}">
+            <a class="nav-link active" th:href="@{/mi-cuenta}">
               <i class="bi bi-person"></i> Panel Admin
             </a>
           </li>
@@ -78,7 +86,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/usuarios/edit-mi-perfil}">
+            <a class="nav-link" th:href="@{/usuarios/configuracion}">
               <i class="bi bi-gear"></i> Configuración
             </a>
           </li>
@@ -92,13 +100,18 @@
         <a th:href="@{/usuarios/configuracion}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
       </div>
 
-      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <!-- Mensajes de Éxito/Error -->
+      <div class="mt-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill"></i>
+          <span th:text="${success}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span th:text="${error}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
       </div>
 
       <div class="card profile-form">
@@ -106,24 +119,76 @@
           <h4 class="mb-0">Información de Usuario</h4>
         </div>
 
-        <form th:action="@{/usuarios/edit-mi-perfil/update}" method="post" enctype="multipart/form-data" th:object="${usuario}">
-          <input type="hidden" th:field="*{id}">
-          <input type="hidden" th:field="*{organizacionId}">
+        <!-- FORMULARIO PARA GUARDAR FOTO (sin validaciones del resto del formulario) -->
+        <form th:action="@{/usuarios/guardar-foto}" method="post" enctype="multipart/form-data" id="guardarFotoForm" class="d-inline">
+          <input type="hidden" th:value="${usuario.id}" name="usuarioId">
+          <div class="mb-4 text-center">
+            <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
+            <img id="previewImagen"
+                 th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
+                 alt="Foto de Perfil"
+                 class="rounded-circle mb-2"
+                 style="width: 150px; height: 150px; object-fit: cover;">
+            <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
+          </div>
+        </form>
 
-          <div class="card-body">
-            <div class="mb-4 text-center">
-              <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
-              <img id="previewImagen"
-                   th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
-                   alt="Foto de Perfil"
-                   class="rounded-circle mb-2"
-                   style="width: 150px; height: 150px; object-fit: cover;">
-              <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
-            </div>
-            <div class="mt-4">
-              <button type="submit" class="btn btn-primary me-2"><i class="bi bi-save"></i> Guardar Cambios</button>
-              <a th:href="@{/mi-cuenta}" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
-            </div>
+        <!-- FORMULARIO PARA ENVIAR TICKET -->
+        <form th:action="@{/usuarios/enviar-ticket-edicion}" method="post">
+          <input type="hidden" th:value="${usuario.id}" name="usuarioId">
+          <input type="hidden" th:value="${usuario.organizacionId}" name="organizacionId">
+
+          <div class="mb-3">
+            <label for="compania" class="form-label">Nombre de la compañía</label>
+            <input type="text" class="form-control" id="compania" name="compania"
+                   th:value="${usuario.compania}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del usuario</label>
+            <input type="text" class="form-control" id="nombre" name="nombre"
+                   th:value="${usuario.nombre}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="correo" name="correo"
+                   th:value="${usuario.organizacion?.email}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="plan" class="form-label">Selecciona un Plan:</label>
+            <select class="form-select" name="plan" id="plan" required>
+              <option value="" disabled>-- Elige un Plan --</option>
+              <option value="Gratuito" th:selected="${usuario.organizacion?.plan == 'Gratuito'}">Gratuito</option>
+              <option value="Standard" th:selected="${usuario.organizacion?.plan == 'Standard'}">Standard</option>
+              <option value="Premium" th:selected="${usuario.organizacion?.plan == 'Premium'}">Premium</option>
+            </select>
+          </div>
+
+
+          <div class="mb-3">
+            <label for="motivo" class="form-label">Motivo de la solicitud</label>
+            <textarea class="form-control" id="motivo" name="motivo" rows="4"
+                      placeholder="Describe qué deseas cambiar y por qué" required></textarea>
+          </div>
+
+          <!-- Botones alineados al final, todos juntos -->
+          <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <!-- Botón Guardar Foto (con su propio formulario) -->
+            <button type="submit" form="guardarFotoForm" name="accion" value="guardar" class="btn btn-primary">
+              <i class="bi bi-save"></i> Guardar Foto
+            </button>
+
+            <!-- Botón Enviar Ticket -->
+            <button type="submit" name="accion" value="ticket" class="btn btn-primary">
+              <i class="bi bi-send"></i> Enviar Ticket
+            </button>
+
+            <!-- Botón Cancelar -->
+            <a th:href="@{/usuarios/configuracion}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </a>
           </div>
         </form>
       </div>

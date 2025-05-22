@@ -1,9 +1,10 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.dto.EditarFotoDTO;
+import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.OrganizationRepository;
+import com.xcrm.service.EmailSender;
 import com.xcrm.service.ImageService;
 import com.xcrm.service.OrganizationServiceImpl;
 import com.xcrm.service.UserServiceImpl;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -34,6 +37,9 @@ public class UserController {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private EmailSender emailSender; // Inyecto el servicio de envío de correos
 
     // Ruta configurable para almacenamiento externo
     @Value("${uploads.dir}")
@@ -92,14 +98,19 @@ public class UserController {
     public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User actual = userServiceImpl.findByUsername(userDetails.getUsername());
 
-        model.addAttribute("usuario",EditarFotoDTO.builder()
-                                            .fotoUrl(actual.getFotoUrl())
-                                            .id(actual.getId())
-                                            .organizacionId(actual.getOrganizacion().getId())
-                                            .build());
-        return "edit-mi-perfil";
+        // Crear el DTO y asignar los datos correspondientes
+        EditarFotoDTO dto = new EditarFotoDTO();
+        dto.setId(actual.getId());
+        dto.setOrganizacionId(actual.getOrganizacion().getId());
+        dto.setFotoUrl(actual.getFotoUrl());
+        dto.setCompania(actual.getOrganizacion().getNombre());
+        dto.setNombre(actual.getUsername());
+        dto.setOrganizacion(actual.getOrganizacion());
 
-}
+        model.addAttribute("usuario", dto); // Pasar el DTO al modelo
+        return "edit-mi-perfil"; // Redirigir a la vista
+    }
+
 
     @PostMapping("/edit-mi-perfil/update")
     public String actualizarFoto(@ModelAttribute("usuario") EditarFotoDTO dto,
@@ -156,11 +167,22 @@ public class UserController {
         model.addAttribute("usuario", actual);
         return "configuracion";
     }
+
+    @GetMapping("/usuarios/configuracion")
+    public String mostrarConfiguracion(Model model, Principal principal) {
+        User usuario = userService.findByUsername(principal.getName());
+
+        model.addAttribute("usuario", usuario);
+
+        return "configuracion";
+    }
+
+
     @PostMapping("/actualizar-configuracion")
     public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestParam("compania") String compania,
                                           @RequestParam("nombre") String nombre,
-//                                          @RequestParam("correo") String correo,
+                                          @RequestParam("correo") String correo,
                                           @RequestParam(value = "password", required = false) String password,
                                           RedirectAttributes redirectAttributes) {
 
@@ -172,10 +194,10 @@ public class UserController {
             return "redirect:/usuarios/configuracion";
         }
 
-//        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-//            redirectAttributes.addFlashAttribute("error", "Debes proporcionar un correo válido.");
-//            return "redirect:/usuarios/configuracion";
-//        }
+        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            redirectAttributes.addFlashAttribute("error", "Debes proporcionar un correo válido.");
+            return "redirect:/usuarios/configuracion";
+        }
 
         if (compania == null || compania.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "El nombre de la compañía no puede estar vacío.");
@@ -184,7 +206,6 @@ public class UserController {
 
         // Actualización de datos
         actual.setUsername(nombre);
-        //actual.setEmail(correo); // ⚠️ Asegurarse de que `email` exista en el modelo `User`
 
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
@@ -203,5 +224,87 @@ public class UserController {
 
         redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
         return "redirect:/usuarios/configuracion";
+    }
+
+    @PostMapping("/guardar-foto")
+    public String guardarFotoPerfil(@RequestParam("usuarioId") UUID userId,
+                                    @RequestParam("foto") MultipartFile foto,
+                                    RedirectAttributes redirectAttributes,
+                                    @AuthenticationPrincipal UserDetails userDetails) {
+
+        User actual = userService.findByUsername(userDetails.getUsername());
+
+        if (!actual.getId().equals(userId)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (foto == null || foto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Debe seleccionar una imagen.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (!foto.getContentType().startsWith("image/")) {
+            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        if (foto.getSize() > (2 * 1024 * 1024)) {
+            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
+            return "redirect:/usuarios/edit-mi-perfil";
+        }
+
+        try {
+            String originalNombre = foto.getOriginalFilename();
+            String extension = originalNombre != null && originalNombre.contains(".")
+                    ? originalNombre.substring(originalNombre.lastIndexOf("."))
+                    : "";
+            String nombreArchivo = actual.getId() + extension;
+
+            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+            actual.setFotoUrl(rutaPublica);
+
+            userService.save(actual);
+            redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
+        }
+
+        return "redirect:/usuarios/edit-mi-perfil";
+    }
+    @PostMapping("/enviar-ticket-edicion")
+    public String enviarTicketEdicion(
+            @RequestParam("usuarioId") UUID usuarioId,
+            @RequestParam("organizacionId") Long organizacionId,
+            @RequestParam("compania") String compania,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("correo") String correo,
+            @RequestParam("plan") String plan,
+            @RequestParam("motivo") String motivo,
+            RedirectAttributes redirectAttributes) {
+
+        String asunto = "Solicitud de Edición de Perfil - " + nombre;
+        String mensaje = String.format(
+                "Nombre del Usuario: %s\n" +
+                        "Correo Electrónico: %s\n" +
+                        "Compañía: %s\n" +
+                        "Plan Actual: %s\n" +
+                        "--------------------------------\n" +
+                        "Motivo de la solicitud:\n%s",
+                nombre, correo, compania, plan, motivo
+        );
+
+        try {
+            // Llama al método de enviar correo con campos vacíos para archivo y dropbox
+            emailSender.enviarCorreo(nombre, correo, asunto, mensaje, null, null);
+
+            redirectAttributes.addFlashAttribute("success", "El ticket fue enviado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace(); // útil en desarrollo
+            redirectAttributes.addFlashAttribute("error", "Error al enviar el ticket: " + e.getMessage());
+        }
+
+        return "redirect:/usuarios/edit-mi-perfil";
     }
 }
