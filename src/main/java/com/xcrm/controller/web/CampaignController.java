@@ -51,6 +51,12 @@ public class CampaignController {
         }
 
         try {
+            // Validación de fechas
+            if (campaign.getFechaFin().isBefore(campaign.getFechaInicio())) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+                return "redirect:/campaigns/administration";
+            }
+
             campaign.setOrganizacion(organizationServiceImpl.getCurrentOrganization());
 
             // Asociar clientes seleccionados si los hay
@@ -67,21 +73,6 @@ public class CampaignController {
 
         return "redirect:/campaigns/administration";
     }
-
-//    @GetMapping("/edit/{id}")
-//    public String showEditForm(@PathVariable("id") Long id, Model model) {
-//        Optional<Campaign> optionalCampaign = campaignServiceImpl.findById(id);
-//
-//        if (optionalCampaign.isPresent()) {
-//            Campaign campaign = optionalCampaign.get(); // Obtén la campaña si está presente
-//            model.addAttribute("campaign", campaign); // Pasa la campaña al modelo
-//            return "editCampaign"; // La vista del formulario de edición
-//        } else {
-//            // Manejo si la campaña no existe
-//            model.addAttribute("error", "Campaña no encontrada");
-//            return "error"; // Redirige a una página de error
-//        }
-//    }
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
