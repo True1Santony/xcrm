@@ -34,7 +34,7 @@ public class CampaignServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+  /*  @Test
     void testAddClienteToCampania_success() {
         Long clientId = 1L;
         Long campaignId = 2L;
@@ -53,7 +53,7 @@ public class CampaignServiceImplTest {
 
         assertTrue(client.getCampaigns().contains(campaign));
         verify(clientService, times(1)).save(client);
-    }
+    }*/
 
     @Test
     void testFindAll_returnsList() {

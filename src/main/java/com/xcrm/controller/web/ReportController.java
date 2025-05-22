@@ -1,7 +1,9 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.dto.ReportResponseDto;
+import com.xcrm.service.OrganizationService;
 import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.report.ReportService;
 import com.xcrm.service.report.ReportServiceImpl;
 
 import lombok.AllArgsConstructor;
@@ -23,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/report")
 public class ReportController {
 
-    private final ReportServiceImpl reportServiceImpl;
-    private final OrganizationServiceImpl organizationServiceImpl;
+    private final ReportService reportServiceImpl;
+    private final OrganizationService organizationServiceImpl;
 
     @GetMapping()
     public String showReportsDashboard(Model model) {

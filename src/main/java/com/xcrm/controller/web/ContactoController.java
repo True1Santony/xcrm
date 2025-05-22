@@ -5,6 +5,7 @@ import com.xcrm.model.User;
 import com.xcrm.repository.ContactoMensajeRepository;
 import com.xcrm.service.ContactoMensajeService;
 import com.xcrm.service.EmailSender;
+import com.xcrm.service.UserService;
 import com.xcrm.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class ContactoController {
     private ContactoMensajeService contactoMensajeService;
 
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userServiceImpl;
 
     @Value("${dropbox.app.key}")
     private String dropboxAppKey;

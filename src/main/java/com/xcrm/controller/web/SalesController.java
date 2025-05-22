@@ -19,12 +19,12 @@ import java.util.*;
 @RequestMapping("/sales")
 public class SalesController {
 
-    private final CampaignServiceImpl campaignServiceImpl;
-    private final UserServiceImpl userServiceImpl;
-    private final OrganizationServiceImpl organizationServiceImpl;
-    private final ClientServiceImpl clientServiceImpl;
-    private final InteractionServiceImpl interactionServiceImpl;
-    private final VentaServiceImpl ventaServiceImpl;
+    private final CampaignService campaignServiceImpl;
+    private final UserService userServiceImpl;
+    private final OrganizationService organizationServiceImpl;
+    private final ClientService clientServiceImpl;
+    private final InteractionService interactionServiceImpl;
+    private final VentaService ventaServiceImpl;
 
     @GetMapping
     public String getSalesAdministrationDashboard(Authentication authentication, Model model){

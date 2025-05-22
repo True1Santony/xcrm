@@ -3,10 +3,7 @@ package com.xcrm.controller.web;
 import com.xcrm.model.Campaign;
 import com.xcrm.model.Client;
 import com.xcrm.model.User;
-import com.xcrm.service.CampaignServiceImpl;
-import com.xcrm.service.ClientServiceImpl;
-import com.xcrm.service.OrganizationServiceImpl;
-import com.xcrm.service.UserServiceImpl;
+import com.xcrm.service.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -24,10 +21,10 @@ import java.util.UUID;
 @RequestMapping("/clients")
 public class ClientController {
 
-    private ClientServiceImpl clientServiceImpl;
-    private CampaignServiceImpl campaignServiceImpl;
-    private UserServiceImpl userServiceImpl;
-    private OrganizationServiceImpl organizationServiceImpl;
+    private ClientService clientServiceImpl;
+    private CampaignService campaignServiceImpl;
+    private UserService userServiceImpl;
+    private OrganizationService organizationServiceImpl;
 
     @GetMapping
     public String showClientsAdministrationDashboard(Authentication authentication, Model model){

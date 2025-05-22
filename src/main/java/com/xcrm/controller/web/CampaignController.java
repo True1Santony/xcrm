@@ -1,9 +1,7 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.model.Campaign;
-import com.xcrm.service.CampaignServiceImpl;
-import com.xcrm.service.ClientServiceImpl;
-import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +18,10 @@ import java.util.Optional;
 public class CampaignController {
 
     @Autowired
-    CampaignServiceImpl campaignServiceImpl;
+    CampaignService campaignServiceImpl;
 
     @Autowired
-    OrganizationServiceImpl organizationServiceImpl;
+    OrganizationService organizationServiceImpl;
 
     @Autowired
     private ClientServiceImpl clientServiceImpl; //Ahora busca clientes por su ID

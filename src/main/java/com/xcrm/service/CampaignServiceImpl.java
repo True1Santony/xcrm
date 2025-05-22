@@ -4,18 +4,30 @@ import com.xcrm.model.Campaign;
 import com.xcrm.model.Client;
 import com.xcrm.repository.CampaignRepository;
 import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Service
 public class CampaignServiceImpl implements CampaignService {
 
-    private CampaignRepository campaignRepository;
+    private final CampaignRepository campaignRepository;
     private ClientService clientService;
+
+    @Autowired
+    public CampaignServiceImpl(CampaignRepository campaignRepository) {
+        this.campaignRepository = campaignRepository;
+    }
+
+    @Autowired
+    public void setClientService(@Lazy ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     // Asignar una campaña a un cliente o comercial (mediante las tablas intermedias)
     @Transactional

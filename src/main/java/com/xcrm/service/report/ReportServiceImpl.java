@@ -1,7 +1,7 @@
 package com.xcrm.service.report;
 
 import com.xcrm.dto.ReportResponseDto;
-import com.xcrm.service.OrganizationServiceImpl;
+import com.xcrm.service.OrganizationService;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,10 +35,10 @@ import java.util.Map;
 public class ReportServiceImpl implements ReportService {
 
     private final EntityManager entityManager;
-    private final OrganizationServiceImpl organizationServiceImpl;
+    private final OrganizationService organizationService;
 
     @Override
-    @Cacheable(value = "generatedReports", key = "'generateReport_' + #reportName + '_' + #format + '_' + @organizationService.getCurrentOrganization().id")
+    @Cacheable(value = "generatedReports", key = "'generateReport_' + #reportName + '_' + #format + '_' + @organizationServiceImpl.getCurrentOrganization().id")
     public ReportResponseDto generateReport(String reportName, String format) throws JRException {
         InputStream reportStream = getReportStream(reportName);
         Map<String, Object> parameters = prepareReportParameters();
@@ -131,7 +131,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(value = "ventasPorComercial", key = "'ventasPorComercial_' + @organizationService.getCurrentOrganization().id")
+    @Cacheable(value = "ventasPorComercial", key = "'ventasPorComercial_' + @organizationServiceImpl.getCurrentOrganization().id")
     public List<Map<String, Object>> getVentasPorComercial() {
         String sql = """
         SELECT u.username AS comercial, COUNT(v.id) AS total_ventas
@@ -156,7 +156,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(value = "interaccionesPorVenta", key = "'interaccionesPorVenta_' + @organizationService.getCurrentOrganization().id")
+    @Cacheable(value = "interaccionesPorVenta", key = "'interaccionesPorVenta_' + @organizationServiceImpl.getCurrentOrganization().id")
     public List<Map<String, Object>> getInteraccionesPorVenta() {
         String sql = """
         SELECT 
@@ -187,7 +187,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(value = "ventasPorCompania", key = "'ventasPorCompania_' + @organizationService.getCurrentOrganization().id")
+    @Cacheable(value = "ventasPorCompania", key = "'ventasPorCompania_' + @organizationServiceImpl.getCurrentOrganization().id")
     public List<Map<String, Object>> getVentasPorCompania() {
         String sql = """
         SELECT\s

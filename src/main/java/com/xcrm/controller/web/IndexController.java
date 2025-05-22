@@ -1,8 +1,8 @@
 package com.xcrm.controller.web;
 
 import com.xcrm.model.Organization;
-import com.xcrm.service.OrganizationServiceImpl;
-import com.xcrm.service.UserServiceImpl;
+import com.xcrm.service.OrganizationService;
+import com.xcrm.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 @Controller
 public class IndexController {
 
-    private OrganizationServiceImpl organizationServiceImpl;
-    private UserServiceImpl userServiceImpl;
+    private OrganizationService organizationService;
+    private UserService userService;
 
     @GetMapping("/")
         public String mostrarIndex(Model model){
@@ -55,7 +55,7 @@ public class IndexController {
 
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
-        model.addAttribute("organization", organizationServiceImpl.getCurrentOrganization());
+        model.addAttribute("organization", organizationService.getCurrentOrganization());
         return "mi-cuenta";
     }
 
@@ -88,15 +88,15 @@ public class IndexController {
         List<String> errores = new ArrayList<>();
 
         // Verificar si el email ya está registrado
-        if (organizationServiceImpl.findByEmail(email).isPresent()) {
+        if (organizationService.findByEmail(email).isPresent()) {
             errores.add("El email ya está en uso.");
         }
 
-        if (userServiceImpl.findByUsername(nombreAdmin) != null) {
+        if (userService.findByUsername(nombreAdmin) != null) {
             errores.add("El usuario ya existe");
         }
 
-        if(organizationServiceImpl.findByNombre(nombreEmpresa).isPresent()){
+        if(organizationService.findByNombre(nombreEmpresa).isPresent()){
             errores.add("La organización, con este nombre, ya existe.");
         }
 
@@ -123,10 +123,10 @@ public class IndexController {
 
         try {
             // Guardar una nueva organización
-            Organization nuevaOrganization = organizationServiceImpl.crearOrganizacion(nombreEmpresa, email, plan);
+            Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
 
             // Guardar al usuario administrador
-            userServiceImpl.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
+            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
 
         } catch (IllegalArgumentException e) {
             errores.add( e.getMessage());  // Capturamos la excepción y la pasamos al modelo

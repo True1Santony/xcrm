@@ -4,10 +4,7 @@ import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.OrganizationRepository;
-import com.xcrm.service.EmailSender;
-import com.xcrm.service.ImageService;
-import com.xcrm.service.OrganizationServiceImpl;
-import com.xcrm.service.UserServiceImpl;
+import com.xcrm.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +24,7 @@ import java.util.UUID;
 @RequestMapping("/usuarios")
 public class UserController {
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     @Autowired
     private OrganizationServiceImpl organizationServiceImpl;
@@ -59,7 +56,7 @@ public class UserController {
         Organization organization = organizationServiceImpl.findById(organizacionId).get();
 
         try {
-            userServiceImpl.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organization);
+            userService.createUserInOrganization(nuevoUsuario.getUsername(), nuevoUsuario.getPassword(), organization);
             redirectAttributes.addFlashAttribute("success", "Usuario registrado exitosamente.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -81,7 +78,7 @@ public class UserController {
                                 @RequestParam(value = "nuevoPassword", required = false) String nuevoPassword,
                                 RedirectAttributes redirectAttributes) {
 
-        userServiceImpl.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
+        userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
 
         redirectAttributes.addFlashAttribute("mensaje", "Usuario actualizado correctamente");
         return "redirect:/usuarios/administration";
@@ -89,14 +86,14 @@ public class UserController {
 
     @PostMapping("/eliminar")
     public String eliminarUsuario(@RequestParam("user_id") UUID userId, RedirectAttributes redirectAttributes) {
-        userServiceImpl.eliminarUsuario(userId);
+        userService.eliminarUsuario(userId);
         redirectAttributes.addFlashAttribute("mensaje", "Usuario eliminado correctamente");
         return "redirect:/usuarios/administration";
     }
 
     @GetMapping("/edit-mi-perfil")
     public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User actual = userServiceImpl.findByUsername(userDetails.getUsername());
+        User actual = userService.findByUsername(userDetails.getUsername());
 
         // Crear el DTO y asignar los datos correspondientes
         EditarFotoDTO dto = new EditarFotoDTO();
@@ -121,7 +118,7 @@ public class UserController {
         System.out.println("== Guardando nueva foto de perfil ==");
         System.out.println("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
 
-        User actual = userServiceImpl.findByUsername(userDetails.getUsername());
+        User actual = userService.findByUsername(userDetails.getUsername());
 
         if (!dto.getId().equals(actual.getId())) {
             redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
@@ -156,14 +153,14 @@ public class UserController {
             }
         }
 
-        userServiceImpl.save(actual);
+        userService.save(actual);
         redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
         return "redirect:/mi-cuenta";
     }
 
     @GetMapping("/configuracion")
     public String mostrarConfiguracion(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User actual = userServiceImpl.findByUsername(userDetails.getUsername());
+        User actual = userService.findByUsername(userDetails.getUsername());
         model.addAttribute("usuario", actual);
         return "configuracion";
     }
@@ -186,7 +183,7 @@ public class UserController {
                                           @RequestParam(value = "password", required = false) String password,
                                           RedirectAttributes redirectAttributes) {
 
-        User actual = userServiceImpl.findByUsername(userDetails.getUsername());
+        User actual = userService.findByUsername(userDetails.getUsername());
 
         // Validaciones básicas (puedes extender con @Valid y DTO si quieres mayor control)
         if (nombre == null || nombre.trim().isEmpty()) {
@@ -220,7 +217,7 @@ public class UserController {
         org.setNombre(compania);
         organizationRepository.save(org); // Actualizar la organización
 
-        userServiceImpl.save(actual); // Guardar usuario actualizado
+        userService.save(actual); // Guardar usuario actualizado
 
         redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
         return "redirect:/usuarios/configuracion";

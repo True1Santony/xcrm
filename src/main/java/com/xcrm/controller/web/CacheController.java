@@ -1,5 +1,6 @@
 package com.xcrm.controller.web;
 
+import com.xcrm.service.report.ReportService;
 import com.xcrm.service.report.ReportServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,11 +13,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @AllArgsConstructor
 public class CacheController {
 
-    private final ReportServiceImpl reportServiceImpl;
+    private final ReportService reportService;
 
     @PostMapping("/clear")
     public String clearCache(RedirectAttributes redirectAttrs) {
-        reportServiceImpl.clearAllCaches();
+        reportService.clearAllCaches();
         redirectAttrs.addFlashAttribute("message", "Caché limpiado con éxito.");
         return "redirect:/mi-cuenta";
     }

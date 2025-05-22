@@ -7,6 +7,7 @@ import com.xcrm.repository.ClientRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.*;
 
@@ -14,10 +15,11 @@ import java.util.*;
 @Service
 public class ClientServiceImpl implements ClientService{
 
-    private ClientRepository clientRepository;
-    private OrganizationServiceImpl organizationServiceImpl;
-    private CampaignService campaignService;
-    private UserServiceImpl userServiceImpl;
+    private final ClientRepository clientRepository;
+    private final OrganizationService organizationServiceImpl;
+    @Lazy
+    private final CampaignService campaignService;
+    private final UserService userServiceImpl;
 
     @Override
     public Optional<Client> findById(Long id) {
