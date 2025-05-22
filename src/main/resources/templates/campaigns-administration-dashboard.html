@@ -113,6 +113,10 @@
                                     <label for="fechaFin" class="form-label">Fecha de Fin</label>
                                     <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}" required>
                                 </div>
+                                <!-- Alerta Visual -->
+                                <div id="fechaError" class="text-danger d-none">
+                                    La fecha de fin no puede ser anterior a la fecha de inicio.
+                                </div>
 
                                 <!-- Selección de Clientes -->
                                 <div class="col-md-6">
@@ -191,10 +195,13 @@
                                                       class="badge bg-secondary me-1"></span>
                                     </td>
                                     <td class="table-actions">
+                                        <!-- Solo mostrar botón de editar si la fecha de inicio es posterior a la fecha actual -->
                                         <!-- Mostrar enlace si la campaña es editable -->
-                                        <a th:href="@{/campaigns/edit/{id}(id=${campaign.id})}" class="btn btn-sm btn-warning">
-                                            <i class="bi bi-pencil"></i> Editar
-                                        </a>
+                                        <th:block th:if="${campaign.fechaInicio > T(java.time.LocalDate).now()}">
+                                            <a th:href="@{/campaigns/edit/{id}(id=${campaign.id})}" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </a>
+                                        </th:block>
                                         <!-- Muestra No editable -->
                                         <th:block th:unless="${campaign.fechaInicio > T(java.time.LocalDate).now()}">
                                             <span class="text-muted"><i class="bi bi-lock-fill"></i> No editable</span>
@@ -218,22 +225,24 @@
         </main>
     </div>
 </div>
-
-<script>
-    // Validación de fechas coherentes antes de enviar formulario de creación para crear campañas
-    document.getElementById('createCampaignForm').addEventListener('submit', function (event) {
-        const inicio = document.getElementById('fechaInicio').value;
-        const fin = document.getElementById('fechaFin').value;
-
-        if (inicio && fin && inicio > fin) {
-            event.preventDefault();
-            alert('La fecha de fin no puede ser anterior a la fecha de inicio.');
-        }
-    });
-</script>
 <!-- Footer -->
 <div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('createCampaignForm').addEventListener('submit', function (event) {
+        const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        const errorDiv = document.getElementById('fechaError');
+
+        if (inicio && fin && inicio > fin) {
+            event.preventDefault(); // Evita que se envíe el formulario
+            errorDiv.classList.remove('d-none'); // Muestra el mensaje de error
+        } else {
+            errorDiv.classList.add('d-none'); // Oculta el mensaje si todo está bien
+        }
+    });
+</script>
 </body>
 </html>
