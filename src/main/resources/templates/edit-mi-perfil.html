@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,18 +12,26 @@
   </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
   <div class="container">
     <a class="navbar-brand" th:href="@{/}">
       <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
     </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a></li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
+        </li>
       </ul>
       <div class="d-flex">
         <form th:action="@{/logout}" method="post">
-          <button class="btn btn-outline-dark" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+          <button class="btn btn-outline-dark" type="submit">
+            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+          </button>
         </form>
       </div>
     </div>
@@ -48,7 +56,7 @@
 
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/mi-cuenta}">
+            <a class="nav-link active" th:href="@{/mi-cuenta}">
               <i class="bi bi-person"></i> Panel Admin
             </a>
           </li>
@@ -92,13 +100,18 @@
         <a th:href="@{/usuarios/configuracion}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
       </div>
 
-      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <!-- Mensajes de Éxito/Error -->
+      <div class="mt-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill"></i>
+          <span th:text="${success}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span th:text="${error}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
       </div>
 
       <div class="card profile-form">
@@ -178,8 +191,6 @@
             </a>
           </div>
         </form>
-
-
       </div>
     </main>
   </div>

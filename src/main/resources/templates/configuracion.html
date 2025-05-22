@@ -36,7 +36,6 @@
 </head>
 <body>
 
-<!-- Barra de navegación verde clara -->
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">
@@ -51,6 +50,7 @@
                     <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
                 </li>
             </ul>
+            <div class="d-flex">
                 <form th:action="@{/logout}" method="post">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
@@ -61,10 +61,8 @@
     </div>
 </nav>
 
-
 <div class="container-fluid">
     <div class="row">
-
         <!-- Menú Lateral -->
         <!-- Botón del menú solo visible en pantallas pequeñas -->
         <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">

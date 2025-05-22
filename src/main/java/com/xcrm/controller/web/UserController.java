@@ -4,6 +4,7 @@ import com.xcrm.DTO.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.repository.OrganizationRepository;
+import com.xcrm.service.EmailSender;
 import com.xcrm.service.ImageService;
 import com.xcrm.service.OrganizationService;
 import com.xcrm.service.UserService;
@@ -36,6 +37,9 @@ public class UserController {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private EmailSender emailSender; // Inyecto el servicio de envío de correos
 
     // Ruta configurable para almacenamiento externo
     @Value("${uploads.dir}")
@@ -269,5 +273,38 @@ public class UserController {
 
         return "redirect:/usuarios/edit-mi-perfil";
     }
+    @PostMapping("/enviar-ticket-edicion")
+    public String enviarTicketEdicion(
+            @RequestParam("usuarioId") UUID usuarioId,
+            @RequestParam("organizacionId") Long organizacionId,
+            @RequestParam("compania") String compania,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("correo") String correo,
+            @RequestParam("plan") String plan,
+            @RequestParam("motivo") String motivo,
+            RedirectAttributes redirectAttributes) {
 
+        String asunto = "Solicitud de Edición de Perfil - " + nombre;
+        String mensaje = String.format(
+                "Nombre del Usuario: %s\n" +
+                        "Correo Electrónico: %s\n" +
+                        "Compañía: %s\n" +
+                        "Plan Actual: %s\n" +
+                        "--------------------------------\n" +
+                        "Motivo de la solicitud:\n%s",
+                nombre, correo, compania, plan, motivo
+        );
+
+        try {
+            // Llama al método de enviar correo con campos vacíos para archivo y dropbox
+            emailSender.enviarCorreo(nombre, correo, asunto, mensaje, null, null);
+
+            redirectAttributes.addFlashAttribute("success", "El ticket fue enviado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace(); // útil en desarrollo
+            redirectAttributes.addFlashAttribute("error", "Error al enviar el ticket: " + e.getMessage());
+        }
+
+        return "redirect:/usuarios/edit-mi-perfil";
+    }
 }
