@@ -2,6 +2,47 @@
 
 XCRM es una aplicación CRM (Customer Relationship Management) desarrollada con **Spring Boot** que permite gestionar campañas, clientes, interacciones y generar métricas y reportes. Diseñada para organizaciones que requieren una solución multi-tenant, genera una base de datos por organización al registrarse automáticamente.
 
+## 📁 Estructura del Proyecto
+```
+xcrm/
+├── .idea/
+├── .mvn/
+├── db/
+├── logs/
+├── src/
+│ ├── main/
+│ │ ├── java/
+│ │ │ └── com/
+│ │ │ └── xcrm/
+│ │ │ ├── configuration/
+│ │ │ ├── controller/
+│ │ │ │ ├── rest/
+│ │ │ │ └── web/
+│ │ │ ├── dto/
+│ │ │ ├── model/
+│ │ │ ├── repository/
+│ │ │ ├── service/
+│ │ │ └── utils/
+│ │ ├── resources/
+│ │ │ ├── db/
+│ │ │ ├── reports/
+│ │ │ ├── static/
+│ │ │ │ ├── css/
+│ │ │ │ ├── images/
+│ │ │ │ ├── JavaScript/
+│ │ │ │ └── uploads/
+│ │ │ ├── templates/
+│ │ │ ├── application.properties
+│ │ │ ├── application-prod.properties
+│ │ │ └── logback-spring.xml
+│ └── test/
+├── target/
+├── .gitignore
+├── esquema_v1.0.1.png
+├── Documentation_XCRM_Despliegue_EC2.pdf
+└── pom.xml
+```
+
 ## 🚀 Tecnologías utilizadas
 
 - ⚙️ **Spring Boot** - Backend robusto y escalable

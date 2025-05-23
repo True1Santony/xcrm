@@ -47,7 +47,14 @@ public class CampaignController {
         }
 
         try {
+
             campaign.setOrganizacion(organizationService.getCurrentOrganization());
+
+            // Validación de fechas
+            if (campaign.getFechaFin().isBefore(campaign.getFechaInicio())) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+                return "redirect:/campaigns/administration";
+            }
 
             // Asociar clientes seleccionados si los hay
             if (clientIds != null && !clientIds.isEmpty()) {
@@ -64,19 +71,59 @@ public class CampaignController {
         return "redirect:/campaigns/administration";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Optional<Campaign> optionalCampaign = campaignService.findById(id);
+//    @GetMapping("/edit/{id}")
+//
+//    public String showEditForm(@PathVariable("id") Long id, Model model) {
+//        Optional<Campaign> optionalCampaign = campaignService.findById(id);
+//
+//        if (optionalCampaign.isPresent()) {
+//            Campaign campaign = optionalCampaign.get();
+//            model.addAttribute("campaign", campaign);
+//            return "editCampaign";
+//        } else {
+//            model.addAttribute("error", "Campaña no encontrada");
+//            return "error";
+//        }
+//
+//        Campaign campaign = optionalCampaign.get();
+//
+//        if (campaign.getFechaInicio().isBefore(LocalDate.now())) {
+//            redirectAttributes.addFlashAttribute("error", "No se puede editar una campaña que ya ha comenzado.");
+//            return "redirect:/campaigns/administration";
+//        }
+//
+//        model.addAttribute("campaign", campaign);
+//        model.addAttribute("allClients", clientService.findAll());
+//
+//        return "campaign-edit"; // Esta es la vista que contiene el formulario completo
+//    }
+@GetMapping("/edit/{id}")
+public String showEditForm(
+        @PathVariable("id") Long id,
+        Model model,
+        RedirectAttributes redirectAttributes) { // <-- Agregar parámetro
 
-        if (optionalCampaign.isPresent()) {
-            Campaign campaign = optionalCampaign.get();
-            model.addAttribute("campaign", campaign);
-            return "editCampaign";
-        } else {
-            model.addAttribute("error", "Campaña no encontrada");
-            return "error";
-        }
+    Optional<Campaign> optionalCampaign = campaignService.findById(id);
+
+    if (optionalCampaign.isEmpty()) {
+        redirectAttributes.addFlashAttribute("error", "Campaña no encontrada");
+        return "redirect:/campaigns/administration";
     }
+
+    Campaign campaign = optionalCampaign.get();
+
+    if (campaign.getFechaInicio().isBefore(LocalDate.now())) {
+        redirectAttributes.addFlashAttribute("error", "No se puede editar una campaña que ya ha comenzado.");
+        return "redirect:/campaigns/administration";
+    }
+
+    model.addAttribute("campaign", campaign);
+    model.addAttribute("allClients", clientService.findAll());
+
+    return "campaign-edit"; // Vista con formulario para editar
+}
+
+
 
     @PostMapping("/update")
     public String updateCampaign(
