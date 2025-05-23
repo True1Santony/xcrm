@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/images/**")
                         .permitAll()
                         .requestMatchers("/api/cache/clear").hasRole("ADMIN")
+                        .requestMatchers("/api/config/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

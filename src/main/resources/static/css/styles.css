@@ -152,6 +152,8 @@
             border-color: #4facfe;
         }
 
+        .profile-form { background-color: #f8f9fa; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
         /* Animación de desvanecimiento al cargar la página */
         .fade-in {
             animation: fadeInAnimation 0.8s ease-in-out;
