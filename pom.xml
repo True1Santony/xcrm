@@ -91,6 +91,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!--
+		Incluye el módulo Spring Boot Starter Mail, que proporciona soporte para enviar correos electrónicos
+		desde la aplicación.
+		Esto permite configurar un servidor SMTP y utilizar clases como JavaMailSender
+		para notificaciones por email.
+		-->
+		<!-- Email -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
