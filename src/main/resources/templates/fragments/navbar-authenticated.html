@@ -8,15 +8,14 @@
       <div class="container">
         <a class="navbar-brand" th:href="@{/}">
           <img th:src="@{/images/logo3.png}" alt="Logo XCRM" height="40">
+          <span class="fw-bold fs-4 text-primary">XCRM</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Inicio</a>
-            </li>
+
           </ul>
           <div class="d-flex">
             <form th:action="@{/logout}" method="post">
