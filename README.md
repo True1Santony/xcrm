@@ -97,6 +97,7 @@ xcrm/
 - 🧩 **JasperSoft Studio** - Editor visual de reportes `.jrxml`
 - 🏗️ **Arquitectura por capas** - Separación clara entre capas (controller, service, repository)
 - 🗃️ **Multi-tenancy** - Una base de datos por organización, creada automáticamente
+- 🧪 **Pruebas unitarias** - Desarrolladas con JUnit 5 (Jupiter) y Mockito para mocks y simulación de comportamientos
 - 🔐 **Encriptación de contraseñas** - Con `UUID` + hashing seguro
 - 🌱 **Git Flow** - Flujo de trabajo colaborativo con ramas `feature/`, `develop`, `release/` y `main`
 
