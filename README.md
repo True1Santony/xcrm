@@ -1,7 +1,50 @@
 # 📞 XCRM - CRM Interacciones con Clientes
 
 XCRM es una aplicación CRM (Customer Relationship Management) desarrollada con **Spring Boot** que permite gestionar campañas, clientes, interacciones y generar métricas y reportes. Diseñada para organizaciones que requieren una solución multi-tenant, genera una base de datos por organización al registrarse automáticamente.
+---
 
+## 🖼️ Capturas de Pantalla
+
+### 🔐 Inicio de Sesión
+![Pantalla de inicio](doc/index.png)  
+*Pantalla principal sin autenticación.*
+
+---
+
+### 📋 Gestión de Campañas
+![Campañas](doc/campañas.png)  
+*Vista de creación y edicion de campañas*
+
+---
+
+### 📊 Visualización de Ventas
+![Ventas - Vista 1](doc/ventas1.png)  
+*Ventas.*
+
+![Ventas - Vista 2](doc/ventas2.png)  
+
+---
+
+### 🧾 Reportes Generados
+![Reporte 1](doc/reportes.png)  
+*Reporte PDF generado con JasperReports.*
+
+![Reporte 2](doc/reportes1.png)  
+*Visualización previa del reporte detallado por cliente.*
+
+---
+
+### ⚙️ Configuración y Seguridad
+![Configuración](doc/config.png)  
+*Pantalla de configuración para usuarios con rol de administrador.*
+
+---
+
+### 🧪 IDE
+![Stack Tecnológico](doc/tech.png)  
+*Un vistazo al proyecto.*
+
+---
 ## 📁 Estructura del Proyecto
 ```
 xcrm/
