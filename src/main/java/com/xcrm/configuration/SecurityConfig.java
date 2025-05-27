@@ -45,7 +45,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/",true)
+                        .defaultSuccessUrl("/mi-cuenta",true)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
