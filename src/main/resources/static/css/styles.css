@@ -194,7 +194,15 @@
              color: red;
              font-size: 0.9rem;
           }
-          
+          .card-register {
+              border: none;
+              border-radius: 15px;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+              padding: 2rem;
+              width: 100%;
+              max-width: 500px;
+              background-color: white;
+           }
 
         /* Animación de desvanecimiento al cargar la página */
         .fade-in {
