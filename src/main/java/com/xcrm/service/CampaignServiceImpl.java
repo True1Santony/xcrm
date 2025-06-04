@@ -17,70 +17,83 @@ public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private ClientService clientService;
 
+    // Constructor para inyectar el repositorio de campañas
     @Autowired
     public CampaignServiceImpl(CampaignRepository campaignRepository) {
         this.campaignRepository = campaignRepository;
     }
 
+    // Setter para inyectar el servicio de clientes (con Lazy para evitar dependencias circulares)
     @Autowired
     public void setClientService(@Lazy ClientService clientService) {
         this.clientService = clientService;
     }
 
-    // Asignar una campaña a un cliente o comercial (mediante las tablas intermedias)
+    /**
+     * Añade un cliente a una campaña, actualizando la relación en la base de datos.
+     * Comprueba que ambos existan y luego guarda la asociación.
+     */
     @Transactional
-    public void addClienteToCampania(Long clienteId, Long campaniaId) {
-        Optional<Campaign> campaniaOpt = campaignRepository.findById(campaniaId);
-        Optional<Client> clienteOpt = clientService.findById(clienteId);
+    public void addClientToCampaign(Long clientId, Long campaignId) {
+        Optional<Campaign> campaignOpt = campaignRepository.findById(campaignId);
+        Optional<Client> clientOpt = clientService.findById(clientId);
 
-        if (campaniaOpt.isPresent() && clienteOpt.isPresent()) {
-            Campaign campaign = campaniaOpt.get();
-            Client client = clienteOpt.get();
-            // La relación entre cliente y campaña puede gestionarse a través de la tabla intermedia
+        if (campaignOpt.isPresent() && clientOpt.isPresent()) {
+            Client client = clientOpt.get();
+            Campaign campaign = campaignOpt.get();
             client.getCampaigns().add(campaign);
-            clientService.save(client); // Guardamos al cliente con la relación actualizada
+            clientService.save(client); // Guarda el cliente con la campaña asociada
         }
     }
 
+    // Devuelve todas las campañas almacenadas en la base de datos.
     public List<Campaign> findAll() {
-       return campaignRepository.findAll();
+        return campaignRepository.findAll();
     }
 
+    // Guarda una nueva campaña o actualiza una existente.
     public void save(Campaign campaign) {
         campaignRepository.save(campaign);
     }
 
+    // Busca una campaña por su identificador y devuelve el resultado.
     public Optional<Campaign> findById(Long id){
         return campaignRepository.findById(id);
     }
 
+     // Elimina una campaña identificada por su ID.
     public void deleteById(Long id) {
         campaignRepository.deleteById(id);
     }
 
+    /**
+     * Actualiza los datos de una campaña existente.
+     * Valida que la campaña sea válida y que exista antes de actualizar.
+     * Si no existe o es inválida, lanza una excepción.
+     */
     public Campaign update(Campaign campaign) {
-        // Asegurarse de que la campaña tenga un id y exista en la base de datos
-        if (campaign != null && campaign.getId() != null) {
-            Optional<Campaign> existingCampaign = campaignRepository.findById(campaign.getId());
-            if (existingCampaign.isPresent()) {
-                // Actualizar los detalles de la campaña existente
-                Campaign updatedCampaign = existingCampaign.get();
-                updatedCampaign.setNombre(campaign.getNombre());
-                updatedCampaign.setDescripcion(campaign.getDescripcion());
-                updatedCampaign.setFechaInicio(campaign.getFechaInicio());
-                updatedCampaign.setFechaFin(campaign.getFechaFin());
-                updatedCampaign.setOrganizacion(campaign.getOrganizacion());
-                updatedCampaign.setClientes(campaign.getClientes());
-                // Guardar la campaña actualizada
-                return campaignRepository.save(updatedCampaign);
-            } else {
-                throw new IllegalArgumentException("La campaña con id " + campaign.getId() + " no existe");
-            }
+        if (campaign == null || campaign.getId() == null) {
+            throw new IllegalArgumentException("Campaña inválida o sin id");
         }
-        throw new IllegalArgumentException("Campaña inválida o sin id");
+
+        Optional<Campaign> existingCampaignOpt = campaignRepository.findById(campaign.getId());
+        if (existingCampaignOpt.isEmpty()) {
+            throw new IllegalArgumentException("La campaña con id " + campaign.getId() + " no existe");
+        }
+
+        Campaign existingCampaign = existingCampaignOpt.get();
+        existingCampaign.setNombre(campaign.getNombre());
+        existingCampaign.setDescripcion(campaign.getDescripcion());
+        existingCampaign.setFechaInicio(campaign.getFechaInicio());
+        existingCampaign.setFechaFin(campaign.getFechaFin());
+        existingCampaign.setOrganizacion(campaign.getOrganizacion());
+        existingCampaign.setClientes(campaign.getClientes());
+
+        return campaignRepository.save(existingCampaign);
     }
 
+    // Busca y devuelve una lista de campañas a partir de una lista de IDs.
     public List<Campaign> findAllByIds(List<Long> campaignIds) {
-       return campaignRepository.findAllById(campaignIds);
+        return campaignRepository.findAllById(campaignIds);
     }
 }
