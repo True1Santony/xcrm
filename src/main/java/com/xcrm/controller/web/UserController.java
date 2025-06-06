@@ -92,7 +92,6 @@ public class UserController {
         // Crear el DTO y asignar los datos correspondientes
         EditarFotoDTO dto = new EditarFotoDTO();
         dto.setId(actual.getId());
-        dto.setOrganizacionId(actual.getOrganizacion().getId());
         dto.setFotoUrl(actual.getFotoUrl());
         dto.setCompania(actual.getOrganizacion().getNombre());
         dto.setNombre(actual.getUsername());
@@ -137,7 +136,7 @@ public class UserController {
                         : "";
                 String nombreArchivo = actual.getId() + extension;
 
-                String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+                String rutaPublica = imageService.saveImage(foto, nombreArchivo);
 
                 actual.setFotoUrl(rutaPublica);
                 log.info("Ruta pública guardada: " + rutaPublica);
@@ -248,7 +247,7 @@ public class UserController {
                     : "";
             String nombreArchivo = actual.getId() + extension;
 
-            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
+            String rutaPublica = imageService.saveImage(foto, nombreArchivo);
             actual.setFotoUrl(rutaPublica);
 
             userService.save(actual);
