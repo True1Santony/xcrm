@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+
+<!--
+  Fragmento reusable que define el pie de página específico para la sección administrativa.
+  Contiene tres bloques principales: enlaces de navegación, información de soporte y enlaces a redes sociales.
+-->
+
 <footer class="bg-dark text-white py-4 mt-4" th:fragment="footer_admin">
     <div class="container">
         <div class="row text-center text-md-start align-items-center">
 
-            <!-- Enlaces a la izquierda -->
+            <!--
+              Bloque de enlaces principales para navegar por la web (Inicio, Contacto, Aviso Legal).
+              Ubicado a la izquierda para facilitar acceso rápido a páginas clave.
+            -->
             <div class="col-md-4 mb-3 mb-md-0">
                 <h5>Enlaces</h5>
                 <ul class="list-unstyled">
@@ -15,7 +24,10 @@
                 </ul>
             </div>
 
-            <!-- Soporte en el centro -->
+            <!--
+              Información de contacto para soporte técnico o administrativo.
+              Incluye email y teléfono para que el usuario pueda solicitar ayuda.
+            -->
             <div class="col-md-4 mb-3 mb-md-0">
                 <h5>Soporte</h5>
                 <ul class="list-unstyled">
@@ -24,16 +36,29 @@
                 </ul>
             </div>
 
-            <!-- Redes sociales a la derecha -->
+            <!--
+              Enlaces a redes sociales donde se puede seguir a la empresa.
+              Ubicados a la derecha para destacar la presencia online en Instagram, Twitter y LinkedIn.
+            -->
             <div class="col-md-4 text-md-end">
                 <h5>Síguenos</h5>
-                <a href="https://www.instagram.com/" class="text-white me-3" target="_blank"><i class="bi bi-instagram fs-4"></i></a>
-                <a href="https://x.com/?lang=es" class="text-white me-3" target="_blank"><i class="bi bi-twitter fs-4"></i></a>
-                <a href="https://www.linkedin.com/home" class="text-white" target="_blank"><i class="bi bi-linkedin fs-4"></i></a>
+                <a href="https://www.instagram.com/" class="text-white me-3" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-instagram fs-4"></i>
+                </a>
+                <a href="https://x.com/?lang=es" class="text-white me-3" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-twitter fs-4"></i>
+                </a>
+                <a href="https://www.linkedin.com/home" class="text-white" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-linkedin fs-4"></i>
+                </a>
             </div>
 
         </div>
+
+        <!-- Línea visual que separa el contenido del footer del aviso legal -->
         <hr class="bg-white">
+
+        <!-- Texto centrado con derechos reservados y año actual -->
         <div class="text-center">
             <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
         </div>

@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+
+<!--
+  Fragmento reutilizable para el pie de página que se puede incluir en otras páginas con Thymeleaf.
+  Contiene tres bloques principales: navegación básica, información de contacto y enlaces a redes sociales.
+-->
+
 <footer class="bg-dark text-white py-4" th:fragment="footer">
   <div class="container">
     <div class="row text-center text-md-start align-items-center">
 
-      <!-- Enlaces a la izquierda -->
+      <!-- Bloque de navegación con enlaces principales del sitio web -->
       <div class="col-md-4 mb-3 mb-md-0">
         <h5>Enlaces</h5>
         <ul class="list-unstyled">
@@ -15,7 +21,7 @@
         </ul>
       </div>
 
-      <!-- Contacto en el centro -->
+      <!-- Bloque con información básica de contacto -->
       <div class="col-md-4 mb-3 mb-md-0">
         <h5>Contacto</h5>
         <ul class="list-unstyled">
@@ -24,16 +30,26 @@
         </ul>
       </div>
 
-      <!-- Redes sociales a la derecha -->
+      <!-- Bloque con enlaces a redes sociales para seguir a la empresa -->
       <div class="col-md-4 text-md-end">
         <h5>Síguenos</h5>
-        <a href="https://www.instagram.com/" class="text-white me-3" target="_blank"><i class="bi bi-instagram fs-4"></i></a>
-        <a href="https://x.com/?lang=es" class="text-white me-3" target="_blank"><i class="bi bi-twitter fs-4"></i></a>
-        <a href="https://www.linkedin.com/home" class="text-white" target="_blank"><i class="bi bi-linkedin fs-4"></i></a>
+        <a href="https://www.instagram.com/" class="text-white me-3" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-instagram fs-4"></i>
+        </a>
+        <a href="https://x.com/?lang=es" class="text-white me-3" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-twitter fs-4"></i>
+        </a>
+        <a href="https://www.linkedin.com/home" class="text-white" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-linkedin fs-4"></i>
+        </a>
       </div>
 
     </div>
+
+    <!-- Línea divisoria -->
     <hr class="bg-white">
+
+    <!-- Derechos de autor centrados -->
     <div class="text-center">
       <p class="mb-0">&copy; 2024 XCRM. Todos los derechos reservados.</p>
     </div>
