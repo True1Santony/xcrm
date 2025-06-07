@@ -144,7 +144,7 @@ public class UserController {
     }
 
     // Muestra la configuración del usuario actual para poder modificar datos personales y de la organización.
-    @GetMapping("/usuarios/configuracion")
+    @GetMapping("/configuracion")
     public String mostrarConfiguracion(Model model, Principal principal) {
         User usuario = userService.findByUsername(principal.getName());
         model.addAttribute("usuario", usuario);
@@ -237,7 +237,6 @@ public class UserController {
      */
     @PostMapping("/enviar-ticket-edicion")
     public String enviarSolicitudEdicionPerfil(@RequestParam("usuarioId") UUID usuarioId,
-                                               @RequestParam("organizacionId") Long organizacionId,
                                                @RequestParam("compania") String compania,
                                                @RequestParam("nombre") String nombre,
                                                @RequestParam("correo") String correo,
