@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/registro",
                                 "/css/**",
                                 "/JavaScript/**",
-                                "/images/**")
+                                "/images/**",
+                                "/aviso-legal")
                         .permitAll()
                         .requestMatchers("/api/cache/clear").hasRole("ADMIN")
                         .requestMatchers("/api/config/**").hasRole("ADMIN")
