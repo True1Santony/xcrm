@@ -87,7 +87,7 @@ public class ContactoController {
 
             // Si hay archivo adjunto, guarda su nombre
             if (archivo != null && !archivo.isEmpty()) {
-                mensajeContacto.setArchivoNombre(archivo.getOriginalFilename());
+                mensajeContacto.setNombreArchivoAdjunto(archivo.getOriginalFilename());
             }
 
             // Asocia el mensaje al usuario autenticado o le genera un ID anónimo
@@ -95,7 +95,7 @@ public class ContactoController {
             mensajeContacto.setUsuarioId(usuarioId);
 
             // Guarda el mensaje en la base de datos
-            contactoMensajeService.guardarMensaje(mensajeContacto);
+            contactoMensajeService.guardarMensajeContacto(mensajeContacto);
 
             // Muestra un mensaje de éxito al usuario
             redirectAttributes.addFlashAttribute("success", "¡Mensaje enviado correctamente!");

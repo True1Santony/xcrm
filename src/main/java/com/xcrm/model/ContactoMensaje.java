@@ -7,26 +7,41 @@ import java.time.LocalDateTime;
 @Table(name = "contacto_mensaje")
 public class ContactoMensaje {
 
+    // Representa un mensaje enviado a través del formulario de contacto.
+    // Cada mensaje tiene un ID único generado automáticamente para identificarlo en la base de datos.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // ID único para cada mensaje
+    private Long id;
 
-    private String nombre;  // Nombre del remitente
-    private String email;   // Email del remitente
-    private String asunto;  // Asunto del mensaje
+    // Datos básicos del remitente: nombre, email y asunto del mensaje.
+
+    private String nombre;
+    private String email;
+    private String asunto;
+
+    // Contenido principal del mensaje, con un tamaño máximo permitido.
 
     @Column(length = 5000)
-    private String mensaje;  // Contenido del mensaje
+    private String mensaje;
 
-    private String archivoDropboxUrl;  // URL del archivo adjunto en Dropbox
+    // Información sobre el archivo adjunto, que puede estar almacenado en Dropbox.
+    // Se guarda la URL del archivo en Dropbox y su nombre para referencia.
 
-    private String archivoNombre;  // Nombre del archivo adjunto, si existe
+    private String archivoDropboxUrl;
+    private String nombreArchivoAdjunto;
+
+    // Identificador del usuario que envió el mensaje, para relacionarlo con la cuenta correspondiente.
+    // Se almacena como texto (UUID en formato string).
 
     @Column(name = "usuarioId")
-    private String usuarioId;  // UUID asociado al usuario, almacenado como texto
+    private String usuarioId;
 
-    private LocalDateTime fechaEnvio;  // Fecha y hora del envío del mensaje
+    // Fecha y hora en que se envió el mensaje, para registro y orden cronológico.
 
+    private LocalDateTime fechaEnvio;
+
+    // Métodos estándar para obtener y modificar los valores de cada campo.
     // Getters y Setters
     public Long getId() {
         return id;
@@ -76,19 +91,19 @@ public class ContactoMensaje {
         this.archivoDropboxUrl = archivoDropboxUrl;
     }
 
-    public String getArchivoNombre() {
-        return archivoNombre;
+    public String getNombreArchivoAdjunto() {
+        return nombreArchivoAdjunto;
     }
 
-    public void setArchivoNombre(String archivoNombre) {
-        this.archivoNombre = archivoNombre;
+    public void setNombreArchivoAdjunto(String nombreArchivoAdjunto) {
+        this.nombreArchivoAdjunto = nombreArchivoAdjunto;
     }
 
-    public String getUsuarioId() { // Relación con el UUID de Usuario
+    public String getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(String usuarioId) { // Relación con el UUID de Usuario
+    public void setUsuarioId(String usuarioId) {
         this.usuarioId = usuarioId;
     }
 

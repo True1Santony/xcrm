@@ -1,83 +1,60 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
+  <!-- Configuraciones generales del documento: codificación, vista en móviles, título y estilos -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editar Perfil - XCRM</title>
-  <!-- Google Fonts -->
+
+  <!-- Fuentes y librerías CSS (Google Fonts, Bootstrap, íconos y estilos propios) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- Estilos personalizados -->
   <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body class="fade-in">
 
+<!-- Inserta el menú de navegación superior para usuarios autenticados (fragmento reutilizable) -->
 <div th:replace="~{fragments/navbar-authenticated :: navbar-auth}"></div>
 
 <div class="container-fluid">
   <div class="row">
-    <!-- Menú Lateral -->
-    <!-- Botón del menú solo visible en pantallas pequeñas -->
-    <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+
+    <!-- Botón que muestra el menú lateral en pantallas pequeñas -->
+    <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarAdminMenu">
       <i class="bi bi-list fs-4"></i>
     </button>
 
-    <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
+    <!-- Menú lateral con enlaces a las secciones administrativas del sistema -->
+    <nav id="sidebarAdminMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
       <div class="position-sticky pt-3">
+        <!-- Nombre del usuario autenticado -->
         <div class="text-center mb-4">
           <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
         </div>
-
         <hr class="border-light">
-
+        <!-- Lista de secciones disponibles para el usuario admin -->
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" th:href="@{/mi-cuenta}">
-              <i class="bi bi-person"></i> Panel Admin
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/usuarios/administration}">
-              <i class="bi bi-people"></i> Usuarios
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/campaigns/administration}">
-              <i class="bi bi-megaphone"></i> Campañas
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/clients}">
-              <i class="bi bi-person-lines-fill"></i> Clientes
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/sales}">
-              <i class="bi bi-journal-text"></i> Ventas
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/report}">
-              <i class="bi bi-bar-chart"></i> Reportes
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/usuarios/configuracion}">
-              <i class="bi bi-gear"></i> Configuración
-            </a>
-          </li>
+          <li class="nav-item"><a class="nav-link active" th:href="@{/mi-cuenta}"><i class="bi bi-person"></i> Panel Admin</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/usuarios/administration}"><i class="bi bi-people"></i> Usuarios</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/campaigns/administration}"><i class="bi bi-megaphone"></i> Campañas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/clients}"><i class="bi bi-person-lines-fill"></i> Clientes</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/sales}"><i class="bi bi-journal-text"></i> Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/report}"><i class="bi bi-bar-chart"></i> Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/usuarios/configuracion}"><i class="bi bi-gear"></i> Configuración</a></li>
         </ul>
       </div>
     </nav>
 
+    <!-- Área principal donde el usuario edita su perfil -->
     <main class="col-md-9 col-lg-10 p-4">
+      <!-- Encabezado de la página con botón para volver -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-pencil-square"></i> Editar Perfil</h2>
         <a th:href="@{/usuarios/configuracion}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
       </div>
 
-      <!-- Mensajes de Éxito/Error -->
+      <!-- Muestra mensajes de éxito o error después de acciones del usuario -->
       <div class="mt-4">
         <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
           <i class="bi bi-check-circle-fill"></i>
@@ -91,48 +68,49 @@
         </div>
       </div>
 
+      <!-- Formulario que contiene los datos del perfil a editar -->
       <div class="card profile-form">
         <div class="card-header bg-primary text-white">
           <h4 class="mb-0">Información de Usuario</h4>
         </div>
 
-        <!-- FORMULARIO PARA GUARDAR FOTO (sin validaciones del resto del formulario) -->
+        <!-- Formulario separado solo para actualizar la foto de perfil -->
         <form th:action="@{/usuarios/guardar-foto}" method="post" enctype="multipart/form-data" id="guardarFotoForm" class="d-inline">
           <input type="hidden" th:value="${usuario.id}" name="usuarioId">
           <div class="mb-4 text-center">
+            <!-- Muestra la foto actual o una imagen por defecto -->
             <label for="fotoPerfil" class="form-label">Foto de Perfil</label><br>
             <img id="previewImagen"
                  th:src="${usuario.fotoUrl != null} ? @{${usuario.fotoUrl}} : @{/images/default-profile.png}"
                  alt="Foto de Perfil"
                  class="rounded-circle mb-2"
                  style="width: 150px; height: 150px; object-fit: cover;">
+            <!-- Input para seleccionar una nueva imagen -->
             <input type="file" class="form-control mt-2" id="fotoPerfil" name="foto" accept="image/*" onchange="mostrarVistaPrevia(event)">
           </div>
         </form>
 
-        <!-- FORMULARIO PARA ENVIAR TICKET -->
-        <form th:action="@{/usuarios/enviar-ticket-edicion}" method="post">
+        <!-- Formulario principal para solicitar cambios de datos al perfil -->
+        <form th:action="@{/usuarios/enviar-ticket-edicion}" method="post" id="editarPerfilForm">
           <input type="hidden" th:value="${usuario.id}" name="usuarioId">
-          <input type="hidden" th:value="${usuario.organizacionId}" name="organizacionId">
 
+          <!-- Campos de entrada editables: compañía, nombre, correo y plan -->
           <div class="mb-3">
             <label for="compania" class="form-label">Nombre de la compañía</label>
-            <input type="text" class="form-control" id="compania" name="compania"
-                   th:value="${usuario.compania}" required>
+            <input type="text" class="form-control" id="compania" name="compania" th:value="${usuario.compania}" required>
           </div>
 
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre del usuario</label>
-            <input type="text" class="form-control" id="nombre" name="nombre"
-                   th:value="${usuario.nombre}" required>
+            <input type="text" class="form-control" id="nombre" name="nombre" th:value="${usuario.nombre}" required>
           </div>
 
           <div class="mb-3">
             <label for="correo" class="form-label">Correo electrónico</label>
-            <input type="email" class="form-control" id="correo" name="correo"
-                   th:value="${usuario.organizacion?.email}" required>
+            <input type="email" class="form-control" id="correo" name="correo" th:value="${usuario.organizacion?.email}" required>
           </div>
 
+          <!-- Selección de plan actual de la organización -->
           <div class="mb-3">
             <label for="plan" class="form-label">Selecciona un Plan:</label>
             <select class="form-select" name="plan" id="plan" required>
@@ -143,26 +121,24 @@
             </select>
           </div>
 
-
+          <!-- Motivo que justifica los cambios (requerido) -->
           <div class="mb-3">
             <label for="motivo" class="form-label">Motivo de la solicitud</label>
             <textarea class="form-control" id="motivo" name="motivo" rows="4"
                       placeholder="Describe qué deseas cambiar y por qué" required></textarea>
           </div>
 
-          <!-- Botones alineados al final, todos juntos -->
+          <!-- Botones de acción para guardar la foto, enviar solicitud o cancelar -->
           <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
-            <!-- Botón Guardar Foto (con su propio formulario) -->
+            <!-- Este botón envía el formulario de la foto -->
             <button type="submit" form="guardarFotoForm" name="accion" value="guardar" class="btn btn-primary">
               <i class="bi bi-save"></i> Guardar Foto
             </button>
 
-            <!-- Botón Enviar Ticket -->
             <button type="submit" name="accion" value="ticket" class="btn btn-primary">
               <i class="bi bi-send"></i> Enviar Ticket
             </button>
 
-            <!-- Botón Cancelar -->
             <a th:href="@{/usuarios/configuracion}" class="btn btn-outline-secondary">
               <i class="bi bi-x-circle"></i> Cancelar
             </a>
@@ -173,9 +149,7 @@
   </div>
 </div>
 
-<div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
-
-<!--Mostrar vista previa-->
+<!-- Script que permite mostrar una vista previa de la imagen antes de subirla -->
 <script>
   function mostrarVistaPrevia(event) {
     const input = event.target;
@@ -190,6 +164,10 @@
     }
   }
 </script>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

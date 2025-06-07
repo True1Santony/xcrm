@@ -2,33 +2,39 @@ package com.xcrm.service;
 
 import com.xcrm.model.ContactoMensaje;
 import com.xcrm.repository.ContactoMensajeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-// Servicio encargado de recibir y almacenar los mensajes en la base de datos
+/**
+ * Servicio que maneja la lógica para recibir y guardar mensajes del formulario de contacto.
+ * Se asegura de asignar fecha de envío y generar un identificador de usuario si no existe,
+ * antes de guardar el mensaje en la base de datos.
+ */
 @Service
 public class ContactoMensajeService {
 
-    @Autowired
-    private ContactoMensajeRepository contactoMensajeRepository;
+    private final ContactoMensajeRepository contactoMensajeRepository;
+
+    // Uso inyección por constructor para que el código sea más claro y fácil de testear
+    public ContactoMensajeService(ContactoMensajeRepository contactoMensajeRepository) {
+        this.contactoMensajeRepository = contactoMensajeRepository;
+    }
 
     /**
-     * Guarda un mensaje en la base de datos.
-     * @param mensaje El mensaje a guardar.
-     * @return El mensaje guardado.
+     * Guarda el mensaje recibido, asignando fecha actual y un ID de usuario si es necesario.
+     * Devuelve el mensaje ya guardado con su ID y fecha asignados.
      */
-    public ContactoMensaje guardarMensaje(ContactoMensaje mensaje) {
-        // Se establece la fecha y hora del envío para el mensaje
+    public ContactoMensaje guardarMensajeContacto(ContactoMensaje mensaje) {
+        // Pone la fecha y hora actuales en el mensaje
         mensaje.setFechaEnvio(LocalDateTime.now());
 
+        // Si el mensaje no tiene usuario asociado, crea uno anónimo nuevo
         if (mensaje.getUsuarioId() == null) {
-            // Solo genera UUID si no se ha asignado previamente
-            UUID usuarioId = UUID.randomUUID();
-            mensaje.setUsuarioId(usuarioId.toString());
+            mensaje.setUsuarioId(UUID.randomUUID().toString());
         }
-        // Guarda el mensaje en la base de datos
-        return contactoMensajeRepository.save(mensaje);  // Persistimos el mensaje en la base de datos
+
+        // Guarda el mensaje en la base de datos y devuelve la entidad persistida
+        return contactoMensajeRepository.save(mensaje);
     }
 }

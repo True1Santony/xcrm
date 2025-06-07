@@ -25,12 +25,20 @@ public class IndexController {
     private final OrganizationService organizationService;
     private final UserService userService;
 
+    /**
+     * Controlador para la página principal.
+     * Solo muestra la vista "index" y registra la acción en logs.
+     */
     @GetMapping("/")
         public String mostrarIndex(Model model){
             log.info("Página de inicio mostrada");
         return "index";
     }
 
+    /**
+     * Controlador para mostrar la página de características.
+     * Añade un título a la vista para mostrar información estática.
+     */
     @GetMapping("/caracteristicas")
     public String mostrarCaracteristicas(Model model) {
         model.addAttribute("titulo", "Características de XCRM");
@@ -43,6 +51,10 @@ public class IndexController {
         return "precios";
     }
 
+    /**
+     * Controlador para la página de login.
+     * Muestra mensajes de error si las credenciales son incorrectas.
+     */
     @GetMapping("/login")
     public String mostrarLogin(Model model, @RequestParam(value = "error", required = false) String error,
                                @RequestParam(value = "logout", required = false) String logout) {
@@ -53,26 +65,41 @@ public class IndexController {
         return "login";
     }
 
+    /**
+     * Controlador para mostrar la página de "Mi Cuenta".
+     * Obtiene y muestra la organización actual asociada al usuario.
+     */
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
         model.addAttribute("organization", organizationService.getCurrentOrganization());
         return "mi-cuenta";
     }
 
-
+    /**
+     * Controlador para la página del aviso legal.
+     * Añade título estático para mostrar el aviso legal.
+     */
     @GetMapping("/aviso-legal")
     public String mostrarAvisoLegal(Model model) {
         model.addAttribute("titulo", "Aviso Legal de XCRM");
         return "aviso-legal";
     }
 
-
+    /**
+     * Controlador para mostrar el formulario de registro.
+     * Añade título para la vista de registro.
+     */
     @GetMapping("/registro")
     public String muestraRegistro(Model model){
         model.addAttribute("titulo", "REGISTRO");
         return "registro";
     }
 
+    /**
+     * Procesa el envío del formulario de registro de nueva organización y usuario administrador.
+     * Valida los datos recibidos, muestra errores si los hay y crea la organización y usuario si es válido.
+     * Finalmente redirige a la página de login con un mensaje de éxito.
+     */
     @PostMapping("/registro")
     public String registrarOrganizacion(@RequestParam String nombreEmpresa,
                                         @RequestParam String nombreAdmin,
@@ -87,7 +114,40 @@ public class IndexController {
         model.addAttribute("titulo", "REGISTRO");
         List<String> errores = new ArrayList<>();
 
-        // Verificar si el email ya está registrado
+        // Valida todos los datos del formulario y agrega posibles errores a la lista
+        validarDatosRegistro(nombreEmpresa, nombreAdmin, email, confirmEmail, password, confirmPassword, errores);
+
+        // Si existen errores, los muestra en la página de registro
+        if (!errores.isEmpty()) {
+            model.addAttribute("errores", errores);
+            return "registro";
+        }
+
+        // Intenta crear la organización y el usuario administrador, capturando posibles errores
+        try {
+            Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
+            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
+        } catch (IllegalArgumentException e) {
+            errores.add(e.getMessage());
+            model.addAttribute("errores", errores);
+            return "registro";
+        }
+
+        // Si todo sale bien, redirige al login con mensaje de éxito
+        redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
+        return "redirect:/login";
+    }
+
+    /**
+     * Método privado que valida los datos de registro recibidos.
+     * Verifica unicidad de email, usuario y organización.
+     * Comprueba que emails y contraseñas coincidan.
+     * Aplica una expresión regular para validar la complejidad de la contraseña.
+     * Todos los errores se añaden a la lista recibida para mostrarlos posteriormente.
+     */
+    private void validarDatosRegistro(String nombreEmpresa, String nombreAdmin, String email, String confirmEmail,
+                                      String password, String confirmPassword, List<String> errores) {
+
         if (organizationService.findByEmail(email).isPresent()) {
             errores.add("El email ya está en uso.");
         }
@@ -96,40 +156,21 @@ public class IndexController {
             errores.add("El usuario ya existe");
         }
 
-        if(organizationService.findByNombre(nombreEmpresa).isPresent()){
+        if (organizationService.findByNombre(nombreEmpresa).isPresent()) {
             errores.add("La organización, con este nombre, ya existe.");
         }
 
-        // Validar que el email y el email de confirmación coincidan
-       if (!email.equals(confirmEmail)) {
-           errores.add("Los emails no coinciden.");
+        if (!email.equals(confirmEmail)) {
+            errores.add("Los emails no coinciden.");
         }
 
-        // Validar que la contraseña y la confirmación coincidan
-       if (!password.equals(confirmPassword)) {
-           errores.add("Las contraseñas no coinciden.");
+        if (!password.equals(confirmPassword)) {
+            errores.add("Las contraseñas no coinciden.");
         }
-        // Validación de la contraseña con expresión regular
+
         String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$";
         if (!Pattern.matches(regex, password)) {
             errores.add("La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y al menos 6 caracteres.");
         }
-
-        if (!errores.isEmpty()) {
-            model.addAttribute("errores", errores);
-            return "registro";
-        }
-
-        try {
-            Organization nuevaOrganization = organizationService.crearOrganizacion(nombreEmpresa, email, plan);
-            userService.crearUsuarioConOrganizacion(nombreAdmin, password, nuevaOrganization, "ROLE_ADMIN");
-
-        } catch (IllegalArgumentException e) {
-            errores.add( e.getMessage());
-            model.addAttribute("errores",errores);
-            return "registro";
-        }
-        redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
-        return "redirect:/login";
     }
 }

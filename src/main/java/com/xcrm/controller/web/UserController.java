@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,21 +25,19 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/usuarios")
 public class UserController {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private OrganizationService organizationService;
+    // Servicios necesarios para operaciones con usuarios, organizaciones, imágenes, envío de emails Y contraseña codificada
+    @Autowired private UserService userService;
+    @Autowired private OrganizationService organizationService;
+    @Autowired private ImageService imageService;
+    @Autowired private EmailSender emailSender;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private EmailSender emailSender;
 
     @Value("${uploads.dir}")
     private String uploadDir;
 
+    // Atributo común para mostrar título en las vistas relacionadas con usuarios
     @ModelAttribute("titulo")
     public String title() {
         return "Registro de Usuarios";
@@ -74,108 +73,98 @@ public class UserController {
                                 RedirectAttributes redirectAttributes) {
 
         userService.actualizarUsuario(userId, nuevoUsername, nuevoPassword, roles);
-        redirectAttributes.addFlashAttribute("mensaje", "Usuario actualizado correctamente");
+        redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
         return "redirect:/usuarios/administration";
     }
 
     @PostMapping("/eliminar")
     public String eliminarUsuario(@RequestParam("user_id") UUID userId, RedirectAttributes redirectAttributes) {
         userService.eliminarUsuario(userId);
-        redirectAttributes.addFlashAttribute("mensaje", "Usuario eliminado correctamente");
+        redirectAttributes.addFlashAttribute("success", "Usuario eliminado correctamente");
         return "redirect:/usuarios/administration";
     }
 
+    // Muestra el formulario para que el usuario autenticado pueda editar su perfil, cargando sus datos actuales.
     @GetMapping("/edit-mi-perfil")
-    public String editarMiPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User actual = userService.findByUsername(userDetails.getUsername());
+    public String mostrarFormularioEditarPerfil(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User usuarioActual = userService.findByUsername(userDetails.getUsername());
 
-        // Crear el DTO y asignar los datos correspondientes
-        EditarFotoDTO dto = new EditarFotoDTO();
-        dto.setId(actual.getId());
-        dto.setOrganizacionId(actual.getOrganizacion().getId());
-        dto.setFotoUrl(actual.getFotoUrl());
-        dto.setCompania(actual.getOrganizacion().getNombre());
-        dto.setNombre(actual.getUsername());
-        dto.setOrganizacion(actual.getOrganizacion());
+        EditarFotoDTO perfilDTO = new EditarFotoDTO();
+        perfilDTO.setId(usuarioActual.getId());
+        perfilDTO.setFotoUrl(usuarioActual.getFotoUrl());
+        perfilDTO.setCompania(usuarioActual.getOrganizacion().getNombre());
+        perfilDTO.setNombre(usuarioActual.getUsername());
+        perfilDTO.setOrganizacion(usuarioActual.getOrganizacion());
 
-        model.addAttribute("usuario", dto);
+        model.addAttribute("usuario", perfilDTO);
         return "edit-mi-perfil";
     }
 
-//refact
+    /**
+     * Actualiza la foto de perfil del usuario autenticado.
+     * Valida la imagen, la guarda y actualiza la URL en el perfil.
+     */
     @PostMapping("/edit-mi-perfil/update")
-    public String actualizarFoto(@ModelAttribute("usuario") EditarFotoDTO dto,
-                                 @AuthenticationPrincipal UserDetails userDetails,
-                                 @RequestParam(value = "foto", required = false) MultipartFile foto,
-                                 RedirectAttributes redirectAttributes) {
+    public String actualizarFotoPerfil(@ModelAttribute("usuario") EditarFotoDTO perfilDTO,
+                                       @AuthenticationPrincipal UserDetails userDetails,
+                                       @RequestParam(value = "foto", required = false) MultipartFile foto,
+                                       RedirectAttributes redirectAttributes) {
 
         log.info("== Guardando nueva foto de perfil ==");
         log.info("Archivo recibido: " + (foto != null ? foto.getOriginalFilename() : "NULO"));
 
-        User actual = userService.findByUsername(userDetails.getUsername());
+        User usuarioActual = userService.findByUsername(userDetails.getUsername());
 
-        if (!dto.getId().equals(actual.getId())) {
+        if (!perfilDTO.getId().equals(usuarioActual.getId())) {
             redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
             return "redirect:/mi-cuenta";
         }
 
         if (foto != null && !foto.isEmpty()) {
-            if (!foto.getContentType().startsWith("image/")) {
-                redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
-                return "redirect:/mi-cuenta";
-            }
-
-            if (foto.getSize() > (2 * 1024 * 1024)) {
-                redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
-                return "redirect:/mi-cuenta";
-            }
-
             try {
-                String originalNombre = foto.getOriginalFilename();
-                String extension = originalNombre != null && originalNombre.contains(".")
-                        ? originalNombre.substring(originalNombre.lastIndexOf("."))
-                        : "";
-                String nombreArchivo = actual.getId() + extension;
+                validarImagen(foto, redirectAttributes, "redirect:/mi-cuenta");
 
-                String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
-
-                actual.setFotoUrl(rutaPublica);
+                String extension = obtenerExtensionArchivo(foto.getOriginalFilename());
+                String nombreArchivo = usuarioActual.getId() + extension;
+                String rutaPublica = imageService.saveImage(foto, nombreArchivo);
+                usuarioActual.setFotoUrl(rutaPublica);
                 log.info("Ruta pública guardada: " + rutaPublica);
+            } catch (IllegalArgumentException e) {
+                // Ya seteó el mensaje de error en redirectAttributes dentro de validarImagen
+                return "redirect:/mi-cuenta";
             } catch (Exception e) {
                 redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
                 return "redirect:/mi-cuenta";
             }
         }
 
-        userService.save(actual);
+        userService.save(usuarioActual);
         redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
         return "redirect:/mi-cuenta";
     }
 
+    // Muestra la configuración del usuario actual para poder modificar datos personales y de la organización.
     @GetMapping("/configuracion")
-    public String mostrarConfiguracion(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User actual = userService.findByUsername(userDetails.getUsername());
-        model.addAttribute("usuario", actual);
-        return "configuracion";
-    }
-
-    @GetMapping("/usuarios/configuracion")
     public String mostrarConfiguracion(Model model, Principal principal) {
         User usuario = userService.findByUsername(principal.getName());
         model.addAttribute("usuario", usuario);
         return "configuracion";
     }
 
-    //ojo rompe multitenant
+    /**
+     * ️ ⚠️ ojo rompe multitenant
+     * Actualiza la configuración del usuario y su organización.
+     * Realiza validaciones básicas y guarda cambios, pero tiene una advertencia sobre multitenancy.
+     */
     @PostMapping("/actualizar-configuracion")
-    public String actualizarConfiguracion(@AuthenticationPrincipal UserDetails userDetails,
-                                          @RequestParam("compania") String compania,
-                                          @RequestParam("nombre") String nombre,
-                                          @RequestParam("correo") String correo,
-                                          @RequestParam(value = "password", required = false) String password,
-                                          RedirectAttributes redirectAttributes) {
+    public String actualizarConfiguracionUsuario(@AuthenticationPrincipal UserDetails userDetails,
+                                                 @RequestParam("compania") String compania,
+                                                 @RequestParam("nombre") String nombre,
+                                                 @RequestParam("correo") String correo,
+                                                 @RequestParam(value = "password", required = false) String password,
+                                                 RedirectAttributes redirectAttributes) {
 
-        User actual = userService.findByUsername(userDetails.getUsername());
+        User usuarioActual = userService.findByUsername(userDetails.getUsername());
 
         if (nombre == null || nombre.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "El nombre del usuario no puede estar vacío.");
@@ -192,8 +181,7 @@ public class UserController {
             return "redirect:/usuarios/configuracion";
         }
 
-        // Actualización de datos
-        actual.setUsername(nombre);
+        usuarioActual.setUsername(nombre);
 
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
@@ -201,59 +189,40 @@ public class UserController {
                 return "redirect:/usuarios/configuracion";
             }
 
-            actual.setPassword(password); // ⚠️ hay que cifrar con Spring Security, si
+            // Codificar la contraseña antes de asignarla
+            usuarioActual.setPassword(passwordEncoder.encode(password));
         }
 
-        Organization org = actual.getOrganizacion();
-        org.setNombre(compania);
-        organizationService.save(org); // solo se actualiza en su bd, no en central
-        userService.save(actual);
+        Organization organizacion = usuarioActual.getOrganizacion();
+        organizacion.setNombre(compania);
+        organizationService.save(organizacion); // Se guarda solo en BD del tenant
+        userService.save(usuarioActual);
 
         redirectAttributes.addFlashAttribute("success", "Los datos de configuración fueron actualizados correctamente.");
         return "redirect:/usuarios/configuracion";
     }
 
+    // Permite guardar la foto de perfil desde un formulario, validando que el usuario solo modifique su propio perfil.
     @PostMapping("/guardar-foto")
-    public String guardarFotoPerfil(@RequestParam("usuarioId") UUID userId,
-                                    @RequestParam("foto") MultipartFile foto,
-                                    RedirectAttributes redirectAttributes,
-                                    @AuthenticationPrincipal UserDetails userDetails) {
+    public String guardarFotoPerfilDesdeFormulario(@RequestParam("usuarioId") UUID userId,
+                                                   @RequestParam("foto") MultipartFile foto,
+                                                   RedirectAttributes redirectAttributes,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
 
-        User actual = userService.findByUsername(userDetails.getUsername());
+        User usuarioActual = userService.findByUsername(userDetails.getUsername());
 
-        if (!actual.getId().equals(userId)) {
+        if (!usuarioActual.getId().equals(userId)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permiso para modificar otro perfil.");
             return "redirect:/usuarios/edit-mi-perfil";
         }
 
-        if (foto == null || foto.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Debe seleccionar una imagen.");
-            return "redirect:/usuarios/edit-mi-perfil";
-        }
-
-        if (!foto.getContentType().startsWith("image/")) {
-            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
-            return "redirect:/usuarios/edit-mi-perfil";
-        }
-
-        if (foto.getSize() > (2 * 1024 * 1024)) {
-            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
-            return "redirect:/usuarios/edit-mi-perfil";
-        }
-
         try {
-            String originalNombre = foto.getOriginalFilename();
-            String extension = originalNombre != null && originalNombre.contains(".")
-                    ? originalNombre.substring(originalNombre.lastIndexOf("."))
-                    : "";
-            String nombreArchivo = actual.getId() + extension;
-
-            String rutaPublica = imageService.guardarImagen(foto, nombreArchivo);
-            actual.setFotoUrl(rutaPublica);
-
-            userService.save(actual);
+            String extension = obtenerExtensionArchivo(foto.getOriginalFilename());
+            String nombreArchivo = usuarioActual.getId() + extension;
+            String rutaPublica = imageService.saveImage(foto, nombreArchivo);
+            usuarioActual.setFotoUrl(rutaPublica);
+            userService.save(usuarioActual);
             redirectAttributes.addFlashAttribute("success", "Foto de perfil actualizada correctamente.");
-
         } catch (Exception e) {
             log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
@@ -261,16 +230,19 @@ public class UserController {
 
         return "redirect:/usuarios/edit-mi-perfil";
     }
+
+    /**
+     * Envía un ticket o solicitud por email para pedir edición de perfil.
+     * Construye el mensaje con datos del usuario y el motivo, y maneja errores en el envío.
+     */
     @PostMapping("/enviar-ticket-edicion")
-    public String enviarTicketEdicion(
-            @RequestParam("usuarioId") UUID usuarioId,
-            @RequestParam("organizacionId") Long organizacionId,
-            @RequestParam("compania") String compania,
-            @RequestParam("nombre") String nombre,
-            @RequestParam("correo") String correo,
-            @RequestParam("plan") String plan,
-            @RequestParam("motivo") String motivo,
-            RedirectAttributes redirectAttributes) {
+    public String enviarSolicitudEdicionPerfil(@RequestParam("usuarioId") UUID usuarioId,
+                                               @RequestParam("compania") String compania,
+                                               @RequestParam("nombre") String nombre,
+                                               @RequestParam("correo") String correo,
+                                               @RequestParam("plan") String plan,
+                                               @RequestParam("motivo") String motivo,
+                                               RedirectAttributes redirectAttributes) {
 
         String asunto = "Solicitud de Edición de Perfil - " + nombre;
         String mensaje = String.format(
@@ -292,5 +264,36 @@ public class UserController {
         }
 
         return "redirect:/usuarios/edit-mi-perfil";
+    }
+
+    /**
+     * Valida que la imagen recibida no esté vacía, sea de tipo imagen y no supere los 2MB.
+     * En caso de error, establece mensajes y lanza excepción para abortar el proceso.
+     */
+    private void validarImagen(MultipartFile foto, RedirectAttributes redirectAttributes, String redirectPath) throws IllegalArgumentException {
+        if (foto == null || foto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Debe seleccionar una imagen.");
+            throw new IllegalArgumentException("Debe seleccionar una imagen.");
+        }
+
+        if (!foto.getContentType().startsWith("image/")) {
+            redirectAttributes.addFlashAttribute("error", "Solo se permiten archivos de imagen.");
+            throw new IllegalArgumentException("Solo se permiten archivos de imagen.");
+        }
+
+        if (foto.getSize() > (2 * 1024 * 1024)) {
+            redirectAttributes.addFlashAttribute("error", "La imagen debe pesar menos de 2MB.");
+            throw new IllegalArgumentException("La imagen debe pesar menos de 2MB.");
+        }
+    }
+
+    /**
+     * Helper privado
+     * Método auxiliar para obtener la extensión del archivo a partir de su nombre original.
+     */
+    private String obtenerExtensionArchivo(String nombreOriginal) {
+        return (nombreOriginal != null && nombreOriginal.contains("."))
+                ? nombreOriginal.substring(nombreOriginal.lastIndexOf("."))
+                : "";
     }
 }

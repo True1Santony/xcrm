@@ -1,5 +1,7 @@
 package com.xcrm.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,49 +12,47 @@ import java.io.IOException;
 @Service
 public class ImageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
+
     @Value("${uploads.dir}")
-    private String uploadDir;
+    private String uploadsDirectory;
 
     /**
-     * Guarda la imagen en el sistema de archivos y devuelve la ruta pública accesible.
+     * Guarda una imagen en el sistema de archivos y devuelve la ruta pública para acceder a ella.
      *
-     * @param file     imagen a guardar
-     * @param filename nombre del archivo (ej: uuid.jpg)
-     * @return ruta accesible por navegador (ej: "/uploads/uuid.jpg")
-     * @throws IllegalArgumentException si el archivo no es una imagen válida
+     * @param imageFile archivo de imagen a guardar
+     * @param filename  nombre con el que se guardará el archivo (ejemplo: uuid.jpg)
+     * @return ruta pública accesible desde el navegador (ejemplo: "/uploads/uuid.jpg")
+     * @throws IllegalArgumentException si el archivo no es una imagen válida o supera el tamaño permitido
      * @throws IOException si ocurre un error al guardar el archivo
      */
-    public String guardarImagen(MultipartFile file, String filename) throws IOException {
-        // Validar tipo MIME
-        if (!file.getContentType().startsWith("image/")) {
-            System.out.println("Archivo rechazado: tipo no permitido: " + file.getContentType());
+    public String saveImage(MultipartFile imageFile, String filename) throws IOException {
+        // Validar que sea un archivo de imagen
+        if (!imageFile.getContentType().startsWith("image/")) {
+            logger.warn("Archivo rechazado: tipo no permitido: {}", imageFile.getContentType());
             throw new IllegalArgumentException("Solo se permiten archivos de imagen.");
         }
 
-        // Validar tamaño
-        if (file.getSize() > 2 * 1024 * 1024) {
-            System.out.println("Archivo rechazado: tamaño excedido (" + file.getSize() + ")");
+        // Validar tamaño máximo permitido (2MB)
+        if (imageFile.getSize() > 2 * 1024 * 1024) {
+            logger.warn("Archivo rechazado: tamaño excedido ({} bytes)", imageFile.getSize());
             throw new IllegalArgumentException("La imagen debe pesar menos de 2MB.");
         }
 
-
-        File directorio = new File(uploadDir);
-        if (!directorio.exists()) {
-            boolean creada = directorio.mkdirs();
-            if (!creada) {
-                throw new IOException("No se pudo crear el directorio: " + directorio.getAbsolutePath());
+        File uploadDirFile = new File(uploadsDirectory);
+        if (!uploadDirFile.exists()) {
+            boolean created = uploadDirFile.mkdirs();
+            if (!created) {
+                logger.error("No se pudo crear el directorio: {}", uploadDirFile.getAbsolutePath());
+                throw new IOException("No se pudo crear el directorio: " + uploadDirFile.getAbsolutePath());
             }
         }
 
-        // Crear archivo de destino
-        File destino = new File(uploadDir, filename);
+        File destinationFile = new File(uploadsDirectory, filename);
 
-        // Mostrar ruta absoluta para verificación
-        System.out.println("Guardando imagen en: " + destino.getAbsolutePath());
+        logger.info("Guardando imagen en: {}", destinationFile.getAbsolutePath());
 
-        // Transferir el archivo
-        System.out.println("== GUARDANDO EN: " + destino.getAbsolutePath());
-        file.transferTo(destino);
+        imageFile.transferTo(destinationFile);
 
         return "/uploads/" + filename;
     }
