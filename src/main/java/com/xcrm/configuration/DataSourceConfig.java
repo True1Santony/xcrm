@@ -19,8 +19,8 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableTransactionManagement//gestion automatica de transacciones, consistencia y atomicidad
-@EnableJpaRepositories("com.xcrm.repository")//no necesario en el contexto de spring boot,spring si que lo necesita
+@EnableTransactionManagement
+@EnableJpaRepositories("com.xcrm.repository")
 public class DataSourceConfig {
 
     @Value("${spring.datasource.driver-class-name}")
@@ -62,10 +62,10 @@ public class DataSourceConfig {
 
         // Configuraciones adicionales de JPA/Hibernate
         Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.show_sql", "true"); // Muestra las consultas SQL en la consola
-        jpaProperties.put("hibernate.format_sql", "true"); // Formatea las consultas para mejor legibilidad
-        jpaProperties.put("hibernate.use_sql_comments", "true"); // Agrega comentarios en las consultas SQL
-        jpaProperties.put("hibernate.hbm2ddl.auto", "update"); // Opcional: actualizar el esquema automáticamente
+        jpaProperties.put("hibernate.show_sql", "false");
+        jpaProperties.put("hibernate.format_sql", "true");
+        jpaProperties.put("hibernate.use_sql_comments", "true");
+        jpaProperties.put("hibernate.hbm2ddl.auto", "update");
 
         emf.setJpaProperties(jpaProperties);
         return emf;
