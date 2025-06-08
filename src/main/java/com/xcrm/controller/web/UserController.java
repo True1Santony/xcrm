@@ -1,6 +1,6 @@
 package com.xcrm.controller.web;
 
-import com.xcrm.DTO.EditarFotoDTO;
+import com.xcrm.dto.EditarFotoDTO;
 import com.xcrm.model.Organization;
 import com.xcrm.model.User;
 import com.xcrm.service.*;

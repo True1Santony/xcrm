@@ -1,4 +1,4 @@
-package com.xcrm.DTO;
+package com.xcrm.dto;
 
 import com.xcrm.model.Organization;
 import lombok.Data;

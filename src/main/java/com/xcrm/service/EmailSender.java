@@ -2,6 +2,8 @@ package com.xcrm.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -20,12 +22,11 @@ public class EmailSender {
 
     private final JavaMailSender mailSender;
     private final String destinatarioCorreo;
+    private static final Logger logger = LoggerFactory.getLogger(EmailSender.class);
 
-    /**
-     * Constructor donde se inyectan:
-     * - el servicio para enviar correos (JavaMailSender)
-     * - la dirección de correo destino desde el archivo de configuración
-     */
+    @Value("${xcrm.mail.enabled:true}")
+    private boolean mailEnabled;
+
     @Autowired
     public EmailSender(JavaMailSender mailSender,
                        @Value("${email.destinatario}") String destinatarioCorreo) {
@@ -43,6 +44,12 @@ public class EmailSender {
     public void enviarCorreo(String nombre, String email, String asunto, String mensaje,
                              MultipartFile archivo, String urlArchivoDropbox)
             throws MailException, MessagingException, IOException {
+
+
+        if (!mailEnabled) {
+            logger.info("🚫 Envío de correos deshabilitado por configuración (xcrm.mail.enabled=false)");
+            return;
+        }
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
