@@ -1,36 +1,51 @@
 package com.xcrm.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "campanias")
 public class Campaign implements Serializable {
 
+    // Representa una campaña comercial dentro del sistema CRM.
+    // Contiene información básica, fechas de duración, organización relacionada
+    // y relaciones con clientes y usuarios comerciales.
+
+    // Identificador único de la campaña
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Nombre de la campaña (hasta 100 caracteres)
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    // Descripción detallada de la campaña
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    // Fecha de inicio de la campaña (obligatoria)
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
+    // Fecha de fin de la campaña (obligatoria)
     @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
+    // Organización a la que pertenece la campaña (relación muchos-a-uno)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacion_id", nullable = false)
-    private Organization organization;
+    private Organization organizacion;
 
-    // Relación con los clientes
+    // Lista de clientes asignados a esta campaña (relación muchos-a-muchos)
     @ManyToMany
     @JoinTable(
             name = "clientes_campanias",
@@ -39,7 +54,7 @@ public class Campaign implements Serializable {
     )
     private Set<Client> clientes = new HashSet<>();
 
-    // Relación con los comerciales
+    // Lista de usuarios comerciales asignados a esta campaña (relación muchos-a-muchos)
     @ManyToMany
     @JoinTable(
             name = "comerciales_campanias",
@@ -48,83 +63,16 @@ public class Campaign implements Serializable {
     )
     private Set<User> comerciales = new HashSet<>();
 
+    // Constructor vacío requerido por JPA
     public Campaign() {
     }
 
-    public Campaign(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Organization organization) {
+    // Constructor con todos los campos necesarios para crear una campaña
+    public Campaign(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Organization organizacion) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.organization = organization;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public LocalDate getFechaInicio() {
-        return fechaInicio;
-    }
-
-    public void setFechaInicio(LocalDate fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public LocalDate getFechaFin() {
-        return fechaFin;
-    }
-
-    public void setFechaFin(LocalDate fechaFin) {
-        this.fechaFin = fechaFin;
-    }
-
-    public Organization getOrganizacion() {
-        return organization;
-    }
-
-    public void setOrganizacion(Organization organization) {
-        this.organization = organization;
-    }
-
-    public Set<Client> getClientes() {
-        return clientes;
-    }
-
-    public void setClientes(Set<Client> clients) {
-        this.clientes = clients;
-    }
-
-    public Set<User> getComerciales() {
-        return comerciales;
-    }
-
-    public void setComerciales(Set<User> comerciales) {
-        this.comerciales = comerciales;
-    }
-
-    public void addComercial(User comercial) {
-        comerciales.add(comercial);
-        comercial.getCampaigns().add(this);
+        this.organizacion = organizacion;
     }
 }
