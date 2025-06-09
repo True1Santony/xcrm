@@ -130,7 +130,7 @@ public class CampaignController {
 
         if (optionalCampaign.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Campaña no encontrada");
-            return "redirect:/campaigns/administration";
+            return "redirect:/campaigns/edit/";
         }
 
         Campaign campaign = optionalCampaign.get();
@@ -142,6 +142,15 @@ public class CampaignController {
         }
 
         try {
+
+            // Validación de fechas
+            LocalDate inicio = LocalDate.parse(fechaInicio);
+            LocalDate fin = LocalDate.parse(fechaFin);
+            if (fin.isBefore(inicio)) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+                return "redirect:/campaigns/edit/" + id;
+            }
+
             // Se actualizan los campos de la campaña
             campaign.setNombre(nombre);
             campaign.setDescripcion(descripcion);
