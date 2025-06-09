@@ -4,32 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Campaña - XCRM</title>
+    <!-- Incluye fuentes, estilos Bootstrap y iconos para el diseño visual -->
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
+        /* Estilos para la barra de navegación superior */
         .navbar-custom {
             background-color: #a8e6cf;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .client-form {
+        /* Estilos para el formulario de edición de campaña */
+        .campaign-edit-form {
             background-color: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+        /* Estilos para los badges (etiquetas) de campaña */
         .badge-campaign {
             background-color: #6f42c1;
             margin-right: 5px;
             margin-bottom: 5px;
         }
+        /* Transición visual para icono de colapsar menú */
         .collapse-icon {
             transition: transform 0.3s ease;
         }
         .collapsed .collapse-icon {
             transform: rotate(-90deg);
         }
+        /* Estilos para el pie de página */
         footer {
             background-color: #f8f9fa;
             padding: 1rem;
@@ -39,7 +45,7 @@
     </style>
 </head>
 <body>
-<!-- Barra de Navegación Superior -->
+<!-- Barra de navegación superior con logo, enlaces y botón para cerrar sesión -->
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">
@@ -55,6 +61,7 @@
                 </li>
             </ul>
             <div class="d-flex">
+                <!-- Formulario para cerrar sesión -->
                 <form th:action="@{/logout}" method="post">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
@@ -65,14 +72,13 @@
     </div>
 </nav>
 
-<!-- Contenedor Principal -->
+<!-- Contenedor principal con menú lateral y contenido principal -->
 <div class="container-fluid">
     <div class="row">
-        <!-- Menú Lateral -->
         <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
             <i class="bi bi-list fs-4"></i>
         </button>
-
+        <!-- Menú lateral con enlaces a secciones del sistema y nombre de usuario -->
         <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
             <div class="position-sticky pt-3">
                 <div class="text-center mb-4">
@@ -80,6 +86,7 @@
                 </div>
                 <hr class="border-light">
                 <ul class="nav flex-column">
+                    <!-- Lista de enlaces para navegación interna -->
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/mi-cuenta}">
                             <i class="bi bi-person"></i> Panel Admin
@@ -119,8 +126,9 @@
             </div>
         </nav>
 
-        <!-- Contenido Principal -->
+        <!-- Área principal donde se muestra el formulario para editar campañas -->
         <main class="col-md-9 col-lg-10 p-4">
+            <!-- Título y botón para volver al listado de campañas -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-pencil-square"></i> Editar Campaña</h2>
                 <a th:href="@{/campaigns/administration}" class="btn btn-secondary">
@@ -128,52 +136,57 @@
                 </a>
             </div>
 
-            <!-- Alertas -->
+            <!-- Sección para mostrar mensajes de error en la edición -->
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
-            <!-- Formulario de Edición -->
-            <div class="card client-form">
+            <!-- Formulario para editar datos de una campaña existente -->
+            <div class="card campaign-edit-form">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Editar Campaña ID: <span th:text="${campaign.id}"></span></h4>
                 </div>
                 <div class="card-body">
                     <form th:action="@{/campaigns/update}" method="post">
+                        <!-- Campo oculto para mantener la referencia a la campaña -->
                         <input type="hidden" name="id" th:value="${campaign.id}" />
 
                         <div class="row g-3">
+                            <!-- Campos para editar nombre, descripción y fechas de la campaña -->
                             <div class="col-md-6">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" th:value="${campaign.nombre}" required>
+                                <input type="text" id="nombre" name="nombre" class="form-control" th:value="${campaign.nombre}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="descripcion" class="form-label">Descripción</label>
-                                <input type="text" class="form-control" id="descripcion" name="descripcion" th:value="${campaign.descripcion}" required>
+                                <input type="text" id="descripcion" name="descripcion" class="form-control" th:value="${campaign.descripcion}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" th:value="${campaign.fechaInicio}" required>
+                                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" th:value="${campaign.fechaInicio}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="fechaFin" class="form-label">Fecha de Fin</label>
-                                <input type="date" class="form-control" id="fechaFin" name="fechaFin" th:value="${campaign.fechaFin}" required>
+                                <input type="date" id="fechaFin" name="fechaFin" class="form-control" th:value="${campaign.fechaFin}" required>
                             </div>
 
-                            <!-- Selección de Clientes -->
+                            <!-- Selector múltiple para asociar clientes a la campaña -->
                             <div class="col-md-12">
                                 <label class="form-label">Clientes Asociados</label>
-                                <select class="form-select" name="clientes" multiple size="6">
+                                <select name="clientes" class="form-select" multiple size="6">
+                                    <!-- Lista dinámica de clientes para seleccionar -->
                                     <option th:each="cliente : ${allClients}"
                                             th:value="${cliente.id}"
                                             th:text="${cliente.nombre}"
                                             th:selected="${#lists.contains(campaign.clientes.![id], cliente.id)}">
                                     </option>
                                 </select>
+                                <!-- Nota para el usuario sobre selección múltiple -->
                                 <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
                             </div>
 
+                            <!-- Botones para guardar cambios o cancelar la edición -->
                             <div class="col-12 mt-4">
                                 <button type="submit" class="btn btn-primary me-2">
                                     <i class="bi bi-save"></i> Guardar Cambios
@@ -190,9 +203,9 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- Footer con contenido común reutilizable -->
 <div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
-<!-- Bootstrap JS -->
+<!-- Scripts de Bootstrap para funcionalidad interactiva -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

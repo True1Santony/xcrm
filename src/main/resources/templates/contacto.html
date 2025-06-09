@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
+    <!-- Configuración general del documento -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contacto - XCRM</title>
@@ -8,31 +9,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS Animation CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body class="fade-in">
-<!-- Barra de navegación verde clara -->
+
+<!-- Navbar público cargado desde fragmento Thymeleaf -->
 <div th:replace="~{fragments/navbar-anonymous :: navbar}"></div>
 
-<!-- Hero Section -->
+<!-- Sección introductoria tipo "Hero" -->
 <section class="hero-section text-center">
-    <div class="container">
+    <div class="container" data-aos="zoom-in">
         <h1 class="display-5 fw-bold mb-3">¿Tienes alguna pregunta?</h1>
         <p class="lead">Nos encantaría saber de ti. Completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</p>
     </div>
 </section>
 
-<!-- Contact Form -->
+<!-- Contenedor del formulario de contacto -->
 <div class="container mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <!--Permite la subida de archivos /form-data-->
+
+                    <!-- Bloque de mensajes de éxito o error (visible tras enviar el formulario) -->
+                    <div class="mt-4">
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    </div>
+
+                    <!-- Formulario principal de contacto -->
                     <form th:action="@{/enviar-contacto}" method="post" enctype="multipart/form-data">
+                        <!-- Campos básicos del formulario -->
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -49,60 +68,53 @@
                             <label for="mensaje" class="form-label">Mensaje</label>
                             <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
                         </div>
-                        <!-- Campo para adjuntar archivo desde Dropbox -->
+
+                        <!-- Opción para seleccionar archivo desde Dropbox -->
                         <div class="mb-3">
                             <label class="form-label">Adjuntar archivo desde <i class="bi bi-cloud-fill text-primary"></i> Dropbox</label>
                             <div class="d-flex align-items-center gap-2">
-                                <button type="button" class="btn btn-outline-primary" id="dropbox-button">
+                                <button type="button" class="btn btn-outline-primary" id="btnSeleccionarArchivoDropbox">
                                     <i class="bi bi-box-arrow-in-down"></i> Seleccionar archivo
                                 </button>
-                                <span id="archivoDropboxNombre" class="text-muted small d-none"></span>
-                                <button type="button" class="btn btn-sm btn-outline-danger d-none" id="dropbox-cancelar">
+                                <span id="nombreArchivoDropbox" class="text-muted small d-none"></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger d-none" id="btnCancelarArchivoDropbox">
                                     <i class="bi bi-x-circle-fill"></i> Cancelar
                                 </button>
                             </div>
-                            <input type="hidden" name="archivoDropbox" id="archivoDropbox">
+                            <!-- Campo oculto donde se guarda el enlace del archivo seleccionado -->
+                            <input type="hidden" name="archivoDropbox" id="inputUrlArchivoDropbox">
                         </div>
-                        <!-- Campo para adjuntar archivo -->
+
+                        <!-- Opción para subir archivo localmente -->
                         <div class="mb-3">
                             <label for="archivo" class="form-label">Adjuntar archivo desde el ordenador</label>
-                            <!--Evita que el usuario seleccione archivos con extensiones no permitidas-->
                             <input type="file" class="form-control" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                             <div class="form-text">Tamaño máximo: 4 MB. Formatos permitidos: PDF, Word, JPG, PNG.</div>
                         </div>
+
+                        <!-- Botón para enviar el formulario -->
                         <button type="submit" class="btn btn-custom">Enviar</button>
                     </form>
 
-                    <!-- Scripts de Bootstrap -->
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-                    <!-- Mensajes de Éxito/Error justo debajo del formulario -->
-                    <div class="mt-4">
-                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span th:text="${success}"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                        </div>
-                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <span th:text="${error}"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Footer -->
+<!-- Pie de página cargado desde fragmento Thymeleaf -->
 <div th:replace="~{fragments/footer :: footer}"></div>
 
-<!-- Agregar el SDK de Dropbox -->
+<!-- Scripts necesarios -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SDK de Dropbox para seleccionar archivos en la nube -->
 <script type="text/javascript"
         th:src="@{'https://www.dropbox.com/static/api/2/dropins.js'}"
         id="dropboxjs"
         th:attr="data-app-key=${dropboxKey}"></script>
+
+<!-- Lógica JavaScript para manejar selección y cancelación de archivo desde Dropbox -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         if (typeof Dropbox === 'undefined') {
@@ -111,36 +123,43 @@
             return;
         }
 
-        const dropboxButton = document.getElementById('dropbox-button');
-        const archivoInput = document.getElementById('archivoDropbox');
-        const nombreSpan = document.getElementById('archivoDropboxNombre');
-        const cancelarBtn = document.getElementById('dropbox-cancelar');
+        const btnSeleccionarArchivoDropbox = document.getElementById('btnSeleccionarArchivoDropbox');
+        const inputUrlArchivoDropbox = document.getElementById('inputUrlArchivoDropbox');
+        const nombreArchivoDropbox = document.getElementById('nombreArchivoDropbox');
+        const btnCancelarArchivoDropbox = document.getElementById('btnCancelarArchivoDropbox');
 
-        dropboxButton.onclick = function () {
+        // Selección de archivo desde Dropbox
+        btnSeleccionarArchivoDropbox.onclick = function () {
             Dropbox.choose({
                 linkType: "direct",
                 multiselect: false,
                 success: function (files) {
                     const selectedFile = files[0];
-                    archivoInput.value = selectedFile.link;
-                    nombreSpan.textContent = '📎 ' + selectedFile.name;
-                    nombreSpan.classList.remove('d-none');
-                    cancelarBtn.classList.remove('d-none');
-                },
-                cancel: function () {
-                    console.log("Selección cancelada.");
+                    inputUrlArchivoDropbox.value = selectedFile.link;
+                    nombreArchivoDropbox.textContent = '📎 ' + selectedFile.name;
+                    nombreArchivoDropbox.classList.remove('d-none');
+                    btnCancelarArchivoDropbox.classList.remove('d-none');
                 }
             });
         };
 
-        cancelarBtn.onclick = function () {
-            archivoInput.value = '';
-            nombreSpan.textContent = '';
-            nombreSpan.classList.add('d-none');
-            cancelarBtn.classList.add('d-none');
+        // Cancelar archivo de Dropbox seleccionado
+        btnCancelarArchivoDropbox.onclick = function () {
+            inputUrlArchivoDropbox.value = '';
+            nombreArchivoDropbox.textContent = '';
+            nombreArchivoDropbox.classList.add('d-none');
+            btnCancelarArchivoDropbox.classList.add('d-none');
         };
     });
 </script>
-
+<!-- AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,
+        easing: 'ease-in-out',
+        once: true
+    });
+</script>
 </body>
 </html>

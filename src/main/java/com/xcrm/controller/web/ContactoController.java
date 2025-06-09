@@ -46,7 +46,7 @@ public class ContactoController {
     }
 
     @PostMapping("/enviar-contacto")
-    public String enviarContacto(
+    public String procesarFormularioContacto(
             @RequestParam String nombre,
             @RequestParam String email,
             @RequestParam String asunto,
@@ -55,66 +55,78 @@ public class ContactoController {
             @RequestParam(required = false) String archivoDropbox,
             RedirectAttributes redirectAttributes) {
 
-        String logArchivo = "";
-
-        // Si el archivo fue adjuntado, registra la información del archivo local
+        // Registra en el log qué archivos se han adjuntado (local o Dropbox)
+        String infoAdjuntos = "";
         if (archivo != null && !archivo.isEmpty()) {
-            logArchivo += String.format("📎 archivo local: '%s' (%d KB)", archivo.getOriginalFilename(), archivo.getSize() / 1024);
+            infoAdjuntos += String.format("📎 archivo local: '%s' (%d KB)", archivo.getOriginalFilename(), archivo.getSize() / 1024);
         } else {
-            logArchivo += "📎 archivo local: no adjunto";
+            infoAdjuntos += "📎 archivo local: no adjunto";
         }
 
-        // Si hay un enlace de Dropbox, lo registra
         if (archivoDropbox != null && !archivoDropbox.trim().isEmpty()) {
-            logArchivo += String.format(", 🌐 Dropbox: %s", archivoDropbox);
+            infoAdjuntos += String.format(", 🌐 Dropbox: %s", archivoDropbox);
         } else {
-            logArchivo += ", 🌐 Dropbox: no adjunto";
+            infoAdjuntos += ", 🌐 Dropbox: no adjunto";
         }
 
+        // Imprime en log todos los datos del formulario para facilitar trazabilidad
         log.info("Formulario recibido: nombre='{}', email='{}', asunto='{}', mensaje='{}', {}",
-                nombre, email, asunto, mensaje, logArchivo);
+                nombre, email, asunto, mensaje, infoAdjuntos);
 
         try {
-
+            // Envía un correo con la información del formulario y los archivos (si los hay)
             emailSender.enviarCorreo(nombre, email, asunto, mensaje, archivo, archivoDropbox);
 
-            // Crear entidad
-            ContactoMensaje contacto = new ContactoMensaje();
-            contacto.setNombre(nombre);
-            contacto.setEmail(email);
-            contacto.setAsunto(asunto);
-            contacto.setMensaje(mensaje);
-            contacto.setArchivoDropboxUrl(archivoDropbox);
+            // Crea un objeto con todos los datos del mensaje para guardarlo
+            ContactoMensaje mensajeContacto = new ContactoMensaje();
+            mensajeContacto.setNombre(nombre);
+            mensajeContacto.setEmail(email);
+            mensajeContacto.setAsunto(asunto);
+            mensajeContacto.setMensaje(mensaje);
+            mensajeContacto.setArchivoDropboxUrl(archivoDropbox);
 
-            // Si se ha adjuntado un archivo, se guarda su nombre
+            // Si hay archivo adjunto, guarda su nombre
             if (archivo != null && !archivo.isEmpty()) {
-                contacto.setArchivoNombre(archivo.getOriginalFilename());
+                mensajeContacto.setNombreArchivoAdjunto(archivo.getOriginalFilename());
             }
 
-            // Si el usuario está logueado, guarda su UUID en el mensaje
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-                String username = auth.getName();
-                User user = userService.findByUsername(username);
-                if (user != null) {
-                    contacto.setUsuarioId(user.getId().toString());  // Asigna el UUID del usuario logueado
-                }
-            } else {
-                UUID anonId = UUID.randomUUID();  // UUID aleatorio para anónimos
-                contacto.setUsuarioId(anonId.toString());
-            }
+            // Asocia el mensaje al usuario autenticado o le genera un ID anónimo
+            String usuarioId = obtenerIdUsuarioAutenticado();
+            mensajeContacto.setUsuarioId(usuarioId);
 
             // Guarda el mensaje en la base de datos
-            contactoMensajeService.guardarMensaje(contacto);
+            contactoMensajeService.guardarMensajeContacto(mensajeContacto);
+
+            // Muestra un mensaje de éxito al usuario
             redirectAttributes.addFlashAttribute("success", "¡Mensaje enviado correctamente!");
+
         } catch (IllegalArgumentException e) {
+            // Manejo de errores de validación
             log.warn("Validación fallida: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
+            // Manejo de cualquier otro error inesperado
             log.error("Error al enviar mensaje de contacto", e);
             redirectAttributes.addFlashAttribute("error", "Hubo un error al enviar el mensaje.");
         }
 
+        // Redirige al formulario después de enviar el mensaje
         return "redirect:/contacto";
+    }
+
+    /**
+     * Devuelve el ID del usuario actual si está autenticado.
+     * Si no hay sesión iniciada, genera un UUID aleatorio como identificador anónimo.
+     */
+    private String obtenerIdUsuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            String username = auth.getName();
+            User user = userService.findByUsername(username);
+            if (user != null) {
+                return user.getId().toString();
+            }
+        }
+        return UUID.randomUUID().toString(); // ID para usuarios no logueados
     }
 }

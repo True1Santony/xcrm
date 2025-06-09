@@ -1,0 +1,50 @@
+Guía de Comandos – Servicio xcrm.service en EC2 Ubuntu
+======================================================
+
+1. Editar el archivo del servicio
+---------------------------------
+sudo nano /etc/systemd/system/xcrm.service
+Edita o corrige el archivo del servicio `xcrm`.
+
+2. Guardar configuración y recargar systemd
+-------------------------------------------
+sudo systemctl daemon-reload
+Recarga los archivos de configuración de servicios para que los cambios surtan efecto.
+
+3. Iniciar o reiniciar el servicio
+----------------------------------
+sudo systemctl start xcrm       # Inicia el servicio
+sudo systemctl restart xcrm     # Reinicia el servicio si ya estaba en ejecución
+
+4. Detener el servicio
+----------------------
+sudo systemctl stop xcrm
+Detiene completamente el servicio.
+
+5. Habilitar el servicio al arrancar EC2
+----------------------------------------
+sudo systemctl enable xcrm
+Activa el inicio automático del servicio cuando se reinicia el sistema (ideal para EC2).
+
+6. Ver estado del servicio
+--------------------------
+sudo systemctl status xcrm
+Muestra si el servicio está activo, inactivo, fallando, etc.
+
+7. Ver logs del servicio
+------------------------
+sudo journalctl -u xcrm -f
+Sigue los logs del servicio en tiempo real (como `tail -f`).
+
+sudo journalctl -u xcrm -n 100
+Muestra las últimas 100 líneas del log.
+
+8. Limpiar logs antiguos (opcional)
+-----------------------------------
+sudo journalctl --vacuum-time=7d
+Elimina logs con más de 7 días para liberar espacio.
+
+9. Resetear estado de fallo
+---------------------------
+sudo systemctl reset-failed xcrm
+Limpia el estado de fallo del servicio si este falló y no se puede volver a iniciar automáticamente.

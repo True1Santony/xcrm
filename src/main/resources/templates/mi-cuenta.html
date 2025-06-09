@@ -205,37 +205,49 @@
             </div>
 
 
-            <!-- Información del Usuario -->
-            <div class="card profile-card">
+            <!-- Sección: Información del Perfil del Usuario -->
+            <div class="card user-profile-card">
+                <!-- Encabezado con título e ícono -->
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0"><i class="bi bi-person-badge"></i> Información del Perfil</h4>
                 </div>
+
+                <!-- Cuerpo de la tarjeta con datos del usuario -->
                 <div class="card-body">
                     <div class="row">
+                        <!-- Columna izquierda: nombre y rol del usuario conectado -->
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <!-- Muestra el nombre del usuario autenticado -->
                                 <h5>Nombre de Usuario</h5>
                                 <p class="fs-5" th:text="${#authentication?.name}"></p>
                             </div>
                             <div class="mb-3">
+                                <!-- Muestra el rol del usuario según sus permisos -->
                                 <h5>Rol</h5>
                                 <span sec:authorize="hasRole('ROLE_ADMIN')" class="badge bg-danger">Administrador</span>
                                 <span sec:authorize="hasRole('ROLE_USER')" class="badge bg-primary">Usuario</span>
                             </div>
                         </div>
+
+                        <!-- Columna derecha: información adicional como organización y fecha -->
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <!-- Muestra el nombre de la organización asociada al usuario -->
                                 <h5>Organización</h5>
                                 <p class="fs-5" th:text="${organization?.nombre}"></p>
                             </div>
                             <div class="mb-3">
+                                <!-- Muestra una fecha fija de registro o inicio (puede actualizarse en el futuro) -->
                                 <h5>Miembro desde</h5>
-                                <p class="fs-5">15/03/2024</p> <!-- Puedes reemplazar con fecha real -->
+                                <p class="fs-5">15/03/2024</p>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Botón para redirigir al usuario a la pantalla de Configuración -->
                     <div class="text-end mt-3">
-                        <a th:href="@{/usuarios/configuracion}" class="btn btn-custom"> <!-- th:href= te redirije a la vista indicada -->
+                        <a th:href="@{/usuarios/configuracion}" class="btn btn-custom">
                             <i class="bi bi-pencil-square"></i> Ir a Configuración
                         </a>
                     </div>

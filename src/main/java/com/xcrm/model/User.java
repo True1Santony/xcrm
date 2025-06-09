@@ -14,6 +14,10 @@ import java.util.UUID;
 @Table(name = "users")
 public class User implements Serializable {
 
+    // Identificador único del usuario almacenado como BINARY(16) para más eficiencia.
+    // Se utiliza UUID como clave primaria para que el identificador no se repita entre usuarios.
+    // La anotación @Id indica que este campo es la clave primaria en la base de datos.
+    // Se almacena en formato binario (16 bytes) en lugar de texto (VARCHAR) para ahorrar espacio y mejorar el rendimiento.
     @Id
     @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;

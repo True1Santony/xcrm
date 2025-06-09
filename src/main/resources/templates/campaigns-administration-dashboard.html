@@ -14,25 +14,24 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body class="fade-in">
-<!-- Barra de navegación verde clara -->
+<!-- Barra de navegación principal para usuarios autenticados -->
 <div th:replace="~{fragments/navbar-authenticated :: navbar-auth}"></div>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Menú Lateral -->
-        <!-- Botón del menú solo visible en pantallas pequeñas -->
+        <!-- Botón para mostrar/ocultar menú lateral en dispositivos móviles -->
         <button class="btn btn-dark d-md-none m-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
             <i class="bi bi-list fs-4"></i>
         </button>
 
+        <!-- Menú lateral de navegación con opciones para administrar usuarios, campañas, clientes, etc. -->
         <nav id="sidebarMenu" class="collapse d-md-block col-md-3 col-lg-2 bg-dark text-light sidebar">
             <div class="position-sticky pt-3">
+                <!-- Muestra el nombre del usuario autenticado -->
                 <div class="text-center mb-4">
                     <h5 th:text="${#authentication?.name}" class="mb-1"></h5>
                 </div>
-
                 <hr class="border-light">
-
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" th:href="@{/mi-cuenta}">
@@ -73,31 +72,37 @@
             </div>
         </nav>
 
-        <!-- Contenido Principal -->
+        <!-- Contenido principal de la página -->
         <main class="col-md-9 col-lg-10 p-4">
+            <!-- Título de la sección y muestra opcional del nombre de la organización -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-megaphone"></i> Administración de Campañas</h2>
                 <div th:if="${organization}" class="badge bg-primary fs-6">
                     Organización: <span th:text="${organization.nombre}"></span>
                 </div>
             </div>
-            <!-- Alertas -->
-            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-                <span th:text="${error}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
+            <!-- Área para mostrar mensajes de error o confirmación enviados desde el backend -->
+            <div id="alerts-container">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${mensaje}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             </div>
-            <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
-                <span th:text="${mensaje}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <!-- Sección de creación de campaña -->
-            <div sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
+
+            <!-- Sección visible solo para usuarios con rol ADMIN para crear y gestionar campañas -->
+            <section sec:authorize="hasRole('ROLE_ADMIN')" class="admin-section">
+                <!-- Formulario para crear una nueva campaña con campos para nombre, descripción, fechas y selección de clientes -->
                 <div class="card mb-4 campaign-form">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0"><i class="bi bi-plus-square"></i> Crear Nueva Campaña</h4>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/campaigns}" method="post" th:object="${new_campaign}" id="createCampaignForm">
+                        <form th:action="@{/campaigns}" method="post" th:object="${newCampaign}" id="formCrearCampaña">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="nombre" class="form-label">Nombre</label>
@@ -124,6 +129,7 @@
                                 <div class="col-md-6">
                                     <label for="clientes" class="form-label">Seleccionar Clientes</label>
                                     <select class="form-select" id="clientes" name="clientes" multiple>
+                                        <!-- Lista de clientes disponibles para asignar a la campaña -->
                                         <option th:each="cliente : ${allClients}"
                                                 th:value="${cliente.id}"
                                                 th:text="${cliente.nombre}">
@@ -131,7 +137,6 @@
                                     </select>
                                     <small class="text-muted">Mantén Ctrl (Windows) o Command (Mac) para seleccionar múltiples</small>
                                 </div>
-
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-custom">
                                         <i class="bi bi-save"></i> Crear Campaña
@@ -141,7 +146,8 @@
                         </form>
                     </div>
                 </div>
-                <!-- Tabla de Campañas -->
+
+                <!-- Tabla que muestra las campañas existentes con detalles y opciones para editar o eliminar -->
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0"><i class="bi bi-list-ul"></i> Lista de Campañas</h4>
@@ -162,6 +168,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                <!-- Recorre la lista de campañas para mostrar cada una en una fila -->
                                 <tr th:each="campaign : ${campaigns}">
                                     <td th:text="${campaign.id}"></td>
                                     <td th:text="${campaign.nombre}"></td>
@@ -169,6 +176,7 @@
                                     <td th:text="${#temporals.format(campaign.fechaInicio, 'dd/MM/yyyy')}"></td>
                                     <td th:text="${#temporals.format(campaign.fechaFin, 'dd/MM/yyyy')}"></td>
                                     <td>
+                                        <!-- Muestra la cantidad de clientes asignados y permite desplegar sus nombres -->
                                         <div th:if="${campaign.clientes.size() > 0}">
                                             <a class="d-block" data-bs-toggle="collapse"
                                                th:attr="data-bs-target='#clientes-'+${campaign.id}"
@@ -191,25 +199,27 @@
                                         <span th:if="${campaign.clientes.size() == 0}" class="text-muted">Ninguno</span>
                                     </td>
 
+                                    <!-- Lista de comerciales asignados a la campaña -->
                                     <td>
-                                                <span th:each="comercial : ${campaign.comerciales}"
-                                                      th:text="${comercial.username + ', '}"
-                                                      class="badge bg-secondary me-1"></span>
+                                        <span th:each="comercial : ${campaign.comerciales}"
+                                              th:text="${comercial.username + ', '}"
+                                              class="badge bg-secondary me-1"></span>
                                     </td>
+
+                                    <!-- Opciones para editar o eliminar campañas -->
                                     <td class="table-actions">
-                                        <!-- Solo mostrar botón de editar si la fecha de inicio es posterior a la fecha actual -->
-                                        <!-- Mostrar enlace si la campaña es editable -->
+                                        <!-- Permite editar solo si la fecha de inicio de la campaña es futura -->
                                         <th:block th:if="${campaign.fechaInicio > T(java.time.LocalDate).now()}">
                                             <a th:href="@{/campaigns/edit/{id}(id=${campaign.id})}" class="btn btn-sm btn-warning">
                                                 <i class="bi bi-pencil"></i> Editar
                                             </a>
                                         </th:block>
-                                        <!-- Muestra No editable -->
+                                        <!-- Muestra mensaje de no editable si la campaña ya comenzó -->
                                         <th:block th:unless="${campaign.fechaInicio > T(java.time.LocalDate).now()}">
                                             <span class="text-muted"><i class="bi bi-lock-fill"></i> No editable</span>
                                         </th:block>
 
-                                        <!-- Botón de eliminar -->
+                                        <!-- Botón para eliminar campaña con confirmación -->
                                         <form th:action="@{/campaigns/delete}" method="post" class="d-inline ms-1">
                                             <input type="hidden" name="id" th:value="${campaign.id}">
                                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar esta campaña?');">
@@ -223,13 +233,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 </div>
+
 <!-- Footer -->
 <div th:replace="~{fragments/footer_admin :: footer_admin}"></div>
-<!-- Bootstrap JS -->
+
+<!-- Scripts de Bootstrap para funcionalidades interactivas -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

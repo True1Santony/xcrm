@@ -32,19 +32,24 @@ public class DatabaseBackupService {
     public File createBackup() throws IOException, InterruptedException {
         String dbUrl = getDatabaseUrlFromEntityManager();
         String dbName = extractDbName(dbUrl);
+        String dbHost = extractHost(dbUrl);
+        String dbPort = extractPort(dbUrl);
         String fileName = "backup_" + dbName + "_" + System.currentTimeMillis() + ".sql";
         File backupFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 
-        log.info("Creando respaldo para DB: " + dbName + " con mysqldump en ruta: " + mysqldumpPath);
+        log.info("Creando respaldo para DB: " + dbName + " en host " + dbHost + ":" + dbPort + " con mysqldump en ruta: " + mysqldumpPath);
 
         ProcessBuilder pb = new ProcessBuilder(
                 mysqldumpPath,
-                "-u" + dbUser,
+                "-h", dbHost,
+                "-P", dbPort,
+                "-u", dbUser,
                 "-p" + dbPassword,
                 dbName,
-                "-r",
-                backupFile.getAbsolutePath()
+                "-r", backupFile.getAbsolutePath()
         );
+
+        pb.environment().put("MYSQL_PWD", dbPassword);
 
         Process process = pb.start();
         int exitCode = process.waitFor();
@@ -57,6 +62,21 @@ public class DatabaseBackupService {
         log.info("Respaldo creado exitosamente: " + backupFile.getAbsolutePath());
         return backupFile;
     }
+
+    private String extractHost(String jdbcUrl) {
+        String withoutPrefix = jdbcUrl.substring("jdbc:mysql://".length());
+        String hostPortPart = withoutPrefix.split("/")[0];
+        return hostPortPart.split(":")[0];
+    }
+
+    private String extractPort(String jdbcUrl) {
+        String withoutPrefix = jdbcUrl.substring("jdbc:mysql://".length());
+        String hostPortPart = withoutPrefix.split("/")[0];
+        String[] parts = hostPortPart.split(":");
+        return (parts.length > 1) ? parts[1] : "3306";
+    }
+
+
 
     private String getDatabaseUrlFromEntityManager() {
         try {

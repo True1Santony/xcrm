@@ -159,17 +159,25 @@ public class ReportServiceImpl implements ReportService {
     @Cacheable(value = "interaccionesPorVenta", key = "'interaccionesPorVenta_' + @organizationServiceImpl.getCurrentOrganization().id")
     public List<Map<String, Object>> getInteraccionesPorVenta() {
         String sql = """
-        SELECT 
-            u.username AS comercial_username,
-            CONCAT('Venta #', v.id) AS venta_label,
-            COUNT(i_cont.id) AS total_interacciones
-        FROM ventas v
-        JOIN interacciones i ON v.interaccion_id = i.id
-        JOIN clientes c ON i.cliente_id = c.id
-        JOIN users u ON i.comercial_id = u.id
-        JOIN interacciones i_cont ON i_cont.cliente_id = c.id AND i_cont.comercial_id = u.id
-        GROUP BY v.id, u.id
-        ORDER BY u.username
+        SELECT\s
+                        u.username AS comercial_username,
+                        CONCAT('Venta #', v.id) AS venta_label,
+                        (
+                            SELECT COUNT(*)\s
+                            FROM interacciones i2
+                            WHERE i2.cliente_id = c.id
+                              AND i2.comercial_id = u.id
+                              AND i2.fecha_hora <= i.fecha_hora
+                              AND (
+                                  i.campania_id IS NULL OR i2.campania_id = i.campania_id
+                              )
+                        ) AS total_interacciones
+                    FROM ventas v
+                    JOIN interacciones i ON v.interaccion_id = i.id
+                    JOIN clientes c ON i.cliente_id = c.id
+                    JOIN users u ON i.comercial_id = u.id
+                    ORDER BY u.username;
+                
     """;
 
         List<Object[]> results = entityManager.createNativeQuery(sql).getResultList();
