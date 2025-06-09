@@ -139,7 +139,7 @@ public String showEditForm(
 
         if (optionalCampaign.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Campaña no encontrada");
-            return "redirect:/campaigns/administration";
+            return "redirect:/campaigns/edit/";
         }
 
         Campaign campaign = optionalCampaign.get();
@@ -150,6 +150,14 @@ public String showEditForm(
         }
 
         try {
+            // Validación de fechas
+            LocalDate inicio = LocalDate.parse(fechaInicio);
+            LocalDate fin = LocalDate.parse(fechaFin);
+            if (fin.isBefore(inicio)) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+                return "redirect:/campaigns/edit/" + id;
+            }
+
             campaign.setNombre(nombre);
             campaign.setDescripcion(descripcion);
             campaign.setFechaInicio(LocalDate.parse(fechaInicio));
