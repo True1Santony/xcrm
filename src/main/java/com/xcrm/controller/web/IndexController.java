@@ -25,20 +25,12 @@ public class IndexController {
     private final OrganizationService organizationService;
     private final UserService userService;
 
-    /**
-     * Controlador para la página principal.
-     * Solo muestra la vista "index" y registra la acción en logs.
-     */
     @GetMapping("/")
         public String mostrarIndex(Model model){
             log.info("Página de inicio mostrada");
         return "index";
     }
 
-    /**
-     * Controlador para mostrar la página de características.
-     * Añade un título a la vista para mostrar información estática.
-     */
     @GetMapping("/caracteristicas")
     public String mostrarCaracteristicas(Model model) {
         model.addAttribute("titulo", "Características de XCRM");
@@ -51,10 +43,6 @@ public class IndexController {
         return "precios";
     }
 
-    /**
-     * Controlador para la página de login.
-     * Muestra mensajes de error si las credenciales son incorrectas.
-     */
     @GetMapping("/login")
     public String mostrarLogin(Model model, @RequestParam(value = "error", required = false) String error,
                                @RequestParam(value = "logout", required = false) String logout) {
@@ -65,20 +53,12 @@ public class IndexController {
         return "login";
     }
 
-    /**
-     * Controlador para mostrar la página de "Mi Cuenta".
-     * Obtiene y muestra la organización actual asociada al usuario.
-     */
     @GetMapping("/mi-cuenta")
     public String mostrarMiCuenta(Model model) {
         model.addAttribute("organization", organizationService.getCurrentOrganization());
         return "mi-cuenta";
     }
 
-    /**
-     * Controlador para la página del aviso legal.
-     * Añade título estático para mostrar el aviso legal.
-     */
     @GetMapping("/aviso-legal")
     public String mostrarAvisoLegal(Model model) {
         model.addAttribute("titulo", "Aviso Legal de XCRM");
@@ -138,13 +118,7 @@ public class IndexController {
         return "redirect:/login";
     }
 
-    /**
-     * Método privado que valida los datos de registro recibidos.
-     * Verifica unicidad de email, usuario y organización.
-     * Comprueba que emails y contraseñas coincidan.
-     * Aplica una expresión regular para validar la complejidad de la contraseña.
-     * Todos los errores se añaden a la lista recibida para mostrarlos posteriormente.
-     */
+
     private void validarDatosRegistro(String nombreEmpresa, String nombreAdmin, String email, String confirmEmail,
                                       String password, String confirmPassword, List<String> errores) {
 
