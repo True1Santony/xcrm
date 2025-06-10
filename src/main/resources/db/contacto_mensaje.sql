@@ -1,8 +1,4 @@
--- Tabla que guarda los mensajes enviados desde el formulario de contacto.
--- Registra datos del remitente (nombre, email, asunto, mensaje), posibles archivos adjuntos,
--- la fecha de envío y el ID del usuario que lo envió.
--- Está vinculada a la tabla 'users' mediante una clave foránea para mantener relación entre mensajes y usuarios.
--- Si se borra o actualiza un usuario, los mensajes relacionados se actualizan automáticamente (ON DELETE/UPDATE CASCADE).
+
 CREATE TABLE IF NOT EXISTS contacto_mensaje (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,         -- ID único del mensaje
     nombre VARCHAR(255),                          -- Nombre del remitente
@@ -12,7 +8,7 @@ CREATE TABLE IF NOT EXISTS contacto_mensaje (
     archivoDropboxUrl VARCHAR(255),               -- URL del archivo en Dropbox (si lo hay)
     nombreArchivoAdjunto VARCHAR(255),                   -- Nombre del archivo adjunto (si lo hay)
     fechaEnvio TIMESTAMP,                         -- Fecha y hora en que se envió el mensaje
-    usuarioId VARCHAR(36) NOT NULL,               -- ID del usuario que lo envía (relacionado con 'users')
+    usuarioId BINARY(16) NOT NULL,               -- ID del usuario que lo envía (relacionado con 'users')
 
     -- Clave foránea: si se elimina o cambia el usuario, se actualiza también aquí
     CONSTRAINT fk_usuarioId

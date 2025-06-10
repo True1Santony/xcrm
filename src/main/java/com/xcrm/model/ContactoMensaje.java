@@ -2,6 +2,7 @@ package com.xcrm.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "contacto_mensaje")
@@ -35,7 +36,7 @@ public class ContactoMensaje {
     // Se almacena como texto (UUID en formato string).
 
     @Column(name = "usuarioId")
-    private String usuarioId;
+    private UUID usuarioId;
 
     // Fecha y hora en que se envió el mensaje, para registro y orden cronológico.
 
@@ -99,11 +100,11 @@ public class ContactoMensaje {
         this.nombreArchivoAdjunto = nombreArchivoAdjunto;
     }
 
-    public String getUsuarioId() {
+    public UUID getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(String usuarioId) {
+    public void setUsuarioId(UUID usuarioId) {
         this.usuarioId = usuarioId;
     }
 
