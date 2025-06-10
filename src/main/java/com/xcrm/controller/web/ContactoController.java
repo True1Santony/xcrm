@@ -91,7 +91,7 @@ public class ContactoController {
             }
 
             // Asocia el mensaje al usuario autenticado o le genera un ID anónimo
-            String usuarioId = obtenerIdUsuarioAutenticado();
+            UUID usuarioId = obtenerIdUsuarioAutenticado();
             mensajeContacto.setUsuarioId(usuarioId);
 
             // Guarda el mensaje en la base de datos
@@ -114,19 +114,15 @@ public class ContactoController {
         return "redirect:/contacto";
     }
 
-    /**
-     * Devuelve el ID del usuario actual si está autenticado.
-     * Si no hay sesión iniciada, genera un UUID aleatorio como identificador anónimo.
-     */
-    private String obtenerIdUsuarioAutenticado() {
+    private UUID obtenerIdUsuarioAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             String username = auth.getName();
             User user = userService.findByUsername(username);
             if (user != null) {
-                return user.getId().toString();
+                return user.getId();
             }
         }
-        return UUID.randomUUID().toString(); // ID para usuarios no logueados
+        return UUID.randomUUID();
     }
 }

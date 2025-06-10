@@ -113,7 +113,6 @@ public class IndexController {
             return "registro";
         }
 
-        // Si todo sale bien, redirige al login con mensaje de éxito
         redirectAttributes.addFlashAttribute("success", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "redirect:/login";
     }

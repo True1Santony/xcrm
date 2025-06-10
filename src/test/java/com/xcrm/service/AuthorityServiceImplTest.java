@@ -39,7 +39,6 @@ public class AuthorityServiceImplTest {
 
         authorityService.deleteAll(authorities);
 
-        // Capturar que se llama deleteAll sin argumentos
         verify(authorityRepository, times(1)).deleteAll();
     }
 }

@@ -31,7 +31,7 @@ public class ContactoMensajeService {
 
         // Si el mensaje no tiene usuario asociado, crea uno anónimo nuevo
         if (mensaje.getUsuarioId() == null) {
-            mensaje.setUsuarioId(UUID.randomUUID().toString());
+            mensaje.setUsuarioId(UUID.randomUUID());
         }
 
         // Guarda el mensaje en la base de datos y devuelve la entidad persistida
